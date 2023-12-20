@@ -179,7 +179,7 @@ upgradeInternalDefine = {
                 ],
                 "baseTime": 1000,
                 # in this case, %1 is upgrade level
-                "timeEquation": "tan(-((%1+30)/600)-90)",
+                "timeEquation": "abs(tan(-((%1+34)/600)-10.93791))",
                 "maxLevel": 10,
                 "whatItGives": [
                         {
@@ -231,7 +231,7 @@ upgradeInternalDefine = {
                 ],
                 "baseTime": 1000,
                 # in this case, %1 is upgrade level
-                "timeEquation": "tan((-(%1+34)/4000)-90)",
+                "timeEquation": "tan((-(%1+230)/4000)-10.939059)",
                 "maxLevel": 10,
                 "whatItGives": [
                         {

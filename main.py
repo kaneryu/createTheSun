@@ -3,8 +3,10 @@ import time
 import ctypes
 import threading
 import sys
+import os
 from math import floor, ceil, log
 #third party imports
+from PyQt6 import QtCore
 from PyQt6.QtGui import *
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
@@ -15,6 +17,7 @@ import _logging as logging
 
 logging.logLevel = 1
 logging.specialLogs = []
+basedir = os.path.dirname(__file__)
 
 class Worker(QRunnable):
     '''
@@ -58,7 +61,6 @@ class MainWindow(QMainWindow):
 
         
         self.setWindowTitle("Create The Sun")
-        self.setWindowIcon(QIcon("icon.ico"))
         self.tabWidget = QTabWidget()
         self.tabWidget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         
@@ -147,14 +149,15 @@ if __name__ == "__main__":
     myappid = u'mycompany.myproduct.subproduct.version'
     ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
-    file = open('stylesheet.qss', 'r')
+    file = open(os.path.join(basedir,'stylesheet.qss'), 'r')
     stylesheet = file.read()
     file.close()
-
+    
     app = QApplication([])
     app.setStyleSheet(stylesheet)
-
+    app.setWindowIcon(QIcon(basedir + r"\icon.ico"))
     window = MainWindow()
+    
     if  window.threadpool.maxThreadCount() < 2:
         error_dialog = QMessageBox()
         error_dialog.setIcon(QMessageBox.Icon.Critical)
@@ -162,5 +165,6 @@ if __name__ == "__main__":
         error_dialog.setText('You have less than 2 available threads. At least 2 threads are needed to run the game')
         error_dialog.exec()
         sys.exit() 
+        
     window.show()
     app.exec()

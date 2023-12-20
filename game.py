@@ -1,6 +1,8 @@
 import sympy as sp
 import regex as re
+import math
 from math import floor, ceil, log
+import mpmath
 import gamedefine
 def canAffordUpgradeTask(upgrade : str) -> bool:
     """

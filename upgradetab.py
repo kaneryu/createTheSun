@@ -79,12 +79,15 @@ class upgradeBlock(QFrame):
         if self.internalDefine["type"] == "idleGenerator":
             current = list(self.visualDefine["currentUpgradeUsefulDescription"])
             withNewUpgrade = list(self.visualDefine["upgradeUsefulDescription"])
-            
-            if self.visualDefine["usefulDescriptionBlank"] == "tickTime":
-                current[current.index("%%%")] = str(round(game.evaluateCostEquation(self.internalDefine["idleGenerator"]["timeEquation"], gamedefine.upgradeLevels[self.name])))
-                withNewUpgrade[withNewUpgrade.index("%%%")] = str(round(game.evaluateCostEquation(self.internalDefine["idleGenerator"]["timeEquation"], gamedefine.upgradeLevels[self.name])))
-            print(str(round(game.evaluateCostEquation(self.internalDefine["idleGenerator"]["timeEquation"], gamedefine.upgradeLevels[self.name]))))
-            return (f"{"".join(current)} \n {"".join(withNewUpgrade)}")
+            if not gamedefine.upgradeLevels[self.name] == 0:
+                if self.visualDefine["usefulDescriptionBlank"] == "tickTime":
+                    current[current.index("%%%")] = str(round(game.evaluateCostEquation(self.internalDefine["idleGenerator"]["timeEquation"], gamedefine.upgradeLevels[self.name])/1000))
+                    withNewUpgrade[withNewUpgrade.index("%%%")] = str(round(game.evaluateCostEquation(self.internalDefine["idleGenerator"]["timeEquation"], gamedefine.upgradeLevels[self.name] + 1)/1000))
+                print(str(round(game.evaluateCostEquation(self.internalDefine["idleGenerator"]["timeEquation"], gamedefine.upgradeLevels[self.name]))))
+                return (f"{"".join(current)} \n {"".join(withNewUpgrade)}")
+            else:
+                withNewUpgrade[withNewUpgrade.index("%%%")] = str(round(game.evaluateCostEquation(self.internalDefine["idleGenerator"]["timeEquation"], gamedefine.upgradeLevels[self.name] + 1)/1000))
+                return "".join(withNewUpgrade)
    
     def updateDisplay(self):
         if game.canAffordUpgrade(self.name):
