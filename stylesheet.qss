@@ -1,20 +1,29 @@
-QMainWindow {background: #222222;}
-QLabel {color: white;}
-
+QMainWindow {background: #1e1e1e;}
+QLabel {
+    color: white;
+    background: transparent;
+    font-family: "Urbanist Medium";
+    font-size: 15px;
+    
+}
+/*222222*/
 QPushButton {
-    background: #222222;
+    background: #1e1e1e;
     border: 1px solid #ffffff;
     border-radius: 7px;
     color: white;
     padding: 5px;
+    font-family: "Urbanist Medium";
+    font-size: 15px;
 }
 QPushButton:hover {
     background: #ffffff;
-    color: #222222;
+    color: #1e1e1e;
 }
 QPushButton:pressed {
     background: #e5e3ff;
-    color: #222222;
+    color: #1e1e1e;
+    font-family: "Urbanist Black";
 }
 QPushButton:disabled {
     background: #361616;
@@ -22,7 +31,7 @@ QPushButton:disabled {
 }
 QProgressBar {
     border: 1px solid #ffffff;
-    background: #222222;
+    background: #1e1e1e;
     color: white;
     text-align: center;
 }
@@ -30,7 +39,7 @@ QProgressBar::chunk {
     background-color: #ffffff;
 }
 QDialog {
-    background: #222222;
+    background: #1e1e1e;
     border: 1px solid #ffffff;
     border-radius: 7px;
     color: white;
@@ -38,15 +47,15 @@ QDialog {
 }
 
 QWidget{
-    background: #222222;
+    background: #1e1e1e;
 }
 
 QTabWidget::pane {
-    background: #222222;
+    background: #1e1e1e;
     color: white;
 }
 QTabBar::tab {
-    background: #222222;
+    background: #1e1e1e;
     color: white;
     border: 1px solid #ffffff;
     border-top-left-radius: 7px; /* For rounded corners */
@@ -67,7 +76,7 @@ QTabBar::tab:selected {
 }
 
 QLineEdit {
-    background: #222222;
+    background: #1e1e1e;
     border: 1px solid #ffffff;
     color: white;
     padding: 2px;

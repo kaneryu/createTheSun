@@ -354,3 +354,65 @@ upgradeDetails = {
         ]
     }
 }
+
+achevementInternalDefine = {
+    "theBeginning": {
+        
+        "hidden": False,
+        
+        "whatItRequires": [
+            {
+                "what": "quarks",
+                "amount": 1
+            },
+            {
+                "what": "protons",
+                "amount": 1                
+            }        
+        ],
+        
+        "type": "show",
+        "whatItGives": [
+            {
+                "what": "nothing",
+                "amount": -1
+            }
+        ]
+    },
+    
+    "automation": {
+        "hidden": False,
+        "whatItRequires": [
+            {
+                "what": "particleAccelerator",
+                "amount": 1
+            }  
+        ],
+        "type": "itemReward",
+        "whatItGives": [
+            {
+                "what": "protons",
+                "amount": 10
+            }
+        ]
+    }
+}
+
+achevementVisualDefine = {
+    "theBeginning": {
+        "visualName": "The Beginning",
+        "hoverDescription": "At the start, there was nothing... \n Create your first quark and proton" 
+    },
+    
+    "automation": {
+        "visualName": "Automation",
+        "hoverDescription": "Automation is upon us. \n Create your first particle accelerator",
+        "rewardDescription": "Unlock to recive 10 protons"      
+    
+    }
+    
+    
+    
+}
+
+unlockedAchevements = []

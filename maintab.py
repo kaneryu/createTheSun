@@ -9,6 +9,7 @@ import gamedefine
 import game
 import logging
 import achevements
+import urbanistFont
 
 class purchaseStrip(QWidget):
     def __init__(self, name):
@@ -39,6 +40,7 @@ class purchaseStrip(QWidget):
     
     def purchase(self):
         if self.name == "quarks":
+            popup = achevements.achevementPopup("theBeginning", self, True)
             game.purchase("quarks")
             return 0
         
@@ -91,6 +93,7 @@ class content(QWidget):
     def __init__(self):
         super().__init__()
         self.layout = QVBoxLayout()
+        self.layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.purchaseStrips = []
         for i in gamedefine.purchaseToCreate:
             if not i == "electrons":

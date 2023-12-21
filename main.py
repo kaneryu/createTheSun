@@ -14,6 +14,7 @@ from PyQt6.QtCore import *
 import tabs
 import electrons
 import _logging as logging
+import urbanistFont
 
 logging.logLevel = 1
 logging.specialLogs = []
@@ -139,7 +140,11 @@ class MainWindow(QMainWindow):
             
             if not threading.main_thread().is_alive():
                 return 0
-            
+    
+    def closeEvent(self, *args, **kwargs):
+        super().closeEvent(*args, **kwargs)
+        sys.exit(0) #stop all threads
+    
 if __name__ == "__main__":
     #change icon in taskbar
     myappid = u'mycompany.myproduct.subproduct.version'
@@ -150,9 +155,12 @@ if __name__ == "__main__":
     file.close()
     
     app = QApplication([])
-    app.setStyleSheet(stylesheet)
+
     app.setWindowIcon(QIcon(basedir + r"\icon.ico"))
     window = MainWindow()
+    urbanistFont.createFonts()
+    app.setStyleSheet(stylesheet)
+    
     
     if  window.threadpool.maxThreadCount() < 2:
         error_dialog = QMessageBox()
