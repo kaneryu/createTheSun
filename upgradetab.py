@@ -50,8 +50,9 @@ class upgradeBlock(QFrame):
             if self.name == "particleAccelerator":
                 equasion = gamedefine.upgradeInternalDefine[self.name]["idleGenerator"]["timeEquation"]
                 gamedefine.upgradeDetails[self.name]["timeToWait"] = int(floor(game.evaluateCostEquation(equasion, gamedefine.upgradeLevels[self.name])))
-                
-                
+            self.usefulDescription.setText(self.parseUsefulDescription())
+            self.upgradeLabel.setText(f"Level {gamedefine.upgradeLevels[self.name]} {self.visualDefine["visualName"]} \n {self.visualDefine["description"]} \n")
+              
     def parseCost(self, name):
         if gamedefine.upgradeLevels[name] == 0:
             what = self.internalDefine["firstCost"]
@@ -64,7 +65,11 @@ class upgradeBlock(QFrame):
         
         for i in what:
             string.append(str(i["amount"]) + " ")
-            string.append(i["what"])
+            if i["amount"] == 1:
+                string.append(i["what"][:-1])
+            else:
+                string.append(i["what"])
+                
             if what.index(i) < len(what) - 2:
                 string.append(", ")
             elif what.index(i) == len(what) - 2:
@@ -75,18 +80,16 @@ class upgradeBlock(QFrame):
         return "".join(string)
     
     def parseUsefulDescription(self):
-        
         if self.internalDefine["type"] == "idleGenerator":
             current = list(self.visualDefine["currentUpgradeUsefulDescription"])
             withNewUpgrade = list(self.visualDefine["upgradeUsefulDescription"])
             if not gamedefine.upgradeLevels[self.name] == 0:
                 if self.visualDefine["usefulDescriptionBlank"] == "tickTime":
-                    current[current.index("%%%")] = str(round(game.evaluateCostEquation(self.internalDefine["idleGenerator"]["timeEquation"], gamedefine.upgradeLevels[self.name])/1000))
-                    withNewUpgrade[withNewUpgrade.index("%%%")] = str(round(game.evaluateCostEquation(self.internalDefine["idleGenerator"]["timeEquation"], gamedefine.upgradeLevels[self.name] + 1)/1000))
-                print(str(round(game.evaluateCostEquation(self.internalDefine["idleGenerator"]["timeEquation"], gamedefine.upgradeLevels[self.name]))))
+                    current[current.index("%%%")] = str(round(game.evaluateCostEquation(self.internalDefine["idleGenerator"]["timeEquation"], gamedefine.upgradeLevels[self.name])/1000, 3))
+                    withNewUpgrade[withNewUpgrade.index("%%%")] = str(round(game.evaluateCostEquation(self.internalDefine["idleGenerator"]["timeEquation"], gamedefine.upgradeLevels[self.name] + 1)/1000, 3))
                 return (f"{"".join(current)} \n {"".join(withNewUpgrade)}")
             else:
-                withNewUpgrade[withNewUpgrade.index("%%%")] = str(round(game.evaluateCostEquation(self.internalDefine["idleGenerator"]["timeEquation"], gamedefine.upgradeLevels[self.name] + 1)/1000))
+                withNewUpgrade[withNewUpgrade.index("%%%")] = str(round(game.evaluateCostEquation(self.internalDefine["idleGenerator"]["timeEquation"], gamedefine.upgradeLevels[self.name] + 1)/1000, 3))
                 return "".join(withNewUpgrade)
    
     def updateDisplay(self):
@@ -94,9 +97,9 @@ class upgradeBlock(QFrame):
             self.upgradeButton.setEnabled(True)
         else:
             self.upgradeButton.setEnabled(False)
-        
+            
         self.upgradeButton.setText(self.parseCost(self.name))
-        #self.usefulDescription.setText(self.parseUsefulDescription())
+    
         
     def updateInternal(self):
         if self.internalDefine["type"] == "idleGenerator":
@@ -112,6 +115,10 @@ class upgradeBlock(QFrame):
                         if game.canAffordUpgradeTask(self.name):
                             for i in gamedefine.upgradeDetails[self.name]["whatYouGet"]:
                                 gamedefine.amounts[i["what"]] += i["amount"]
+                            for i in gamedefine.upgradeDetails[self.name]["whatItCosts"]:
+                                gamedefine.amounts[i["what"]] -= i["amount"]
+                        else:
+                            self.lastTickTime += 10000 # softlock prevention; add 10 seconds
                     else:         
                         for i in gamedefine.upgradeDetails[self.name]["whatYouGet"]:
                             gamedefine.amounts[i["what"]] += i["amount"]

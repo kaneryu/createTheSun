@@ -140,10 +140,6 @@ class MainWindow(QMainWindow):
             if not threading.main_thread().is_alive():
                 return 0
             
-            
-        
-        
-
 if __name__ == "__main__":
     #change icon in taskbar
     myappid = u'mycompany.myproduct.subproduct.version'

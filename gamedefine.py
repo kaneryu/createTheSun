@@ -39,7 +39,10 @@ visualGameDefine = {
 internalGameDefine = {
     "quarks": {
         "whatItCosts": [
-            "nothing",
+            {
+            "what": "nothing",
+            "amount": -1
+            }
         ],
 
         "defaultCost": -1,
@@ -54,7 +57,10 @@ internalGameDefine = {
 
     "electrons": {
         "whatItCosts": [
-            "nothing"
+            {
+            "what": "nothing",
+            "amount": -1
+            }
         ],
 
         "defaultCost": -1,
@@ -69,7 +75,10 @@ internalGameDefine = {
 
     "protons": {
         "whatItCosts": [
-            "quarks"
+            {
+            "what": "quarks",
+            "amount": 1
+            }
         ],
         "defaultCost": 1,
         "costEquation": "%1 * 6",
@@ -83,7 +92,14 @@ internalGameDefine = {
 
     "hydrogen": {
         "whatItCosts": [
-            "protons"
+            {
+            "what": "protons",
+            "amount": 1
+            },
+            {
+            "what": "electrons",
+            "amount": 1
+            }
         ],
         "defaultCost": 1,
         "costEquation": "%1 * 1",
@@ -97,7 +113,10 @@ internalGameDefine = {
 
     "stars": {
         "whatItCosts": [
-            "hydrogen"
+            {
+            "what": "hydrogen",
+            "amount": 1e57
+            }
         ],
         "defaultCost": 1e57,
         "costEquation": "%1 * 1e57",
@@ -111,10 +130,13 @@ internalGameDefine = {
 
     "galaxies": {
         "whatItCosts": [
-            "stars"
+            {
+            "what": "stars",
+            "amount": 1e11
+            },
         ],
-        "defaultCost": 1e57,
-        "costEquation": "%1 * 1e57",
+        "defaultCost": 1e11,
+        "costEquation": "%1 * 1e11",
         "whatItGives": [
             {
                 "what": "galaxies",
@@ -125,9 +147,12 @@ internalGameDefine = {
 
     "superclusters": {
         "whatItCosts": [
-            "galaxies"
+            {
+            "what": "galaxies",
+            "amount": 100000
+            }
         ],
-        "defaultCost": 1e57,
+        "defaultCost": 100000,
         "costEquation": "%1 * 100000",
         "whatItGives": [
             {
@@ -159,7 +184,7 @@ upgradeInternalDefine = {
         "upgradeCost" : [            
             {
                 "what": "quarks",
-                "amount": 5        
+                "amount": 50       
             },
             {
                 "what": "electrons",
@@ -215,7 +240,7 @@ upgradeInternalDefine = {
             {
                 "what": "electrons",
                 "amount": 50
-            }           
+            }
         ],
         
         "maxLevel": 4000,
@@ -231,7 +256,7 @@ upgradeInternalDefine = {
                 ],
                 "baseTime": 1000,
                 # in this case, %1 is upgrade level
-                "timeEquation": "tan((-(%1+230)/4000)-10.939059)",
+                "timeEquation": "tan(-((%1/5+230)/4000)-10.939059)",
                 "maxLevel": 10,
                 "whatItGives": [
                         {
@@ -276,13 +301,13 @@ upgradeVisualDefine = {
     
 }
 
-purchaseToCreate = ["quarks", "protons"]
+purchaseToCreate = ["quarks", "protons", "hydrogen"]
 upgradesToCreate = ["particleAccelerator", "protonicForge"]
 
 amounts = {
-    "quarks": 0,
+    "quarks": 200,
     "electrons": 0,
-    "protons": 0,
+    "protons": 200,
     "hydrogen": 0,
     "stars": 0,
     "galaxies": 0,
@@ -290,7 +315,7 @@ amounts = {
 }
 
 electronDetails = {
-    "waitTime": 1000,
+    "waitTime": 200,
     "amount": 1,
     "maxAmount": 100,
     "minAmount": 0, 

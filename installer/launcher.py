@@ -131,7 +131,7 @@ class MainWindow(QMainWindow):
         self.container = QWidget()
         self.Vlayout = QVBoxLayout()
         self.startButton = QPushButton("Start Create The Sun")
-        self.startButton.clicked.connect(self.start)
+        self.startButton.clicked.connect(self.startInstall)
         self.Vlayout.addWidget(self.label)
         self.Vlayout.addWidget(self.startButton)
         self.PlaceholderLayout = QVBoxLayout()
@@ -142,11 +142,13 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.container)
         
         
-    def start(self):
+    def startInstall(self):
         self.Vlayout.removeWidget(self.startButton)
+        
         if not os.path.exists(installpath):
             dialog = CustomDialog("Would you like to install Create The Sun?", "Install Create The Sun", True)
             results = dialog.exec() 
+            
             if results == QDialog.DialogCode.Accepted:
                 try:
                     self.install_yes(None)
@@ -180,8 +182,11 @@ class MainWindow(QMainWindow):
                         self.install_yes(None)
                         self.close()
                     else:
-                        self.label.setText("There are no updates available. Starting Create The Sun...")
+                        self.label.setText("Starting Create The Sun...")
                         self.start()
+                else:
+                    self.label.setText("There are no updates available. Starting Create The Sun...")
+                    self.start()
             except requests.exceptions.ConnectionError:
                 dialog = CustomDialog("Update failed due to connection error", "Update Failed", False)
                 self.close()
@@ -209,7 +214,7 @@ class MainWindow(QMainWindow):
                 return 0
         else:
             self.label.setText("Create The Sun is up to date.")
-            return -1
+            return 0
         
     def update_progressbar(self, value):
         self.install_progress_bar.setValue(value)
@@ -254,7 +259,7 @@ class MainWindow(QMainWindow):
         
     def start(self):
         os.chdir(installpath)
-        subprocess.Popen("launcher.exe")
+        subprocess.Popen("main.exe")
         self.close()
 
         

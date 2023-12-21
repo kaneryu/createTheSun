@@ -29,10 +29,7 @@ class purchaseStrip(QWidget):
         self.label = QLabel(f"You have {gamedefine.amounts[name]} {self.visualItem['visualName'].lower()}")
         self.layout.addWidget(self.label)
         if not name == "quarks":
-            self.getCurrentCostDict = game.getCurrentCost(name)
-            self.currentCost = self.getCurrentCostDict[list(self.getCurrentCostDict.keys())[0]]
-            self.whatItCosts = list(self.getCurrentCostDict.keys())[0]
-            self.purchaseButton = QPushButton(f"Cost: {self.currentCost} {gamedefine.visualGameDefine[self.whatItCosts]['visualName'].lower()}")
+            self.purchaseButton = QPushButton("")
         else:
             self.purchaseButton = QPushButton("Free")
         self.purchaseButton.clicked.connect(self.purchase)
@@ -50,7 +47,25 @@ class purchaseStrip(QWidget):
 
     def showAchievementPopup(self, achievement):
         self.achievementPopup = achevements.achevementPopup(achievement, self, True)
+    def parseCost(self, name):
+        what = self.internalItem["whatItCosts"]
+        string = ["Cost: "]
         
+        
+        
+        for i in what:
+            string.append(str(i["amount"]) + " ")
+            if i["amount"] == 1:
+                string.append(i["what"][:-1])
+            else:
+                string.append(i["what"])
+            if what.index(i) < len(what) - 2:
+                string.append(", ")
+            elif what.index(i) == len(what) - 2:
+                string.append(" and ")
+        
+        return "".join(string)
+    
     def updateTab(self):
         """
         Updates the tab with the current information.
@@ -60,18 +75,16 @@ class purchaseStrip(QWidget):
         If the item is "quarks", the purchase button text is set to "Free".
         """
         self.label.setText(f"You have {game.humanReadableNumber(gamedefine.amounts[self.name])} {self.visualItem['visualName'].lower()}")
-        if not self.name == "quarks":
-            self.getCurrentCostDict = game.getCurrentCost(self.name)
-            self.currentCost = self.getCurrentCostDict[list(self.getCurrentCostDict.keys())[0]]
-            self.whatItCosts = list(self.getCurrentCostDict.keys())[0]
-            self.purchaseButton.setText(f"Cost: {game.humanReadableNumber(self.currentCost)} {gamedefine.visualGameDefine[self.whatItCosts]['visualName'].lower()}")
+        
+        if not gamedefine.internalGameDefine[self.name]["whatItCosts"][0]["amount"] == -1:
+
+            self.purchaseButton.setText(self.parseCost(self.name))
             if not game.canAfford(self.name):
                 self.purchaseButton.setDisabled(True)
             else:
                 self.purchaseButton.setDisabled(False)
         else:
             self.purchaseButton.setText("Free")
-        
 
         
 class content(QWidget):

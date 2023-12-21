@@ -1,8 +1,6 @@
 import sympy as sp
 import regex as re
-import math
 from math import floor, ceil, log
-import mpmath
 import gamedefine
 def canAffordUpgradeTask(upgrade : str) -> bool:
     """
@@ -39,20 +37,13 @@ def purchaseUpgrade(upgrade : str) -> None:
     else:
         costs = gamedefine.upgradeInternalDefine[upgrade]["upgradeCost"]
     
-    ongoing = True
-    
+
     for i in costs:
-        if gamedefine.amounts[i["what"]] < i["amount"]:
-            ongoing = False
-    
-    if ongoing:
-        for i in costs:
-            gamedefine.amounts[i["what"]] -= i["amount"]
-        gamedefine.upgradeLevels[upgrade] += 1
-        print(f"purchased {upgrade}, now have {gamedefine.upgradeLevels[upgrade]}")
-        return
-    else:
-        return
+        gamedefine.amounts[i["what"]] -= i["amount"]
+    gamedefine.upgradeLevels[upgrade] += 1
+    print(f"purchased {upgrade}, now have {gamedefine.upgradeLevels[upgrade]}")
+    return
+
     
 def canAffordUpgrade(upgrade : str) -> bool:
     """
@@ -94,12 +85,15 @@ def canAfford(item: str) -> bool:
     if gamedefine.internalGameDefine[item]["costEquation"] == "":
         return True
 
-    whatItCosts = gamedefine.internalGameDefine[item]["whatItCosts"][0]
-
-    if gamedefine.amounts[whatItCosts] >= int(evaluateCostEquation(gamedefine.internalGameDefine[item]["costEquation"], 1)):
-        return True
+    whatItCosts = gamedefine.internalGameDefine[item]["whatItCosts"]
     
-    return False
+    ongoing = True
+    
+    for i in whatItCosts:
+        if gamedefine.amounts[i["what"]] < i["amount"]:
+            ongoing = False
+    
+    return ongoing
 
 def purchase(item: str) -> None:
     """
@@ -115,13 +109,15 @@ def purchase(item: str) -> None:
         print(f"purchased {item}, now have {gamedefine.amounts[item]}")
         return
 
-    whatItCosts = gamedefine.internalGameDefine[item]["whatItCosts"][0]
-    currentCost = int(evaluateCostEquation(gamedefine.internalGameDefine[item]["costEquation"], 1))
+    whatItCosts = gamedefine.internalGameDefine[item]["whatItCosts"]
+    whatItGives = gamedefine.internalGameDefine[item]["whatItGives"]
     
-    if gamedefine.amounts[whatItCosts] >= currentCost:
-        gamedefine.amounts[whatItCosts] -= currentCost
-        gamedefine.amounts[item] += gamedefine.internalGameDefine[item]["whatItGives"][0]["amount"]
+    for i in whatItCosts:
+        gamedefine.amounts[i["what"]] -= i["amount"]
+    for i in whatItGives:
+        gamedefine.amounts[i["what"]] += i["amount"]
     print(f"purchased {item}, now have {gamedefine.amounts[item]}")
+    
     return
 
 def getCurrentCost(item: str, _round : bool | None = False, eNotation : bool | None = True) -> dict:
