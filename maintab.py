@@ -8,8 +8,8 @@ from PyQt6.QtGui import *
 import gamedefine
 import game
 import logging
-import achevements
 import urbanistFont
+import observerModel
 
 class purchaseStrip(QWidget):
     def __init__(self, name):
@@ -39,16 +39,14 @@ class purchaseStrip(QWidget):
         self.setLayout(self.layout)
     
     def purchase(self):
+        observerModel.g_observable.notify_observers(type = "purchase", name = self.name)
         if self.name == "quarks":
-            popup = achevements.achevementPopup("theBeginning", self, True)
             game.purchase("quarks")
             return 0
         
         if game.canAfford(self.name):
             game.purchase(self.name)
 
-    def showAchievementPopup(self, achievement):
-        self.achievementPopup = achevements.achevementPopup(achievement, self, True)
     def parseCost(self, name):
         what = self.internalItem["whatItCosts"]
         string = ["Cost: "]

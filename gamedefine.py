@@ -168,7 +168,7 @@ upgradeInternalDefine = {
         "firstCost": [
             {
                 "what": "quarks",
-                "amount": 5
+                "amount": 50
                             
             },
             {
@@ -177,7 +177,7 @@ upgradeInternalDefine = {
             },
             {
                 "what": "protons",
-                "amount": 10
+                "amount": 20
             }
         ],
         
@@ -192,34 +192,87 @@ upgradeInternalDefine = {
             }           
         ],
         
-        "maxLevel": 1000,
+        "maxLevel": 50,
+        
         "withRequirement": False,
         "type" : "idleGenerator",
         "idleGenerator" : {
                 "whatItGives": [
                     {
                         "what": "quarks",
-                        "baseAmount": 1
+                        "amount": 1
                     }
                 ],
-                "baseTime": 1000,
+                "time": 1000,
                 # in this case, %1 is upgrade level
-                "timeEquation": "abs(tan(-((%1+34)/600)-10.93791))",
-                "maxLevel": 10,
-                "whatItGives": [
+                "equationType": "timeEquation",
+                "timeEquation": "abs(tan(-((%1+34)/600)-10.93791))",   
+        },
+        
+        "multiLevelUpgradesOn": True,
+        "multiLevelUpgradesStarts": [1, 30],
+        "multiLevelUpgrades": [
+            {
+                "startLevel": 1,
+                "upgradeCost" : [            
+                    {
+                        "what": "quarks",
+                        "amount": 50       
+                    },
+                    {
+                        "what": "electrons",
+                        "amount": 50
+                    }      
+                ],
+                "idleGenerator" : {
+                    "whatItGives": [
                         {
                             "what": "quarks",
-                            "baseAmount": 1
+                            "amount": 1
                         }
-                    ],    
-        }       
+                    ],
+                    "time": 1000,
+                    # in this case, %1 is upgrade level
+                    "equationType": "timeEquation",
+                    "timeEquation": "abs(tan(-((%1+34)/600)-10.93791))"
+                }
+                    
+            },
+            {
+                "startLevel": 30,
+                "upgradeCost" : [            
+                    {
+                        "what": "quarks",
+                        "amount": 30000    
+                    },
+                    {
+                        "what": "electrons",
+                        "amount": 60
+                    }      
+                ],
+                "idleGenerator" : {
+                    "whatItGives": [
+                        {
+                            "what": "quarks",
+                            "amount": 3
+                        }
+                    ],
+                    "time": 1000,
+                    # in this case, %1 is upgrade level
+                    "equationType": "whatItGivesEQ",
+                    "timeEquation": "(x-30)+3"
+                }
+                    
+            }
+
+        ]       
     },
     
     "protonicForge": {
         "firstCost": [
             {
                 "what": "quarks",
-                "amount": 100
+                "amount": 1500
                             
             },
             {
@@ -228,14 +281,14 @@ upgradeInternalDefine = {
             },
             {
                 "what": "protons",
-                "amount": 50
+                "amount": 400
             }
         ],
         
         "upgradeCost" : [            
             {
                 "what": "protons",
-                "amount": 100     
+                "amount": 200     
             },
             {
                 "what": "electrons",
@@ -243,8 +296,7 @@ upgradeInternalDefine = {
             }
         ],
         
-        "maxLevel": 4000,
-        
+        "maxLevel": 100,
         "type" : "idleGenerator",
         "withRequirement": True,
         "idleGenerator" : {
@@ -254,17 +306,77 @@ upgradeInternalDefine = {
                         "baseAmount": 1
                     }
                 ],
-                "baseTime": 1000,
+                "whatItCosts": [
+                    {
+                        "what": "quarks",
+                        "amount": 3     
+                    }
+                ],
+                "time": 1000,
                 # in this case, %1 is upgrade level
-                "timeEquation": "tan(-((%1/5+230)/4000)-10.939059)",
-                "maxLevel": 10,
-                "whatItGives": [
+                "timeEquation": "abs(tan(-((%1+34)/600)-10.93791))",
+        },
+        
+        "multiLevelUpgradesOn": True,
+        "multiLevelUpgradesStarts": [1, 50],
+        "multiLevelUpgrades": [
+            {
+                "startLevel": 1,
+                "upgradeCost" : [            
+                    {
+                        "what": "protons",
+                        "amount": 200     
+                    },
+                    {
+                        "what": "electrons",
+                        "amount": 50
+                    },
+                ],
+                "idleGenerator" : {
+                    "whatItGives": [
                         {
                             "what": "protons",
                             "baseAmount": 1
                         }
-                    ],    
-        }       
+                    ],
+                    "time": 1000,
+                    # in this case, %1 is upgrade level
+                    "timeEquation": "abs(tan(-((%1+34)/600)-10.93791))"
+                }
+            },
+            {
+                "startLevel": 50,
+                "upgradeCost" : [            
+                    {
+                        "what": "protons",
+                        "amount": 350     
+                    },
+                    {
+                        "what": "electrons",
+                        "amount": 60
+                    },
+                ],
+                "idleGenerator" : {
+                    "whatItGives": [
+                        {
+                            "what": "protons",
+                            "baseAmount": 3
+                        }
+                    ],
+                    "whatItCosts": [
+                        {
+                            "what": "quarks",
+                            "amount": 5
+                        }
+                    ],
+                    "time": 1000,
+                    # in this case, %1 is upgrade level
+                    "timeEquation": "abs(tan(-((%1+34)/600)-10.93791))"
+                }
+            }
+
+        ]
+        
     }
 }
     
@@ -282,7 +394,21 @@ upgradeVisualDefine = {
         "currentUpgradeUsefulDescription": ["You are currently gaining 1 Quark every ", "%%%", " seconds"],
         "upgradeUsefulDescription": ["Upgrade to gain 1 Quark every  ", "%%%", " seconds"],
         "usefulDescriptionBlank": "tickTime",
-        "upgradeId": ["particleAcceleratorUpgrade", 0]
+        "upgradeId": ["particleAcceleratorUpgrade", 0],
+        
+        "multiLevelUpgrades": [
+            {
+                "default": True                
+            },
+            {
+                "default": False,
+                "description": "Somebody spilled coffee on the accelerator, causing it to go 3x faster!",
+                "currentUpgradeUsefulDescription": ["You are currently gaining 3 Quarks every ", "%%%", " seconds"],
+                "upgradeUsefulDescription": ["Upgrade to gain 3 Quarks every ", "%%%", " seconds"],
+                "visualName": "Particle Accelerator",
+                "description": "Accelerates particles to create quarks."
+            }
+        ]
     },
     "protonicForge": {
         "visualName": "Protonic Forge",
@@ -295,7 +421,21 @@ upgradeVisualDefine = {
         "currentUpgradeUsefulDescription": ["You are currently gaining 1 Proton every ", "%%%", " seconds"],
         "upgradeUsefulDescription": ["Upgrade to gain 1 Proton every ", "%%%", " seconds"],
         "usefulDescriptionBlank": "tickTime",
-        "upgradeId": ["protonicForgeUpgrade", 0]
+        "upgradeId": ["protonicForgeUpgrade", 0],
+        
+        "multiLevelUpgrades": [
+            {
+                "default": True                
+            },
+            {
+                "default": False,
+                "description": "A new breakthrough has lead to 3x more proton production!",
+                "currentUpgradeUsefulDescription": ["You are currently gaining 3 Protons every ", "%%%", " seconds"],
+                "upgradeUsefulDescription": ["Upgrade to gain 3 Protons every ", "%%%", " seconds"],
+                "visualName": "Blast Protonic Forge",
+                "description": "Accelerates particles to create quarks."
+            }
+        ]
     }
     
     
@@ -305,9 +445,9 @@ purchaseToCreate = ["quarks", "protons", "hydrogen"]
 upgradesToCreate = ["particleAccelerator", "protonicForge"]
 
 amounts = {
-    "quarks": 200,
+    "quarks": 99999999999999999999999999999999,
     "electrons": 0,
-    "protons": 200,
+    "protons": 99999999999999999999999999999999,
     "hydrogen": 0,
     "stars": 0,
     "galaxies": 0,
@@ -315,14 +455,14 @@ amounts = {
 }
 
 electronDetails = {
-    "waitTime": 200,
+    "waitTime": 1,
     "amount": 1,
     "maxAmount": 100,
     "minAmount": 0, 
 }
 
 upgradeLevels = {
-    "particleAccelerator" : 0,
+    "particleAccelerator" : 30,
     "protonicForge": 0
 }
 
@@ -339,7 +479,7 @@ upgradeDetails = {
     
     "protonicForge": {
         
-        "timeToWait": 100,
+        "timeToWait": 1000,
         "whatYouGet": [
             {
                 "what": "protons",

@@ -63,6 +63,7 @@ QTabBar::tab {
     min-width: 8ex;
     padding: 2px; /* Padding inside each tab */
     margin-right: 2px;
+    font-family: "Urbanist Light";
 }
 QTabBar::tab:selected {
     background: #2e2e2e;
@@ -73,6 +74,7 @@ QTabBar::tab:selected {
     min-width: 8ex;
     padding: 2px; /* Padding inside each tab */
     margin-right: 2px;
+    font-family: "Urbanist Medium";
 }
 
 QLineEdit {

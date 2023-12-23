@@ -11,7 +11,7 @@ basedir = os.path.dirname(os.path.realpath(__file__))
 mediadir = os.path.join(basedir, "assets/")
 
 class achevementPopup(QWidget):
-    def __init__(self, achevement : str, window : QMainWindow, open : bool = False):
+    def __init__(self, achevement : str, open : bool = False):
         super().__init__()
         self.setWindowTitle("Test")
         self.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.FramelessWindowHint)
@@ -21,8 +21,7 @@ class achevementPopup(QWidget):
         self.fadein.setDuration(200)
         self.fadein.setStartValue(0)
         self.fadein.setEndValue(1)
-        screen_geometry = window.geometry()
-        self.move(screen_geometry.bottomRight())
+
         
         self.content = achevementWidget(achevement)
         self.achevementGet = QLabel("You got an achevement!")
@@ -63,3 +62,4 @@ class achevementWidget(QWidget):
         
         self.layout.addWidget(self.text)
         self.setLayout(self.layout)
+        

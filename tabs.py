@@ -17,6 +17,8 @@ class mainTab(QWidget):
         self.tabContent = maintab.content()
         self.layout.addWidget(self.tabContent)
         self.setLayout(self.layout)
+    def name():
+        return "Main Tab"
     
     
         
@@ -33,6 +35,9 @@ class upgradeTab(QWidget):
         
     def updateInternal(self):
         self.tabContent.updateInternal()
+    
+    def name():
+        return "Automation && Upgradges"
         
 class settingsTab(QWidget):
     def __init__(self):
@@ -42,7 +47,10 @@ class settingsTab(QWidget):
         self.setLayout(self.layout)
     def updateDisplay(self):
         return 0
-
+    
+    def name():
+        return "Settings"
+    
 class achievementsTab(QWidget):
     def __init__(self):
         super().__init__()
@@ -51,5 +59,8 @@ class achievementsTab(QWidget):
         self.setLayout(self.layout)
     def updateDisplay(self):
         return 0
+    
+    def name():
+        return "Achevements"
 
 tabs = [mainTab, upgradeTab, settingsTab, achievementsTab]
