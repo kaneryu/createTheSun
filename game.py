@@ -31,16 +31,36 @@ def purchaseUpgrade(upgrade : str) -> None:
     """
     if gamedefine.upgradeLevels[upgrade] >= gamedefine.upgradeInternalDefine[upgrade]["maxLevel"]:
         return
-    
-    if gamedefine.upgradeLevels[upgrade] == 0:
-        costs = gamedefine.upgradeInternalDefine[upgrade]["firstCost"]
+    if gamedefine.upgradeInternalDefine[upgrade]["multiLevelUpgradesOn"]:
+        currentLevel = gamedefine.upgradeLevels[upgrade]
+        target = 0
+        for i in gamedefine.upgradeInternalDefine[upgrade]["multiLevelUpgradesStarts"]:
+            if currentLevel >= i:
+                target = gamedefine.upgradeInternalDefine[upgrade]["multiLevelUpgradesStarts"].index(i)
+        currentUpgradeDict = gamedefine.upgradeInternalDefine[upgrade]["multiLevelUpgrades"][target]
+        costs = currentUpgradeDict["upgradeCost"]
+        
     else:
-        costs = gamedefine.upgradeInternalDefine[upgrade]["upgradeCost"]
-    
+        currentUpgradeDict = gamedefine.upgradeInternalDefine[upgrade]
+        if gamedefine.upgradeLevels[upgrade] == 0:
+            costs = gamedefine.upgradeInternalDefine[upgrade]["firstCost"]
+        else:
+            costs = gamedefine.upgradeInternalDefine[upgrade]["upgradeCost"]
+        
 
     for i in costs:
         gamedefine.amounts[i["what"]] -= i["amount"]
     gamedefine.upgradeLevels[upgrade] += 1
+    
+    if currentUpgradeDict["type"] == "idleGenerator":
+
+        equasion = currentUpgradeDict["idleGenerator"]["timeEquation"]
+        currentUpgradeDict["timeToWait"] = int(floor(evaluateCostEquation(equasion, gamedefine.upgradeLevels[upgrade])))
+        if currentUpgradeDict["multiLevelUpgradesOn"]:
+            gamedefine.upgradeDetails[upgrade]["whatYouGet"] = currentUpgradeDict["idleGenerator"]["whatItGives"]
+            if currentUpgradeDict["withRequirement"]:
+                gamedefine.upgradeDetails[upgrade]["whatItCosts"] = currentUpgradeDict["idleGenerator"]["whatItCosts"]
+
     print(f"purchased {upgrade}, now have {gamedefine.upgradeLevels[upgrade]}")
     return
 
@@ -340,3 +360,5 @@ magnitudeDict = {
     99:	"NNn",
     100: "Ce" 
 }
+
+

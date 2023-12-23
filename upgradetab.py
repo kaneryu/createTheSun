@@ -11,7 +11,7 @@ from PyQt6.QtGui import *
 import gamedefine
 import game
 
-class upgradeBlock(QFrame):
+class automationBlock(QFrame):
     def __init__(self, name):
         self.name = name
         super().__init__()
@@ -54,12 +54,28 @@ class upgradeBlock(QFrame):
             self.upgradeLabel.setText(f"Level {gamedefine.upgradeLevels[self.name]} {self.visualDefine["visualName"]} \n {self.visualDefine["description"]} \n")
               
     def parseCost(self, name):
-        if gamedefine.upgradeLevels[name] == 0:
-            what = self.internalDefine["firstCost"]
-            string = ["Purchase for "]
+        if self.internalDefine["multiLevelUpgradesOn"] and not gamedefine.upgradeLevels[self.name] == 0:
+                
+                currentLevel = gamedefine.upgradeLevels[self.name]
+                target = 0
+                for i in self.internalDefine["multiLevelUpgradesStarts"]:
+                    if currentLevel >= i:
+                        target = self.internalDefine["multiLevelUpgradesStarts"].index(i)
+
+                if not self.visualDefine["multiLevelUpgrades"][target]["default"]: #if not using the default value
+                    what = list(self.internalDefine["multiLevelUpgrades"][target]["upgradeCost"])
+                    string = ["Upgradge for "]
+                    
+                else:
+                    what = self.internalDefine["upgradeCost"]
+                    string = ["Upgradge for "]
         else:
-            what = self.internalDefine["upgradeCost"]
-            string = ["Upgradge for "]
+            if gamedefine.upgradeLevels[name] == 0:
+                what = self.internalDefine["firstCost"]
+                string = ["Purchase for "]
+            else:
+                what = self.internalDefine["upgradeCost"]
+                string = ["Upgradge for "]
         
         
         
@@ -81,8 +97,25 @@ class upgradeBlock(QFrame):
     
     def parseUsefulDescription(self):
         if self.internalDefine["type"] == "idleGenerator":
-            current = list(self.visualDefine["currentUpgradeUsefulDescription"])
-            withNewUpgrade = list(self.visualDefine["upgradeUsefulDescription"])
+            if self.internalDefine["multiLevelUpgradesOn"] and not gamedefine.upgradeLevels[self.name] == 0:
+                
+                currentLevel = gamedefine.upgradeLevels[self.name]
+                target = 0
+                for i in self.internalDefine["multiLevelUpgradesStarts"]:
+                    if currentLevel >= i:
+                        target = self.internalDefine["multiLevelUpgradesStarts"].index(i)
+
+                if not self.visualDefine["multiLevelUpgrades"][target]["default"]: #if not using the default value
+                    current = list(self.visualDefine["multiLevelUpgrades"][target]["currentUpgradeUsefulDescription"])
+                    withNewUpgrade = list(self.visualDefine["upgradeUsefulDescription"])
+                    self.upgradeLabel.setText(f"{self.visualDefine["multiLevelUpgrades"][target]["visualName"]} \n {self.visualDefine["multiLevelUpgrades"][target]["description"]} \n")
+                else:
+                    current = list(self.visualDefine["currentUpgradeUsefulDescription"])
+                    withNewUpgrade = list(self.visualDefine["upgradeUsefulDescription"])
+            else:  
+                current = list(self.visualDefine["currentUpgradeUsefulDescription"])
+                withNewUpgrade = list(self.visualDefine["upgradeUsefulDescription"])
+                
             if not gamedefine.upgradeLevels[self.name] == 0:
                 if self.visualDefine["usefulDescriptionBlank"] == "tickTime":
                     current[current.index("%%%")] = str(round(game.evaluateCostEquation(self.internalDefine["idleGenerator"]["timeEquation"], gamedefine.upgradeLevels[self.name])/1000, 3))
@@ -134,7 +167,7 @@ class content(QWidget):
         self.upgradeBlocks = []
         for i in gamedefine.upgradesToCreate:
             print("creating upgrade " + i)
-            self.upgradeBlocks.append(upgradeBlock(i))
+            self.upgradeBlocks.append(automationBlock(i))
             self.layout.addWidget(self.upgradeBlocks[-1])
         
         self.setLayout(self.layout)

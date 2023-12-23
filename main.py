@@ -66,11 +66,12 @@ class MainWindow(QMainWindow):
         self.tabWidget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         
         self.tabs = []
-        
+
         for i in tabs.tabs:
-            self.tabs.append({"class" : i(), "name": i.__name__})
-            self.tabWidget.addTab(self.tabs[-1]["class"], self.tabs[-1]["name"])
-        
+            self.tabs.append({"class" : i(), "name": i.name()})
+            self.tabWidget.addTab(self.tabs[-1]["class"], i.name())
+            
+        self.tabWidget.setMovable(True)
         self.topContainer = QWidget()
         self.label = QLabel("Create The Sun")
         self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
