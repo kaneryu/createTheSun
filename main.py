@@ -94,6 +94,7 @@ class MainWindow(QMainWindow):
         
         self.container = QWidget()
         self.container.setLayout(self.layout)
+        
         self.setCentralWidget(self.container)
 
         displayUpdate = Worker(self._updateDisplay)
@@ -131,9 +132,7 @@ class MainWindow(QMainWindow):
     
     def updateThread1(self):
         """
-        Updates the internal state of electrons and the class of tab 1.
-        
-        This method is intended to be run in a separate thread. It continuously updates the internal state of electrons and the class of tab 1. It also checks if the main thread is still alive and returns 0 if it's not.
+        A seperate thread for updating electrons and tabs, so it can run as fast as possible without waiting for display referesh
         """
         while True:
             self.electrons.updateInternal()

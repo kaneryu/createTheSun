@@ -87,3 +87,10 @@ QLineEdit {
 QErrorMessage::QTextEdit{
     color: #ffffff;
 }
+
+QComboBox {
+    color: #ffffff
+
+
+
+}

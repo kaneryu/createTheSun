@@ -2,6 +2,19 @@ import sympy as sp
 import regex as re
 from math import floor, ceil, log
 import gamedefine
+
+def getCurrentMultiLevelUpgrade(upgrade: str) -> bool:
+    currentLevel = gamedefine.upgradeLevels[upgrade]
+    target = 0
+    for i in gamedefine.upgradeInternalDefine[upgrade]["multiLevelUpgradesStarts"]:
+        if currentLevel >= i:
+            target = gamedefine.upgradeInternalDefine[upgrade]["multiLevelUpgradesStarts"].index(i)
+    if target == 0:
+        
+    
+    currentUpgradeDict = gamedefine.upgradeInternalDefine[upgrade]["multiLevelUpgrades"][target]
+    
+
 def canAffordUpgradeTask(upgrade : str) -> bool:
     """
     Checks if you can afford an upgrade's task.
@@ -242,7 +255,7 @@ def magnitude(number):
     if number == 0:
         return 0
     k = 1000.0
-    return int(floor(log(number, k)))
+    return int(round(log(number, k)))
 
 def humanReadableNumber(number):
     if number == 0:
@@ -254,10 +267,9 @@ def humanReadableNumber(number):
             return str(number)
         else:
             return nonilize(number)
-        
 
 magnitudeDict = {
-    -1: "",
+    -1: "broken%",
     0:  "K",
     1:  "M",
     2:  "B",

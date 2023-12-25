@@ -173,6 +173,7 @@ class MainWindow(QMainWindow):
                 self.close()
         else:
             self.label.setText("Checking for updates...")
+
             try:
                 if self.updateCheck() == 1:
                     self.label.setText("An update is available.")
@@ -188,8 +189,9 @@ class MainWindow(QMainWindow):
                     self.label.setText("There are no updates available. Starting Create The Sun...")
                     self.start()
             except requests.exceptions.ConnectionError:
-                dialog = CustomDialog("Update failed due to connection error", "Update Failed", False)
-                self.close()
+                dialog = CustomDialog("Update check failed due to connection error", "Update Failed", False)
+                dialog.exec()
+                self.start()
                 
             
     def updateCheck(self):
@@ -204,7 +206,6 @@ class MainWindow(QMainWindow):
         if request.status_code != 200:
             dialog = CustomDialog("There was an error checking for updates. Would you like to install Create The Sun?", "Update error", True)
             dialog.exec()
-        
         elif currentVersion != self.latestVersion:
             dialog = CustomDialog("There is an update available. Would you like to install it?", "Update available", True)
             results = dialog.exec() 
