@@ -26,6 +26,9 @@ class purchaseStrip(QWidget):
             self.visualItem = gamedefine.visualGameDefine["proton"]
             name = "proton"
             logging.log(f"error importing item '{name}' from gamedefine", 3)
+
+        self.setToolTip(gamedefine.visualGameDefine[name]["description"])
+        self.setToolTipDuration(5000)
         
         self.label = QLabel(f"You have {gamedefine.amounts[name]} {self.visualItem['visualName'].lower()}")
         self.layout.addWidget(self.label)
@@ -50,8 +53,6 @@ class purchaseStrip(QWidget):
     def parseCost(self, name):
         what = self.internalItem["whatItCosts"]
         string = ["Cost: "]
-        
-        
         
         for i in what:
             string.append(str(i["amount"]) + " ")
@@ -86,6 +87,25 @@ class purchaseStrip(QWidget):
         else:
             self.purchaseButton.setText("Free")
 
+class header(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.layout = QHBoxLayout()
+        self.layout.setAlignment(Qt.AlignmentFlag.AlignRight)
+        
+        self.label = QLabel("Buy x")
+        self.textEdit = QLineEdit()
+        self.textEdit.setValidator(QIntValidator())
+        self.textEdit.textChanged.connect(self.updateBuyMultiple)
+        
+    def updateBuyMultiple(self):
+        gamedefine.mainTabBuyMultiple = int(self.textEdit.text())
+    
+        
+    def switchBuyButton(self):
+        pass
+        
+        
         
 class content(QWidget):
     def __init__(self):
@@ -104,3 +124,4 @@ class content(QWidget):
     def updateDisplay(self):
         for i in self.purchaseStrips:
             i.updateTab()
+            
