@@ -1,4 +1,4 @@
-visualGameDefine = {
+itemVisualDefine = {
     "quarks": {
         "visualName": "Quarks",
         "description": "Quarks are the building blocks of protons. They are made of nothing...?",
@@ -36,7 +36,7 @@ visualGameDefine = {
     }
 }
 
-internalGameDefine = {
+itemInternalDefine = {
     "quarks": {
         "whatItCosts": [
             {
@@ -180,36 +180,9 @@ upgradeInternalDefine = {
                 "amount": 20
             }
         ],
-        
-        "upgradeCost" : [            
-            {
-                "what": "quarks",
-                "amount": 50       
-            },
-            {
-                "what": "electrons",
-                "amount": 50
-            }           
-        ],
-        
+       
         "maxLevel": 50,
         
-        "withRequirement": False,
-        "type" : "idleGenerator",
-        "idleGenerator" : {
-                "whatItGives": [
-                    {
-                        "what": "quarks",
-                        "amount": 1
-                    }
-                ],
-                "time": 1000,
-                # in this case, %1 is upgrade level
-                "equationType": "timeEquation",
-                "timeEquation": "abs(tan(-((%1+34)/600)-10.93791))",   
-        },
-        
-        "multiLevelUpgradesOn": True,
         "multiLevelUpgradesStarts": [1, 30],
         "multiLevelUpgrades": [
             {
@@ -224,6 +197,7 @@ upgradeInternalDefine = {
                         "amount": 50
                     }      
                 ],
+                "type": "idleGenerator",
                 "idleGenerator" : {
                     "whatItGives": [
                         {
@@ -231,6 +205,7 @@ upgradeInternalDefine = {
                             "amount": 1
                         }
                     ],
+                    "withRequirement": False,
                     "time": 1000,
                     # in this case, %1 is upgrade level
                     "equationType": "timeEquation",
@@ -250,6 +225,8 @@ upgradeInternalDefine = {
                         "amount": 60
                     }      
                 ],
+                "withRequirement": False,
+                "type": "idleGenerator",
                 "idleGenerator" : {
                     "whatItGives": [
                         {
@@ -285,7 +262,7 @@ upgradeInternalDefine = {
             }
         ],
         
-        "multiLeveUpgradesStarts": [0, 50],
+        "multiLevelUpgradesStarts": [1, 50],
         
         "multiLevelUpgrades": [
             {
@@ -302,7 +279,7 @@ upgradeInternalDefine = {
                     }
                 ],
                 
-                "maxLevel": 100,
+                "maxLevel": 50,
                 "type" : "idleGenerator",
                 "withRequirement": True,
                 "idleGenerator" : {
@@ -321,6 +298,7 @@ upgradeInternalDefine = {
                             }
                         ],
                         "time": 1000,
+                        "equationType": "timeEquation",
                         # in this case, %1 is upgrade level
                         "timeEquation": "abs(tan(-((%1+34)/600)-10.93791))",
                 },
@@ -331,6 +309,7 @@ upgradeInternalDefine = {
         
             {
                 "startLevel": 50,
+                "maxLevel": 150,
                 "upgradeCost" : [            
                     {
                         "what": "protons",
@@ -347,18 +326,27 @@ upgradeInternalDefine = {
                     "whatItGives": [
                         {
                             "what": "protons",
-                            "baseAmount": 3
+                            "baseAmount": 1
                         }
                     ],
                     "whatItCosts": [
                         {
                             "what": "quarks",
-                            "amount": 5
+                            "amount": 2
                         }
                     ],
-                    "time": 1000,
+                    "time": 10,
+                    "equationType": "amountEquation",
                     # in this case, %1 is upgrade level
-                    "timeEquation": "abs(tan(-((%1+34)/600)-10.93791))"
+                    "amountEquation": [
+                        {
+                            "equation": "(%1-45)/5",
+                            
+                        }
+                        
+                        
+                        
+                    ]
                 }
             }
 
@@ -370,37 +358,41 @@ upgradeInternalDefine = {
     
 upgradeVisualDefine = {
     
-    "particleAccelerator": {
-        "visualName": "Particle Accelerator",
-        "description": "Accelerates particles to create quarks.",
-        "id": ["particleAccelerator", 0],
-        
-        "upgradeVisualName": "Increase Loop Size",
-        "upgradeDescription": "Increase the size of the particle accelerator loop for more quarks per second.",
-        "firstupgradeUsefulDescription": "Creates 1 Quark per second",
-        "currentUpgradeUsefulDescription": ["You are currently gaining 1 Quark every ", "%%%", " seconds"],
-        "upgradeUsefulDescription": ["Upgrade to gain 1 Quark every  ", "%%%", " seconds"],
-        "usefulDescriptionBlank": "tickTime",
-        "upgradeId": ["particleAcceleratorUpgrade", 0],
-        
-        "multiLevelUpgrades": [
-            {
-                "default": True                
-            },
-            {
-                "default": False,
-                "description": "Somebody spilled coffee on the accelerator, causing it to go 3x faster!",
-                "currentUpgradeUsefulDescription": ["You are currently gaining 3 Quarks every ", "%%%", " seconds"],
-                "upgradeUsefulDescription": ["Upgrade to gain 3 Quarks every ", "%%%", " seconds"],
-                "visualName": "Particle Accelerator",
-                "description": "Accelerates particles to create quarks."
-            }
-        ]
-    },
+    "particleAccelerator": [
+        {
+            "default": False,
+            "visualName": "Particle Accelerator",
+            "description": "Accelerates particles to create quarks.",
+            
+            "upgradeVisualName": "Increase Loop Size",
+            "upgradeDescription": "Increase the size of the particle accelerator loop for more quarks per second.",
+            "firstupgradeUsefulDescription": "Creates 1 Quark per second",
+            
+            "currentUpgradeUsefulDescription": ["You are currently gaining 3 Quarks every %%% seconds"],
+            "upgradeUsefulDescription": ["Upgrade to gain 3 Quarks every %%% seconds"],
+            "usefulDescriptionBlank": "tickTime",
+            
+            "id": ["particleAccelerator", 0]
+             
+        },
+        {
+            "default": False,
+            "visualName": "Particle Accelerator",
+            "description": "Accelerates particles to create quarks.",
+            
+            "upgradeVisualName": "Increase Loop Size",
+            "upgradeDescription": "Increase the size of the particle accelerator loop for more quarks per second.",
+            "firstupgradeUsefulDescription": "Creates 1 Quark per second",
+            
+            "currentUpgradeUsefulDescription": "You are currently gaining 3 Quarks every %%% seconds",
+            "upgradeUsefulDescription": "Upgrade to gain 3 Quarks every %%% seconds",
+            "usefulDescriptionBlank": "tickTime",
+            
+            "id": ["particleAccelerator", 0]
+
+        }
+    ],
     "protonicForge": [
-            {
-            "id": ["protonicForge", 0]
-            },
             {
                 "visualName": "Protonic Forge",
                 "description": "Automatically combines quarks into protons.",
@@ -408,35 +400,64 @@ upgradeVisualDefine = {
                 "upgradeVisualName": "Increase Forge Size",
                 "upgradeDescription": "Increase the size of the forge, allowing for more quarks to be combined into protons per second",
                 "firstupgradeUsefulDescription": "Creates 1 Proton per second",
-                "currentUpgradeUsefulDescription": ["You are currently gaining 1 Proton every ", "%%%", " seconds"],
-                "upgradeUsefulDescription": ["Upgrade to gain 1 Proton every ", "%%%", " seconds"],
+                
+                "currentUpgradeUsefulDescription": "You are currently gaining 1 Proton every %%% seconds",
+                "upgradeUsefulDescription": "Upgrade to gain 1 Proton every %%% seconds",
+                
                 "usefulDescriptionBlank": "tickTime",
                 "upgradeId": ["protonicForgeTickUpgrade", 0]        
             },
             {
                 "visualName": "Blast Protonic Forge",
                 "description": "Automatically combines quarks into protons.",
-                "currentUpgradeUsefulDescription": ["You are currently gaining", "%%%", "Protons every x seconds"],
-                "upgradeUsefulDescription": ["Upgrade to gain", "%%%", "Protons every x seconds"],
-                "upgradeId": ["protonicForgeAmountUpgrade", 1]    
+                
+                "upgradeVisualName": "Increase Forge Size",
+                "upgradeDescription": "Increase the size of the forge, allowing for more protons to be produced per 0.011 seconds",
+                "firstupgradeUsefulDescription": "Creates 1 Proton per second",
+                
+                "currentUpgradeUsefulDescription": "You are currently gaining %%% Protons every 0.011 seconds",
+                "upgradeUsefulDescription": "Upgrade to gain %%% Protons every 0.011 seconds",
+                "usefulDescriptionBlank": "amount",
+                "upgradeId": ["protonicForgeAmountUpgrade", 0]    
             }
         ]
     }
 
-purchaseToCreate = ["quarks", "protons", "hydrogen"]
+purchaseToCreate = ["quarks", "protons", "hydrogen", "stars", "galaxies"]
 upgradesToCreate = ["particleAccelerator", "protonicForge"]
 
 amounts = {
-    "quarks": 99999999999999999999999999999999,
+    "quarks": 4712057130497587498,
     "electrons": 0,
-    "protons": 99999999999999999999999999999999,
+    "protons": 4712057130497587498,
     "hydrogen": 0,
     "stars": 0,
     "galaxies": 0,
     "superclusters": 0
 }
 
+clickGainMultiplierList = {
+    "quarks": [1],
+    "electrons": [1],
+    "protons": [1],
+    "hydrogen": [1],
+    "stars": [1],
+    "galaxies": [1],
+    "superclusters": [1]
+}
+
+multiplierList = {
+    "quarks": [1],
+    "electrons": [1],
+    "protons": [1],
+    "hydrogen": [1],
+    "stars": [1],
+    "galaxies": [1],
+    "superclusters": [1]
+}
+
 mainTabBuyMultiple = 1
+mainTabBuyMultipleList = [1, 10, 100, 1000]
 
 electronDetails = {
     "waitTime": 1,
@@ -446,7 +467,7 @@ electronDetails = {
 }
 
 upgradeLevels = {
-    "particleAccelerator" : 30,
+    "particleAccelerator" : 0,
     "protonicForge": 0
 }
 
