@@ -1,19 +1,19 @@
 import tkinter as tk
 import tkinter as ttk
-import game
+import itemGameLogic
 
 
 
 def purchase(object):
   if object == "quarks":
-    game.gameDict["quarks"] = game.gameDict["quarks"] + 1
+    itemGameLogic.gameDict["quarks"] = itemGameLogic.gameDict["quarks"] + 1
   else:
-    cost = game.evaluateCost(object)
+    cost = itemGameLogic.evaluateCost(object)
     
-    if cost >= game.gameDict[game.gameDict[object + "Cost"][0]]:
-      game.gameDict[object] = game.gameDict[object] + 1
-      game.gameDict[game.gameDict[object + "Cost"][0]] = game.gameDict[game.gameDict[object + "Cost"][0]] - cost
-  print(game.gameDict[object])
+    if cost >= itemGameLogic.gameDict[itemGameLogic.gameDict[object + "Cost"][0]]:
+      itemGameLogic.gameDict[object] = itemGameLogic.gameDict[object] + 1
+      itemGameLogic.gameDict[itemGameLogic.gameDict[object + "Cost"][0]] = itemGameLogic.gameDict[itemGameLogic.gameDict[object + "Cost"][0]] - cost
+  print(itemGameLogic.gameDict[object])
        
 class creationObject(ttk.Frame):
   def __init__(self, parent, object : str, name : str, *args, **kwargs):
@@ -21,7 +21,7 @@ class creationObject(ttk.Frame):
     
     ttk.Frame.config(self, relief = "ridge", borderwidth = 2)
     #f"You have {game.gameDict[object]} {name}{game.plural(object)}
-    self.desc = ttk.Label(self, textvariable = tk.StringVar(value = game.descDict[object + ",String"][0] + game.descDict[object + ",String"][1] + game.descDict[object + ",String"][2]))
+    self.desc = ttk.Label(self, textvariable = tk.StringVar(value = itemGameLogic.descDict[object + ",String"][0] + itemGameLogic.descDict[object + ",String"][1] + itemGameLogic.descDict[object + ",String"][2]))
     self.desc.pack(side = "left")
     
     if object == "quarks":
@@ -29,9 +29,9 @@ class creationObject(ttk.Frame):
       self.purchaseButton = ttk.Button(self, text = f"Purchase 1 quark for free", command = lambda: purchase(object))
       self.purchaseButton.pack()
     else:
-      print(game.evaluateCost(object))
-      cost = game.evaluateCost(object)
-      self.purchaseButton = ttk.Button(self, text = f"Purchase 1 {name} for {cost} {game.gameDict[object + "Cost"][0][:-1]}{game.plural(object)}", command = lambda: purchase(object))
+      print(itemGameLogic.evaluateCost(object))
+      cost = itemGameLogic.evaluateCost(object)
+      self.purchaseButton = ttk.Button(self, text = f"Purchase 1 {name} for {cost} {itemGameLogic.gameDict[object + "Cost"][0][:-1]}{itemGameLogic.plural(object)}", command = lambda: purchase(object))
       self.purchaseButton.pack()
 
 

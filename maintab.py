@@ -6,10 +6,12 @@ from PyQt6.QtWidgets import *
 from PyQt6.QtGui import *
 #local imports
 import gamedefine
-import game
+import itemGameLogic
 import logging
 import urbanistFont
 import observerModel
+import achevements
+import numberLogic
 
 class purchaseStrip(QWidget):
     def __init__(self, name):
@@ -18,16 +20,18 @@ class purchaseStrip(QWidget):
         self.layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
         
         self.name = name
-        if not gamedefine.internalGameDefine[name] == None:
-            self.internalItem = gamedefine.internalGameDefine[name]
-            self.visualItem = gamedefine.visualGameDefine[name]
+        
+        if not gamedefine.itemVisualDefine[name] == None:
+            self.internalItem = gamedefine.itemInternalDefine[name]
+            self.visualItem = gamedefine.itemVisualDefine[name]
         else:
-            self.item = gamedefine.internalGameDefine["proton"]
-            self.visualItem = gamedefine.visualGameDefine["proton"]
+            self.item = gamedefine.itemInternalDefine["proton"]
+            self.visualItem = gamedefine.itemVisualDefine["proton"]
             name = "proton"
             logging.log(f"error importing item '{name}' from gamedefine", 3)
-
-        self.setToolTip(gamedefine.visualGameDefine[name]["description"])
+            
+        print(gamedefine.itemVisualDefine[name])
+        self.setToolTip(gamedefine.itemVisualDefine[name]["description"])
         self.setToolTipDuration(5000)
         
         self.label = QLabel(f"You have {gamedefine.amounts[name]} {self.visualItem['visualName'].lower()}")
@@ -43,12 +47,13 @@ class purchaseStrip(QWidget):
     
     def purchase(self):
         observerModel.g_observable.notify_observers(type = "purchase", name = self.name)
+
         if self.name == "quarks":
-            game.purchase("quarks")
+            itemGameLogic.purchase("quarks")
             return 0
         
-        if game.canAfford(self.name):
-            game.purchase(self.name)
+        if itemGameLogic.canAfford(self.name):
+            itemGameLogic.purchase(self.name)
 
     def parseCost(self, name):
         what = self.internalItem["whatItCosts"]
@@ -75,18 +80,23 @@ class purchaseStrip(QWidget):
         It also updates the purchase button text to display the cost of the item.
         If the item is "quarks", the purchase button text is set to "Free".
         """
-        self.label.setText(f"You have {game.humanReadableNumber(gamedefine.amounts[self.name])} {self.visualItem['visualName'].lower()}")
+        self.label.setText(f"You have {numberLogic.humanReadableNumber(gamedefine.amounts[self.name])} {self.visualItem['visualName'].lower()}")
         
-        if not gamedefine.internalGameDefine[self.name]["whatItCosts"][0]["amount"] == -1:
+        if not self.internalItem["whatItCosts"][0]["amount"] == -1:
 
             self.purchaseButton.setText(self.parseCost(self.name))
-            if not game.canAfford(self.name):
+            if not itemGameLogic.canAfford(self.name):
                 self.purchaseButton.setDisabled(True)
             else:
                 self.purchaseButton.setDisabled(False)
         else:
             self.purchaseButton.setText("Free")
-
+    def showAchevement(self, achevement):
+        hecker = achevements.achevementPopup("theBeginning")
+        
+        hecker.show()
+        
+            
 class header(QWidget):
     def __init__(self):
         super().__init__()
