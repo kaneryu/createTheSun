@@ -3,7 +3,6 @@ import regex as re
 from math import floor, ceil, log
 import gamedefine
 
-
 def nonilize(number):
     if number == 0:
         return 0
@@ -21,13 +20,19 @@ def magnitude(number):
 def humanReadableNumber(number):
     if number == 0:
         return "0"
+    
     if magnitude(number) > 11:
-        return '{:.2e}'.format(number)
+        if not len(str(number)) > 307: # max float size fix (also shout out to antimatter dimensions 1.79e308!!!)
+            return '{:.2e}'.format(number)
+        else:
+            number = str(number) 
+            return number[1] + "." + number[2] + number[3] + "e" + str(len(number) - 1) 
     else:
         if number < 1000:
             return str(number)
         else:
             return nonilize(number)
+
 
 magnitudeDict = {
     -1: "broken%",

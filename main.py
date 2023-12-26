@@ -7,13 +7,13 @@ import os
 from math import floor, ceil, log
 #third party imports
 from PyQt6 import QtCore
-from PyQt6.QtGui import *
-from PyQt6.QtWidgets import *
-from PyQt6.QtCore import *
+from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, QSizePolicy, QMessageBox
+from PyQt6.QtCore import QPropertyAnimation, Qt, QTimer, QRunnable, pyqtSlot, pyqtSignal, QThreadPool
 #local imports
 import tabs
 import electrons
-import _logging as logging
+import logging_ as logging
 import urbanistFont
 
 logging.logLevel = 1
@@ -54,7 +54,7 @@ class MainWindow(QMainWindow):
         
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
-        
+
         self.threadpool = QThreadPool()
         self.updateSignal.connect(self.updateDisplay)
         self.sUpdateThread1.connect(self.sUpdateThread1)
@@ -79,7 +79,7 @@ class MainWindow(QMainWindow):
         self.topContainerLayout.addWidget(self.label)
         self.topContainer.setLayout(self.topContainerLayout)
         
-        self.layout = QVBoxLayout()
+        self.layout: QVBoxLayout = QVBoxLayout()
         self.contentLayout = QHBoxLayout()
         self.contentContainer = QWidget()
         
@@ -97,6 +97,8 @@ class MainWindow(QMainWindow):
         
         self.setCentralWidget(self.container)
 
+        self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
+        
         displayUpdate = Worker(self._updateDisplay)
         interalUpdate1 = Worker(self.updateThread1)
         self.threadpool.start(displayUpdate)
@@ -144,6 +146,16 @@ class MainWindow(QMainWindow):
     def closeEvent(self, *args, **kwargs):
         super().closeEvent(*args, **kwargs)
         sys.exit(0) #stop all threads
+        
+    def createSaveDir(self):
+        LOCALAPPDATA = os.getenv('LOCALAPPDATA')
+        if not LOCALAPPDATA:
+            LOCALAPPDATA = os.path.join(os.getenv('APPDATA'), r"\Local") #type:ignore this warning, it works fine
+            
+        SAVEDIR = os.path.join(LOCALAPPDATA, r"CreateTheSun\Saves")
+        
+        if not os.path.exists(SAVEDIR):
+            os.mkdir(SAVEDIR)
     
 if __name__ == "__main__":
     #change icon in taskbar

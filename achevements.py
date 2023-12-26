@@ -1,6 +1,6 @@
-from PyQt6.QtGui import *
-from PyQt6.QtWidgets import *
-from PyQt6.QtCore import *
+from PyQt6.QtGui import QPixmap
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
+from PyQt6.QtCore import QPropertyAnimation, Qt, QTimer
 
 import os
 from time import time
@@ -26,7 +26,7 @@ class achevementPopup(QWidget):
         self.content = achevementWidget(achevement)
         self.achevementGet = QLabel("You got an achevement!")
         self.achevementGet.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.achevementGet.setFont(QFont("Arial", 20))
+        
         layout = QVBoxLayout()
         layout.addWidget(self.content)
         self.setLayout(layout)
@@ -40,9 +40,11 @@ class achevementPopup(QWidget):
         if open:
             self.show()
             self.fadein.start()
-            ticktime = time()
-            while time() - ticktime < 5:
-                QApplication.processEvents()
+            
+            self.timer = QTimer()
+            self.timer.timeout.connect(self.close)
+            self.timer.start(5000)
+            
             self.fadeout.start()
             
 
@@ -51,15 +53,15 @@ class achevementPopup(QWidget):
 class achevementWidget(QWidget):
     def __init__(self, achevement : str):
         super().__init__()
-        self.layout = QHBoxLayout()
-        self.layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.layout_ = QHBoxLayout()
+        self.layout_.setAlignment(Qt.AlignmentFlag.AlignLeft)
         
         self.image = QLabel()
         self.image.setPixmap(QPixmap(os.path.join(mediadir, "images/", "achevements/", achevement + ".png")))
-        self.layout.addWidget(self.image)
+        self.layout_.addWidget(self.image)
 
         self.text = QLabel(gamedefine.achevementVisualDefine[achevement]["visualName"] + "\n" + gamedefine.achevementVisualDefine[achevement]["hoverDescription"])
         
-        self.layout.addWidget(self.text)
-        self.setLayout(self.layout)
+        self.layout_.addWidget(self.text)
+        self.setLayout(self.layout_)
         

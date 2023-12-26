@@ -14,6 +14,8 @@ def canAfford(item: str) -> bool:
     Returns:
         bool: Whether you can afford the item or not.
     """
+    
+    buyMultiplier = gamedefine.mainTabBuyMultiple
 
     if gamedefine.itemInternalDefine[item]["costEquation"] == "":
         return True
@@ -23,7 +25,7 @@ def canAfford(item: str) -> bool:
     ongoing = True
     
     for i in whatItCosts:
-        if gamedefine.amounts[i["what"]] < i["amount"]:
+        if gamedefine.amounts[i["what"]] < i["amount"] * buyMultiplier:
             ongoing = False
     
     return ongoing
@@ -37,6 +39,8 @@ def purchase(item: str) -> None:
         cost (int): The cost of the item.
     """
 
+    buyMultiplier = gamedefine.mainTabBuyMultiple
+    
     if gamedefine.itemInternalDefine[item]["costEquation"] == "":
         gamedefine.amounts[item] += 1
         print(f"purchased {item}, now have {gamedefine.amounts[item]}")
@@ -46,9 +50,9 @@ def purchase(item: str) -> None:
     whatItGives = gamedefine.itemInternalDefine[item]["whatItGives"]
     
     for i in whatItCosts:
-        gamedefine.amounts[i["what"]] -= i["amount"]
+        gamedefine.amounts[i["what"]] -= i["amount"] * buyMultiplier
     for i in whatItGives:
-        gamedefine.amounts[i["what"]] += i["amount"]
+        gamedefine.amounts[i["what"]] += i["amount"] * buyMultiplier
     print(f"purchased {item}, now have {gamedefine.amounts[item]}")
     
     return
@@ -65,18 +69,20 @@ def getCurrentCost(item: str, _round : bool | None = False, eNotation : bool | N
         dict: The current cost of the item.    
     """
     
+    buyMultiplier = gamedefine.mainTabBuyMultiple
+    
     equation = gamedefine.itemInternalDefine[item]["costEquation"]
     if equation == "":
-        return 0
+        return {"failed": True}
 
     whatItCosts = gamedefine.itemInternalDefine[item]["whatItCosts"][0]
 
-    currentCost = int(evaluateCostEquation(equation, 1))
+    currentCost = int(evaluateCostEquation(equation, 1)) 
 
     if _round:
-        return {whatItCosts: round(currentCost)}
+        return {whatItCosts: round(currentCost) * buyMultiplier}
     else: 
-        return {whatItCosts: currentCost}
+        return {whatItCosts: currentCost * buyMultiplier}
     
 def evaluateCostEquation(costEquation: str, *args: int) -> int:
     """
@@ -93,11 +99,11 @@ def evaluateCostEquation(costEquation: str, *args: int) -> int:
     # if there are too many arguments, it will break
     if f"%{len(args) + 1}%" in costEquation:
         # failed, 0
-        return ([-1, 0])
+        return -1
     # if there are too few arguments, it will break
     if f"%{len(args)}%" in costEquation:
         # failed, 0
-        return ([-1, 0])
+        return -1
     # break up the equation into a list of strings
     equation = splitCostEquation(costEquation)
 
@@ -145,13 +151,33 @@ def splitCostEquation(costEquation: str) -> list[str]:
 
 
 def parseCost(name):
+    
+    buyMultiplier = gamedefine.mainTabBuyMultiple
+    
     if not name == "quarks":
         what = gamedefine.itemInternalDefine[name]["whatItCosts"]
-        string = ["Purchase for "]                    
+        get = gamedefine.itemInternalDefine[name]["whatItGives"]
+        string = ["Purchase "]                    
+    else:
+        return "Free"
+
+    for i in get:
+        string.append(str(i["amount"] * buyMultiplier) + " ")
+        if i["amount"] * buyMultiplier == 1:
+            string.append(i["what"][:-1])
+        else:
+            string.append(i["what"])
+            
+        if get.index(i) < len(get) - 2:
+            string.append(", ")
+        elif get.index(i) == len(get) - 2:
+            string.append(" and ")
+        else:
+            string.append(" for ")
 
     for i in what:
-        string.append(str(i["amount"]) + " ")
-        if i["amount"] == 1:
+        string.append(str(i["amount"] * buyMultiplier) + " ")
+        if i["amount"] * buyMultiplier == 1:
             string.append(i["what"][:-1])
         else:
             string.append(i["what"])
@@ -164,3 +190,15 @@ def parseCost(name):
             string.append(".")
     
     return "".join(string)
+
+def maxAll():
+    affordList = []
+    for i in gamedefine.itemInternalDefine:
+        if not gamedefine.itemInternalDefine[i]["whatItCosts"][0]["what"] == "nothing":
+            if i in gamedefine.purchaseToCreate:
+                if canAfford(i):
+                    affordList.append(i)
+                    
+    for i in affordList:
+        purchase(i) # this fixes the 'cascade effect' of the max all button by not actually purchasing it until the end
+        
