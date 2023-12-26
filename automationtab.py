@@ -9,7 +9,7 @@ from PyQt6.QtWidgets import *
 from PyQt6.QtGui import *
 #local imports
 import gamedefine
-import upgradeGameLogic
+import automationGameLogic
 
 class automationBlock(QFrame):
     def __init__(self, name):
@@ -19,38 +19,38 @@ class automationBlock(QFrame):
         self.layout = QGridLayout()
         self.setMaximumSize(QSize(700, 200))
         self.lastTickTime = 0
-        self.visualDefine = gamedefine.upgradeVisualDefine[name]
-        self.internalDefine = gamedefine.upgradeInternalDefine[name]
+        self.visualDefine = gamedefine.automationVisualDefine[name]
+        self.internalDefine = gamedefine.automationInternalDefine[name]
         
-        self.upgradeLabel = QLabel(upgradeGameLogic.parseUpgradeName(self.name))
+        self.upgradeLabel = QLabel(automationGameLogic.parseUpgradeName(self.name))
         self.upgradeLabel.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.layout.addWidget(self.upgradeLabel, 0, 0)
         
-        self.upgradeDescription = QLabel(upgradeGameLogic.getDescription(self.name))
+        self.upgradeDescription = QLabel(automationGameLogic.getDescription(self.name))
         self.upgradeDescription.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.layout.addWidget(self.upgradeDescription, 1, 0)
         
-        self.upgradeButton = QPushButton(upgradeGameLogic.parseCost(self.name))
+        self.upgradeButton = QPushButton(automationGameLogic.parseCost(self.name))
         self.upgradeButton.clicked.connect(self.purchase)
         self.layout.addWidget(self.upgradeButton, 2, 0)
         
-        self.usefulDescription = QLabel(upgradeGameLogic.parseUsefulDescription(self.name))
+        self.usefulDescription = QLabel(automationGameLogic.parseUsefulDescription(self.name))
         self.layout.addWidget(self.usefulDescription, 3, 0)
         self.setLayout(self.layout)
     
     def purchase(self): 
-        if upgradeGameLogic.canAffordUpgrade(self.name):
-            upgradeGameLogic.purchaseUpgrade(self.name)
-            upgradeGameLogic.updateUpgradeStatus(self.name)
+        if automationGameLogic.canAffordUpgrade(self.name):
+            automationGameLogic.purchaseUpgrade(self.name)
+            automationGameLogic.updateUpgradeStatus(self.name)
                 
-            self.usefulDescription.setText(upgradeGameLogic.parseUsefulDescription(self.name))
-            self.upgradeDescription(upgradeGameLogic.getDescription(self.name))
-            self.upgradeLabel.setText(upgradeGameLogic.parseUpgradeName(self.name))
-            self.upgradeButton.setText(upgradeGameLogic.parseCost(self.name))
+            self.usefulDescription.setText(automationGameLogic.parseUsefulDescription(self.name))
+            self.upgradeDescription.setText(automationGameLogic.getDescription(self.name))
+            self.upgradeLabel.setText(automationGameLogic.parseUpgradeName(self.name))
+            self.upgradeButton.setText(automationGameLogic.parseCost(self.name))
               
 
     def updateDisplay(self):
-        if upgradeGameLogic.canAffordUpgrade(self.name):
+        if automationGameLogic.canAffordUpgrade(self.name):
             self.upgradeButton.setEnabled(True)
         else:
             self.upgradeButton.setEnabled(False)
@@ -58,7 +58,7 @@ class automationBlock(QFrame):
         
     def updateInternal(self):
         if self.internalDefine["type"] == "idleGenerator":
-            self.lastTickTime = upgradeGameLogic.doUpgradeTask(self.name, self.lastTickTime)
+            self.lastTickTime = automationGameLogic.doUpgradeTask(self.name, self.lastTickTime)
             
         
 
@@ -68,18 +68,18 @@ class content(QWidget):
         super().__init__()
         self.layout = QVBoxLayout()
         self.layout.setAlignment(Qt.AlignmentFlag.AlignTop)
-        self.upgradeBlocks = []
-        for i in gamedefine.upgradesToCreate:
-            print("creating upgrade " + i)
-            self.upgradeBlocks.append(automationBlock(i))
-            self.layout.addWidget(self.upgradeBlocks[-1])
+        self.automationBlocks = []
+        for i in gamedefine.automationsToCreate:
+            print("creating automation " + i)
+            self.automationBlocks.append(automationBlock(i))
+            self.layout.addWidget(self.automationBlocks[-1])
         
         self.setLayout(self.layout)
     
     def updateDisplay(self):
-        for i in self.upgradeBlocks:
+        for i in self.automationBlocks:
             i.updateDisplay()
     
     def updateInternal(self):
-        for i in self.upgradeBlocks:
+        for i in self.automationBlocks:
             i.updateInternal()

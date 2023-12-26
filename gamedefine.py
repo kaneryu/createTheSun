@@ -77,15 +77,15 @@ itemInternalDefine = {
         "whatItCosts": [
             {
             "what": "quarks",
-            "amount": 1
+            "amount": 3
             }
         ],
-        "defaultCost": 1,
-        "costEquation": "%1 * 6",
+        "defaultCost": 3,
+        "costEquation": "%1 * 3",
         "whatItGives": [
             {
                 "what": "protons",
-                "amount": 2
+                "amount": 1
             }
         ],
     },
@@ -163,7 +163,7 @@ itemInternalDefine = {
     }
 }
 
-upgradeInternalDefine = {
+automationInternalDefine = {
     "particleAccelerator": {
         "firstCost": [
             {
@@ -356,7 +356,7 @@ upgradeInternalDefine = {
 }
     
     
-upgradeVisualDefine = {
+automationVisualDefine = {
     
     "particleAccelerator": [
         {
@@ -423,13 +423,13 @@ upgradeVisualDefine = {
         ]
     }
 
-purchaseToCreate = ["quarks", "protons", "hydrogen", "stars", "galaxies"]
-upgradesToCreate = ["particleAccelerator", "protonicForge"]
+purchaseToCreate = ["quarks", "protons"]
+automationsToCreate = []#["particleAccelerator", "protonicForge"]
 
 amounts = {
-    "quarks": 4712057130497587498,
+    "quarks": 0,
     "electrons": 0,
-    "protons": 4712057130497587498,
+    "protons": 0,
     "hydrogen": 0,
     "stars": 0,
     "galaxies": 0,
@@ -457,10 +457,9 @@ multiplierList = {
 }
 
 mainTabBuyMultiple = 1
-mainTabBuyMultipleList = [1, 10, 100, 1000]
 
 electronDetails = {
-    "waitTime": 1,
+    "waitTime": 1000,
     "amount": 1,
     "maxAmount": 100,
     "minAmount": 0, 
@@ -552,12 +551,8 @@ achevementVisualDefine = {
     "automation": {
         "visualName": "Automation",
         "hoverDescription": "Automation is upon us. \n Create your first particle accelerator",
-        "rewardDescription": "Unlock to recive 10 protons"      
-    
+        "rewardDescription": "Unlock to recive 10 protons"
     }
-    
-    
-    
 }
 
 unlockedAchevements = []

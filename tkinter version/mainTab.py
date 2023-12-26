@@ -1,6 +1,6 @@
 import tkinter as tk
 import tkinter as ttk
-import itemGameLogic
+import game
 
 
 

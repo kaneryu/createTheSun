@@ -10,19 +10,18 @@ def getCurrentInternalMultiLevelUpgrade(upgrade: str) -> dict:
     target = getCurrentMultiLevelUpgradeIndex(upgrade)
 
     if target == 0:
-        return (False, gamedefine.upgradeInternalDefine)
+        return (False, gamedefine.automationInternalDefine[upgrade])
     else:    
-        return gamedefine.upgradeInternalDefine[upgrade]["multiLevelUpgrades"][target]
+        return gamedefine.automationInternalDefine[upgrade]["multiLevelUpgrades"][target]
 
 def getCurrentMultiLevelUpgradeIndex(upgrade: str) -> int:
     
     currentLevel = gamedefine.upgradeLevels[upgrade]
     target = 0
     
-    for i in gamedefine.upgradeInternalDefine[upgrade]["multiLevelUpgradesStarts"]:
+    for i in gamedefine.automationInternalDefine[upgrade]["multiLevelUpgradesStarts"]:
         if currentLevel >= i:
-            target = gamedefine.upgradeInternalDefine[upgrade]["multiLevelUpgradesStarts"].index(i)
-    print(f"current level: {currentLevel}, target: {target}")
+            target += 1
     return target
 
 def getCurrentVisualMultiLevelUpgrade(upgrade: str) -> dict:
@@ -30,9 +29,9 @@ def getCurrentVisualMultiLevelUpgrade(upgrade: str) -> dict:
     target = getCurrentMultiLevelUpgradeIndex(upgrade)
 
     if target == 0:
-        return gamedefine.upgradeVisualDefine[0]
+        return gamedefine.automationVisualDefine[upgrade][0]
     else:    
-        return gamedefine.upgradeVisualDefine[upgrade][target]
+        return gamedefine.automationVisualDefine[upgrade][target]
 
 def canAffordUpgradeTask(upgrade : str) -> bool:
     """
@@ -66,7 +65,7 @@ def purchaseUpgrade(upgrade : str) -> None:
         upgrade (str): The upgrade to purchase.
     """
     if gamedefine.upgradeLevels[upgrade] == 0:
-        costs = gamedefine.upgradeInternalDefine[upgrade]["firstCost"]
+        costs = gamedefine.automationInternalDefine[upgrade]["firstCost"]
     else:
         costs = getCurrentInternalMultiLevelUpgrade(upgrade)["upgradeCost"]
     
@@ -129,7 +128,7 @@ def canAffordUpgrade(upgrade : str) -> bool:
         bool: Whether you can afford the upgrade or not.
     """
     if gamedefine.upgradeLevels[upgrade] == 0:
-        costs = gamedefine.upgradeInternalDefine[upgrade]["firstCost"]
+        costs = gamedefine.automationInternalDefine[upgrade]["firstCost"]
     else:
         costs = getCurrentInternalMultiLevelUpgrade(upgrade)["upgradeCost"]
     
@@ -233,7 +232,7 @@ def splitCostEquation(costEquation: str) -> list[str]:
 
 def parseCost(name):
     if gamedefine.upgradeLevels[name] == 0:
-        what = gamedefine.upgradeInternalDefine[name]["firstCost"]
+        what = gamedefine.automationInternalDefine[name]["firstCost"]
         string = ["Purchase for "]    
     else:
         what = getCurrentInternalMultiLevelUpgrade(name)["upgradeCost"]
@@ -261,11 +260,12 @@ def parseUsefulDescription(upgrade):
     
         if gamedefine.upgradeLevels[upgrade] == 0:
             index = getCurrentMultiLevelUpgradeIndex(upgrade)
-            return gamedefine.upgradeVisualDefine[upgrade][index]["firstupgradeUsefulDescription"]
+            return gamedefine.automationVisualDefine[upgrade][index]["firstupgradeUsefulDescription"]
         else:
             currentVisualDict =  getCurrentVisualMultiLevelUpgrade(upgrade)
             
             currentInternalDict = getCurrentInternalMultiLevelUpgrade(upgrade)
+
         if currentInternalDict["type"] == "idleGenerator":
             currentDec = currentVisualDict["currentUpgradeUsefulDescription"]
             futureDec = currentVisualDict["upgradeUsefulDescription"]
@@ -283,7 +283,7 @@ def parseUpgradeName(upgrade):
     
     if gamedefine.upgradeLevels[upgrade] == 0:
         
-        return gamedefine.upgradeVisualDefine[upgrade][0]["visualName"]
+        return gamedefine.automationVisualDefine[upgrade][0]["visualName"]
     else:
         
         currentDict = getCurrentVisualMultiLevelUpgrade(upgrade)
@@ -293,7 +293,7 @@ def getDescription(upgrade):
     index = getCurrentMultiLevelUpgradeIndex(upgrade)
     
     if gamedefine.upgradeLevels[upgrade] == 0:
-        return f"{gamedefine.upgradeVisualDefine[upgrade][index]["upgradeVisualName"]} \n {gamedefine.upgradeVisualDefine[upgrade][index]["upgradeDescription"]}"
+        return f"{gamedefine.automationVisualDefine[upgrade][index]["upgradeVisualName"]} \n {gamedefine.automationVisualDefine[upgrade][index]["upgradeDescription"]}"
     else:
 
-        return f"{gamedefine.upgradeVisualDefine[upgrade][index]["upgradeVisualName"]} \n {gamedefine.upgradeVisualDefine[upgrade][index]["upgradeDescription"]}"
+        return f"{gamedefine.automationVisualDefine[upgrade][index]["upgradeVisualName"]} \n {gamedefine.automationVisualDefine[upgrade][index]["upgradeDescription"]}"

@@ -7,7 +7,7 @@ from internal_utils import _base64 as base64
 
 #Internal Imports
 import mainTab, upgradesTab, version
-import itemGameLogic as _game
+import game as _game
 
 
 

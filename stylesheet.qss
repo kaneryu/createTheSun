@@ -1,4 +1,8 @@
-QMainWindow {background: #1e1e1e;}
+
+QMainWindow{
+    background: #1e1e1e;
+    border-radius: 10px;
+}
 QLabel {
     color: white;
     background: transparent;

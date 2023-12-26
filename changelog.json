@@ -1,0 +1,106 @@
+{
+
+    "0.1.0": {
+        "version": "0.1.0",
+        "date": {
+            "year": "2023",
+            "month": "12",
+            "day": "19"
+        },
+
+
+        "text":[
+            "# v0.1.0",
+            "Update released on 12/19/2023",
+            "## Changes",
+            "Inital Release"
+
+        ],
+
+        
+        "type": "pre-release",
+        "importance": "high"
+
+    },
+
+    "0.1.1": {
+        "version": "0.1.1",
+        "date": {
+            "year": "2023",
+            "month": "12",
+            "day": "19"
+        },
+
+
+        "text":[
+            "# v0.1.1",
+            "Update released on 12/20/2023",
+            "## Changes",
+            "### Hotfixes",
+            "- Fixed equations for protonic forge and particle accel.",
+            "- Fixed text under upgrade button showing as if it the upgrade weren't level 0, even if it was.",
+            "- Fixed how paths work in the EXE version so it can be run from anywhere",
+            "### New Additions:",
+            "Launcher",
+            "-Includes autoupdater",
+            "-Launches the game"
+
+        ],
+
+        
+        "type": "patch",
+        "importance": "medium"
+
+    },
+
+    
+    "0.1.2": {
+        "version": "0.1.2",
+        "date": {
+            "year": "2023",
+            "month": "12",
+            "day": "20"
+        },
+
+
+        "text":[
+            "# v0.1.2",
+            "Update released on 12/20/2023",
+            "## Changes",
+            "### Hotfixes",
+            "- Launcher",
+            "- - Fixed multiple fatal issues with launcher"
+        ],
+        "type": "patch",
+        "importance": "medium"
+
+    },
+
+    "0.1.3": {
+        "version": "0.1.3",
+        "date": {
+            "year": "2023",
+            "month": "12",
+            "day": "26"
+        },
+
+
+        "text":[
+            "# v0.1.3",
+            "Update released on 12/26/2023",
+            "## Changes",
+            "Internal Changes:",
+            "- Changed how automations are define so they're more extensible",
+            "- added achievements, but they're not visible yet",
+            "New Features:",
+            "- Buy multiple",
+            "- - You can now buy multiple of an item at once",
+            "- Max All",
+            "- - You can now buy the max amount of all items at once"
+        ],
+        "type": "patch",
+        "importance": "medium"
+
+    }
+
+}
