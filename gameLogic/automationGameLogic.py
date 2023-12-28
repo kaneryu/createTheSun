@@ -3,20 +3,28 @@ import regex as re
 import time
 from math import floor, ceil, log
 import gamedefine
+import gameLogic.numberLogic as numberLogic
 
-
-def getCurrentInternalMultiLevelUpgrade(upgrade: str) -> dict:
+def getCurrentInternalMultiLevelUpgrade(upgrade: str, level: int | None = None) -> dict:
     
-    target = getCurrentMultiLevelUpgradeIndex(upgrade)
+    if level == None:
+        target = getCurrentMultiLevelUpgradeIndex(upgrade)
+    else:
+        target = getCurrentMultiLevelUpgradeIndex(upgrade, level)
 
     if target == 0:
         return gamedefine.automationInternalDefine[upgrade]["multiLevelUpgrades"][target]
     else:    
         return gamedefine.automationInternalDefine[upgrade]["multiLevelUpgrades"][target]
 
-def getCurrentMultiLevelUpgradeIndex(upgrade: str) -> int:
+def getCurrentMultiLevelUpgradeIndex(upgrade: str, level: int | None = None) -> int:
     
-    currentLevel = gamedefine.upgradeLevels[upgrade]
+    
+    if level == None:
+        currentLevel = gamedefine.upgradeLevels[upgrade]
+    else:
+        currentLevel = level
+    
     target = -1
     
     for i in gamedefine.automationInternalDefine[upgrade]["multiLevelUpgradesStarts"]:
@@ -28,9 +36,12 @@ def getCurrentMultiLevelUpgradeIndex(upgrade: str) -> int:
         
     return target
 
-def getCurrentVisualMultiLevelUpgrade(upgrade: str) -> dict:
-
-    target = getCurrentMultiLevelUpgradeIndex(upgrade)
+def getCurrentVisualMultiLevelUpgrade(upgrade: str, level: int | None = None) -> dict:
+    
+    if level == None:
+        target = getCurrentMultiLevelUpgradeIndex(upgrade)
+    else:
+        target = getCurrentMultiLevelUpgradeIndex(upgrade, level)
 
     if target == 0:
         return gamedefine.automationVisualDefine[upgrade][0]
@@ -102,7 +113,7 @@ def updateUpgradeStatus(upgrade : str) -> None:
         
         if idleGenDict["equationType"] == "timeEquation":
             
-            gamedefine.upgradeDetails[upgrade]["timeToWait"] = evaluateCostEquation(idleGenDict["timeEquation"], gamedefine.upgradeLevels[upgrade])
+            gamedefine.upgradeDetails[upgrade]["timeToWait"] = numberLogic.evaluateCostEquation(idleGenDict["timeEquation"], gamedefine.upgradeLevels[upgrade])
             for i in range(len(idleGenDict["whatItGives"])):
                 gamedefine.upgradeDetails[upgrade]["whatItGives"][i]["amount"] = idleGenDict["whatItGives"][i]["amount"]
             
@@ -115,15 +126,17 @@ def updateUpgradeStatus(upgrade : str) -> None:
             
             gamedefine.upgradeDetails[upgrade]["timeToWait"] = idleGenDict["time"]
             for i in range(len(idleGenDict["whatItGives"])):
-                amount = evaluateCostEquation(idleGenDict["amountEquation"][i], gamedefine.upgradeLevels[upgrade])
+                amount = numberLogic.evaluateCostEquation(idleGenDict["amountEquation"][i]["equation"], gamedefine.upgradeLevels[upgrade])
                 gamedefine.upgradeDetails[upgrade]["whatItGives"][i]["amount"] = amount
                 
             if idleGenDict["withRequirement"]:
                 for i in range(len(idleGenDict["whatItCosts"])):
-                    amount = evaluateCostEquation(idleGenDict["costEquation"][i], gamedefine.upgradeLevels[upgrade])
+                    amount = numberLogic.evaluateCostEquation(idleGenDict["costEquation"][i], gamedefine.upgradeLevels[upgrade])
                     gamedefine.upgradeDetails[upgrade]["whatItCosts"][i]["amount"] = amount
-            
-                
+
+
+
+         
                 
                 
 def canAffordUpgrade(upgrade : str) -> bool:
@@ -180,70 +193,7 @@ def doUpgradeTask(upgrade, lastTickTime):
     return lastTickTime
         
 
-def evaluateCostEquation(costEquation: str, *args: int) -> int:
-    """
-    Evaluates the cost equation.
 
-    Args:
-        costEquation (str): The cost equation to evaluate.
-        *args: The arguments to put into the cost equation.
-
-    Returns:
-        int: The result of the cost equation.    
-    """
-
-    # if there are too many arguments, it will break
-    if f"%{len(args) + 1}%" in costEquation:
-        # failed, 0
-        return ([-1, 0])
-    # if there are too few arguments, it will break
-    if f"%{len(args)}%" in costEquation:
-        # failed, 0
-        return ([-1, 0])
-    # break up the equation into a list of strings
-    equation = splitCostEquation(costEquation)
-
-    amountVarsFound = 1
-    for i in range(len(equation)):
-        # if it's a number, replace it with the argument
-        if equation[i] == "%":
-            equation[i] = str(args[amountVarsFound - 1])
-            amountVarsFound += 1
-    # join the list of strings into one string
-    equation = "".join(equation)
-    expr = sp.sympify(equation)
-
-    return expr.evalf()
-
-
-def splitCostEquation(costEquation: str) -> list[str]:
-    """
-    Splits the cost equation into a list of strings.
-
-    Args:
-        costEquation (str): The cost equation to split.
-
-    Returns:
-        list[str]: The list of strings.
-    """
-
-    groups = []
-    latestGroup = ""
-    i = 0
-    while i < len(costEquation):
-        if costEquation[i] == "%":
-            if latestGroup != "":
-                groups.append(latestGroup)
-                latestGroup = ""
-            if costEquation[i + 1].isnumeric():
-                groups.append("%")
-                i = i + 1
-        else:
-            latestGroup += costEquation[i]
-        i += 1
-    if latestGroup != "":
-        groups.append(latestGroup)
-    return (groups)
 
 def parseCost(name):
     if gamedefine.upgradeLevels[name] == 0:
@@ -283,24 +233,39 @@ def parseUsefulDescription(upgrade):
 
         if currentInternalDict["type"] == "idleGenerator":
             currentDec = currentVisualDict["currentUpgradeUsefulDescription"]
-
-            futureDec = currentVisualDict["upgradeUsefulDescription"]
+            futureDec = ""
             
             if currentVisualDict["usefulDescriptionBlank"] == "tickTime":
                 currentDec = currentDec.replace("%%%", str(round( gamedefine.upgradeDetails[upgrade]["timeToWait"]/1000, 3)))
                 
-                futureNum = evaluateCostEquation(currentInternalDict["idleGenerator"]["timeEquation"], gamedefine.upgradeLevels[upgrade] + 1)
+                futureDec = getFutureDescription(upgrade)
                 
-                futureDec = futureDec.replace("%%%", str(round(futureNum/1000, 3)))
             elif currentVisualDict["usefulDescriptionBlank"] == "amount":
-                currentDec = currentDec.replace("%%%", str(gamedefine.upgradeDetails[upgrade]["whatItGives"][0]["amount"]))
+                currentDec = currentDec.replace("%%%", str(round(gamedefine.upgradeDetails[upgrade]["whatItGives"][0]["amount"], 3)))
                 
-                futureNum = evaluateCostEquation(currentInternalDict["idleGenerator"]["amountEquation"][0], gamedefine.upgradeLevels[upgrade] + 1)
-                
-                futureDec = futureDec.replace("%%%", str(futureNum))
-                
-            
+                futureDec = getFutureDescription(upgrade)
+              
             return currentDec + " \n " + futureDec
+
+def getFutureDescription(upgrade):
+    
+    futureInternalDict = getCurrentInternalMultiLevelUpgrade(upgrade, gamedefine.upgradeLevels[upgrade] + 1)
+    futureVisualDict = getCurrentVisualMultiLevelUpgrade(upgrade, gamedefine.upgradeLevels[upgrade] + 1)
+    
+    if futureInternalDict["type"] == "idleGenerator":
+        futureDec = str(futureVisualDict["upgradeUsefulDescription"])
+        
+        if futureVisualDict["usefulDescriptionBlank"] == "tickTime":
+            futureNum = numberLogic.evaluateCostEquation(futureInternalDict["idleGenerator"]["timeEquation"], gamedefine.upgradeLevels[upgrade] + 1)
+
+            futureDec = futureDec.replace("%%%", str(round(futureNum/1000, 3)))
+        elif futureVisualDict["usefulDescriptionBlank"] == "amount":
+            futureNum = numberLogic.evaluateCostEquation(futureInternalDict["idleGenerator"]["amountEquation"][0]["equation"], gamedefine.upgradeLevels[upgrade] + 1)
+
+            futureDec = futureDec.replace("%%%", str(round(futureNum, 3)))
+        
+        return futureDec
+
 
 def parseUpgradeName(upgrade):
     

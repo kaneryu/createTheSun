@@ -4,7 +4,6 @@ import ctypes
 import threading
 import sys
 import os
-from math import floor, ceil, log
 #third party imports
 from PyQt6 import QtCore
 from PyQt6.QtGui import QIcon
