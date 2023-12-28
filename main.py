@@ -138,7 +138,7 @@ class MainWindow(QMainWindow):
         """
         while True:
             self.electrons.updateInternal()
-            #self.tabs[1]["class"].updateInternal()
+            self.tabs[1]["class"].updateInternal()
             
             if not threading.main_thread().is_alive():
                 return 0

@@ -10,18 +10,22 @@ def getCurrentInternalMultiLevelUpgrade(upgrade: str) -> dict:
     target = getCurrentMultiLevelUpgradeIndex(upgrade)
 
     if target == 0:
-        return (False, gamedefine.automationInternalDefine[upgrade])
+        return gamedefine.automationInternalDefine[upgrade]["multiLevelUpgrades"][target]
     else:    
         return gamedefine.automationInternalDefine[upgrade]["multiLevelUpgrades"][target]
 
 def getCurrentMultiLevelUpgradeIndex(upgrade: str) -> int:
     
     currentLevel = gamedefine.upgradeLevels[upgrade]
-    target = 0
+    target = -1
     
     for i in gamedefine.automationInternalDefine[upgrade]["multiLevelUpgradesStarts"]:
         if currentLevel >= i:
             target += 1
+    
+    if target == -1:
+        target = 0
+        
     return target
 
 def getCurrentVisualMultiLevelUpgrade(upgrade: str) -> dict:
@@ -47,12 +51,16 @@ def canAffordUpgradeTask(upgrade : str) -> bool:
     if gamedefine.upgradeLevels[upgrade] == 0:
         costs = getCurrentInternalMultiLevelUpgrade(upgrade)[1]
     else:
-        costs = getCurrentInternalMultiLevelUpgrade(upgrade)["upgradeCost"]
+        costs = getCurrentInternalMultiLevelUpgrade(upgrade)["idleGenerator"]["whatItCosts"]
     
+        
     ongoing = True
     
     for i in costs:
-        if gamedefine.amounts[i["what"]] < i["amount"]:
+        if i["amount"] == "atMarketPrice":
+            if gamedefine.amounts[i["what"]] < gamedefine.itemInternalDefine[i["what"]]["whatItCosts"][0]["amount"]:
+                ongoing = False
+        elif gamedefine.amounts[i["what"]] < i["amount"]:
             ongoing = False
     
     return ongoing
@@ -85,6 +93,7 @@ def updateUpgradeStatus(upgrade : str) -> None:
         return
     
     currentUpgradeDict = getCurrentInternalMultiLevelUpgrade(upgrade)
+    
     if type(currentUpgradeDict) == tuple:
         return #failed, level 0
     if currentUpgradeDict["type"] == "idleGenerator":
@@ -93,24 +102,24 @@ def updateUpgradeStatus(upgrade : str) -> None:
         
         if idleGenDict["equationType"] == "timeEquation":
             
-            gamedefine.upgradeDetails[upgrade]["timeToWait"] = evaluateCostEquation(idleGenDict["equation"], gamedefine.upgradeLevels[upgrade])
-            for i in len(idleGenDict["whatItGives"]):
+            gamedefine.upgradeDetails[upgrade]["timeToWait"] = evaluateCostEquation(idleGenDict["timeEquation"], gamedefine.upgradeLevels[upgrade])
+            for i in range(len(idleGenDict["whatItGives"])):
                 gamedefine.upgradeDetails[upgrade]["whatItGives"][i]["amount"] = idleGenDict["whatItGives"][i]["amount"]
             
             if idleGenDict["withRequirement"]:
                 
-                for i in len(idleGenDict["whatItCosts"]):
+                for i in range(len(idleGenDict["whatItCosts"])):
                     gamedefine.upgradeDetails[upgrade]["whatItCosts"][i]["amount"] = idleGenDict["whatItCosts"][i]["amount"]
             
         elif idleGenDict["equationType"] == "amountEquation":
             
             gamedefine.upgradeDetails[upgrade]["timeToWait"] = idleGenDict["time"]
-            for i in len(idleGenDict["whatItGives"]):
+            for i in range(len(idleGenDict["whatItGives"])):
                 amount = evaluateCostEquation(idleGenDict["amountEquation"][i], gamedefine.upgradeLevels[upgrade])
                 gamedefine.upgradeDetails[upgrade]["whatItGives"][i]["amount"] = amount
                 
             if idleGenDict["withRequirement"]:
-                for i in len(idleGenDict["whatItCosts"]):
+                for i in range(len(idleGenDict["whatItCosts"])):
                     amount = evaluateCostEquation(idleGenDict["costEquation"][i], gamedefine.upgradeLevels[upgrade])
                     gamedefine.upgradeDetails[upgrade]["whatItCosts"][i]["amount"] = amount
             
@@ -145,23 +154,29 @@ def doUpgradeTask(upgrade, lastTickTime):
         return lastTickTime
     else:
         internalDefine = getCurrentInternalMultiLevelUpgrade(upgrade)["idleGenerator"]
-        
     if gamedefine.upgradeLevels[upgrade] > 0:
-        if internalDefine["type"] == "idleGenerator":
-            if time.time() * 1000 - lastTickTime > gamedefine.upgradeDetails[upgrade]["timeToWait"]:
-                lastTickTime = time.time() * 1000
-                if internalDefine["withRequirement"]:
-                    if canAffordUpgradeTask(upgrade):
-                        for i in gamedefine.upgradeDetails[upgrade]["whatYouGet"]:
-                            gamedefine.amounts[i["what"]] += i["amount"]
-                        for i in gamedefine.upgradeDetails[upgrade]["whatItCosts"]:
-                            gamedefine.amounts[i["what"]] -= i["amount"]
-                    else:
-                        lastTickTime += 10000 # softlock prevention; add 10 seconds
-                else:         
-                    for i in gamedefine.upgradeDetails[upgrade]["whatYouGet"]:
+        if time.time() * 1000 - lastTickTime > gamedefine.upgradeDetails[upgrade]["timeToWait"]:
+            gamedefine.upgradeDisabledState[upgrade] = (False, "0")
+            lastTickTime = time.time() * 1000
+            if internalDefine["withRequirement"]:
+                if canAffordUpgradeTask(upgrade):
+                    for i in gamedefine.upgradeDetails[upgrade]["whatItGives"]:
                         gamedefine.amounts[i["what"]] += i["amount"]
                         
+                    for i in gamedefine.upgradeDetails[upgrade]["whatItCosts"]:
+                        if i["amount"] == "atMarketPrice":
+                            gamedefine.amounts[i["what"]] -= gamedefine.itemInternalDefine[i["what"]]["whatItCosts"][0]["amount"]
+                        else:
+                            gamedefine.amounts[i["what"]] -= i["amount"]
+                else:
+                    lastTickTime += 10000 # softlock prevention; add 10 seconds
+                    gamedefine.upgradeDisabledState[upgrade] = (True, "10") # type: ignore
+            else:         
+                for i in gamedefine.upgradeDetails[upgrade]["whatItGives"]:
+                    gamedefine.amounts[i["what"]] += i["amount"]
+        else:
+            if gamedefine.upgradeDisabledState[upgrade][0] == True:
+                gamedefine.upgradeDisabledState[upgrade] = (True, str(ceil((gamedefine.upgradeDetails[upgrade]["timeToWait"] - (time.time() * 1000 - lastTickTime))/1000))) # type: ignore
     return lastTickTime
         
 
@@ -268,14 +283,22 @@ def parseUsefulDescription(upgrade):
 
         if currentInternalDict["type"] == "idleGenerator":
             currentDec = currentVisualDict["currentUpgradeUsefulDescription"]
+
             futureDec = currentVisualDict["upgradeUsefulDescription"]
             
-            if currentVisualDict["usefulDescriptionBlank"] == "amount":
-                currentDec = currentDec.replace("%%%", str(gamedefine.upgradeDetails[upgrade]["timeToWait"]))
-                futureDec = futureDec.replace("%%%", str(gamedefine.upgradeDetails[upgrade]["timeToWait"]))
-            elif currentVisualDict["usefulDescriptionBlank"] == "tickTime":
-                currentDec = currentDec.replace("%%%", str(gamedefine.upgradeDetails[upgrade]["whatYouGet"][0]["amount"]))
-                futureDec = futureDec.replace("%%%", str(gamedefine.upgradeDetails[upgrade]["whatYouGet"][0]["amount"]))
+            if currentVisualDict["usefulDescriptionBlank"] == "tickTime":
+                currentDec = currentDec.replace("%%%", str(round( gamedefine.upgradeDetails[upgrade]["timeToWait"]/1000, 3)))
+                
+                futureNum = evaluateCostEquation(currentInternalDict["idleGenerator"]["timeEquation"], gamedefine.upgradeLevels[upgrade] + 1)
+                
+                futureDec = futureDec.replace("%%%", str(round(futureNum/1000, 3)))
+            elif currentVisualDict["usefulDescriptionBlank"] == "amount":
+                currentDec = currentDec.replace("%%%", str(gamedefine.upgradeDetails[upgrade]["whatItGives"][0]["amount"]))
+                
+                futureNum = evaluateCostEquation(currentInternalDict["idleGenerator"]["amountEquation"][0], gamedefine.upgradeLevels[upgrade] + 1)
+                
+                futureDec = futureDec.replace("%%%", str(futureNum))
+                
             
             return currentDec + " \n " + futureDec
 

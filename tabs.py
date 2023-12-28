@@ -75,4 +75,4 @@ class achievementsTab(QWidget):
     def name(): #type: ignore
         return "Achevements"
 
-tabs = [mainTab, upgradeTab, settingsTab, achievementsTab]
+tabs = [mainTab, automationTab, settingsTab, achievementsTab]
