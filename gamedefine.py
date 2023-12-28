@@ -197,6 +197,7 @@ automationInternalDefine = {
                         "amount": 50
                     }      
                 ],
+                "withRequirement": False,
                 "type": "idleGenerator",
                 "idleGenerator" : {
                     "whatItGives": [
@@ -228,16 +229,21 @@ automationInternalDefine = {
                 "withRequirement": False,
                 "type": "idleGenerator",
                 "idleGenerator" : {
+                    "withRequirement": False,
                     "whatItGives": [
                         {
                             "what": "quarks",
                             "amount": 3
                         }
                     ],
-                    "time": 1000,
+                    "time": 10,
                     # in this case, %1 is upgrade level
-                    "equationType": "whatItGivesEQ",
-                    "timeEquation": "(x-30)+3"
+                    "equationType": "amountEquation",
+                    "amountEquation": [
+                        {
+                        "timeEquation": "(%1-30)+3"
+                        }
+                    ]
                 }
                     
             }
@@ -286,7 +292,7 @@ automationInternalDefine = {
                         "whatItGives": [
                             {
                                 "what": "protons",
-                                "baseAmount": 1
+                                "amount": 1
                             }
                         ],
                         "type" : "idleGenerator",
@@ -294,7 +300,7 @@ automationInternalDefine = {
                         "whatItCosts": [
                             {
                                 "what": "quarks",
-                                "amount": 3     
+                                "amount": "atMarketPrice"     
                             }
                         ],
                         "time": 1000,
@@ -323,16 +329,17 @@ automationInternalDefine = {
                 "type" : "idleGenerator",
                 "withRequirement": True,
                 "idleGenerator" : {
+                    "withRequirement": True,
                     "whatItGives": [
                         {
                             "what": "protons",
-                            "baseAmount": 1
+                            "amount": 1
                         }
                     ],
                     "whatItCosts": [
                         {
                             "what": "quarks",
-                            "amount": 2
+                            "amount": "atMarketPrice"
                         }
                     ],
                     "time": 10,
@@ -368,8 +375,8 @@ automationVisualDefine = {
             "upgradeDescription": "Increase the size of the particle accelerator loop for more quarks per second.",
             "firstupgradeUsefulDescription": "Creates 1 Quark per second",
             
-            "currentUpgradeUsefulDescription": ["You are currently gaining 3 Quarks every %%% seconds"],
-            "upgradeUsefulDescription": ["Upgrade to gain 3 Quarks every %%% seconds"],
+            "currentUpgradeUsefulDescription": "You are currently gaining 1 Quarks every %%% seconds",
+            "upgradeUsefulDescription": "Upgrade to gain 1 Quarks every %%% seconds",
             "usefulDescriptionBlank": "tickTime",
             
             "id": ["particleAccelerator", 0]
@@ -384,8 +391,8 @@ automationVisualDefine = {
             "upgradeDescription": "Increase the size of the particle accelerator loop for more quarks per second.",
             "firstupgradeUsefulDescription": "Creates 1 Quark per second",
             
-            "currentUpgradeUsefulDescription": "You are currently gaining 3 Quarks every %%% seconds",
-            "upgradeUsefulDescription": "Upgrade to gain 3 Quarks every %%% seconds",
+            "currentUpgradeUsefulDescription": "You are currently gaining %%% Quarks every 0.011 seconds",
+            "upgradeUsefulDescription": "Upgrade to gain %%% Quarks every 0.011 seconds",
             "usefulDescriptionBlank": "tickTime",
             
             "id": ["particleAccelerator", 0]
@@ -424,12 +431,12 @@ automationVisualDefine = {
     }
 
 purchaseToCreate = ["quarks", "protons"]
-automationsToCreate = []#["particleAccelerator", "protonicForge"]
+automationsToCreate = ["particleAccelerator", "protonicForge"]
 
 amounts = {
-    "quarks": 0,
-    "electrons": 0,
-    "protons": 0,
+    "quarks": 100,
+    "electrons": 100,
+    "protons": 100,
     "hydrogen": 0,
     "stars": 0,
     "galaxies": 0,
@@ -459,21 +466,25 @@ multiplierList = {
 mainTabBuyMultiple = 1
 
 electronDetails = {
-    "waitTime": 1000,
+    "waitTime": 1,
     "amount": 1,
     "maxAmount": 100,
     "minAmount": 0, 
 }
 
 upgradeLevels = {
-    "particleAccelerator" : 0,
-    "protonicForge": 0
+    "particleAccelerator" : 20,
+    "protonicForge": 20
+}
+upgradeDisabledState = {
+    "particleAccelerator" : (False, "0"),
+    "protonicForge": (False, "0")
 }
 
 upgradeDetails = {
     "particleAccelerator" : {
         "timeToWait" : 1000,
-        "whatYouGet" : [
+        "whatItGives" : [
             {
                 "what": "quarks",
                 "amount": 1
@@ -484,7 +495,7 @@ upgradeDetails = {
     "protonicForge": {
         
         "timeToWait": 1000,
-        "whatYouGet": [
+        "whatItGives": [
             {
                 "what": "protons",
                 "amount": 1

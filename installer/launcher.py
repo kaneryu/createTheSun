@@ -13,7 +13,7 @@ import json
 #external imports
 from PyQt6 import QtGui
 from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QGridLayout, QVBoxLayout, QHBoxLayout, QPushButton, QFileDialog, QMessageBox, QProgressBar, QDialog, QDialogButtonBox
+from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QTextEdit, QGridLayout, QVBoxLayout, QHBoxLayout, QPushButton, QFileDialog, QMessageBox, QProgressBar, QDialog, QDialogButtonBox
 from PyQt6.QtGui import QPalette, QColor
 
 basedir = os.path.dirname(__file__)
@@ -92,14 +92,19 @@ QLineEdit {
     color: white;
     padding: 2px;
 }
+
+QTextEdit {
+    color: white;
+}
 """
+
 def createShortcut(path, target):
     shell = Dispatch('WScript.Shell')
     shortcut = shell.CreateShortCut(target)
     shortcut.Targetpath = path
     shortcut.save()
 
-def removeDir(dir : os.path, warning = True) -> None:
+def removeDir(dir, warning = True) -> None:
     if warning == True:
         print("WARNING!!! THIS WILL DELETE ALL FILES IN THE DIRECTORY AND THE DIRECTORY ITSELF!!!")
         sleep(30)
@@ -124,7 +129,7 @@ class MainWindow(QMainWindow):
 
         self.progress_signal.connect(self.update_progressbar)
         self.label_signal.connect(self.update_label)
-        self.label = QLabel("", alignment=Qt.AlignmentFlag.AlignCenter)
+        self.label = QLabel("", alignment=Qt.AlignmentFlag.AlignCenter) #type: ignore
         
         self.install_progress_bar = QProgressBar()
 
@@ -181,17 +186,14 @@ class MainWindow(QMainWindow):
                     results = dialog.exec() 
                     if results == QDialog.DialogCode.Accepted:
                         self.install_yes(None)
-                        self.close()
                     else:
                         self.label.setText("Starting Create The Sun...")
-                        self.start()
                 else:
                     self.label.setText("There are no updates available. Starting Create The Sun...")
-                    self.start()
             except requests.exceptions.ConnectionError:
                 dialog = CustomDialog("Update check failed due to connection error", "Update Failed", False)
                 dialog.exec()
-                self.start()
+        self.start()
                 
             
     def updateCheck(self):
@@ -203,11 +205,18 @@ class MainWindow(QMainWindow):
         file.close()
         self.latestVersion = response[0]["tag_name"]
         
+        print(f"Current version: {currentVersion}\nLatest version: {self.latestVersion}")
+        
         if request.status_code != 200:
             dialog = CustomDialog("There was an error checking for updates. Would you like to install Create The Sun?", "Update error", True)
             dialog.exec()
         elif currentVersion != self.latestVersion:
-            dialog = CustomDialog("There is an update available. Would you like to install it?", "Update available", True)
+            changeLog = self.getChangelog(currentVersion)
+            if not changeLog == "No changelog available":
+                dialog = CustomDialog(f"There is an update available. Would you like to install it?", "Update available", True, changeLog)
+            else:
+                dialog = CustomDialog("There is an update available. Would you like to install it?", "Update available", True)
+                
             results = dialog.exec() 
             if results == QDialog.DialogCode.Accepted:
                 return 1
@@ -216,6 +225,7 @@ class MainWindow(QMainWindow):
         else:
             self.label.setText("Create The Sun is up to date.")
             return 0
+        
         
     def update_progressbar(self, value):
         self.install_progress_bar.setValue(value)
@@ -255,6 +265,7 @@ class MainWindow(QMainWindow):
 
             
         self.label.setText("Create The Sun is installed.")
+        
         self.dialog = CustomDialog("Create The Sun is installed.", "Create The Sun installed.", False)
         self.dialog.exec()
         
@@ -286,7 +297,7 @@ class MainWindow(QMainWindow):
 
     def install_thread(self):
         self.zipFile = zipfile.ZipFile("application.zip")
-        installDir = os.getenv("LOCALAPPDATA") + "/createTheSun/"
+        installDir = os.getenv("LOCALAPPDATA") + "/createTheSun/" #type: ignore
         if not os.path.exists(installDir):
             os.mkdir(installDir)
         else:
@@ -310,9 +321,28 @@ class MainWindow(QMainWindow):
     def closeEvent(self, *args, **kwargs):
         super().closeEvent(*args, **kwargs)
         sys.exit(0) #stop all threads
+        
+        
+    def getChangelog(self, version):
+        request = requests.request("GET", "https://raw.githubusercontent.com/kaneryu/createthesun/master/changelog.json")
+        response = json.loads(request.text)
+        
+        if not version in response:
+            return "No changelog available"
+        
+        rawChangelog = response[version]["text"]
+        changelog = ""
+        for i in rawChangelog:
+            changelog += i + "\n"
+        
+        request = requests.request("GET", "https://api.github.com/repos/KaneryU/createTheSun/releases")
+        response = json.loads(request.text)
+        changelog = response[0]["body"]
+        return changelog
+        
     
 class CustomDialog(QDialog):
-    def __init__(self, text, windowTitle = "Dialog", cancelable = True):
+    def __init__(self, text, windowTitle = "Dialog", cancelable = True, markdownText = ""):
         super().__init__()
 
         self.setWindowTitle(windowTitle)
@@ -325,11 +355,14 @@ class CustomDialog(QDialog):
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
 
-        self.layout = QVBoxLayout()
-        message = QLabel(text)
-        self.layout.addWidget(message)
-        self.layout.addWidget(self.buttonBox)
-        self.setLayout(self.layout)
+        self.layout_ = QVBoxLayout()
+        message = QTextEdit(text)
+        if markdownText != "":
+            message.setMarkdown(markdownText)
+        message.setReadOnly(True)
+        self.layout_.addWidget(message)
+        self.layout_.addWidget(self.buttonBox)
+        self.setLayout(self.layout_)
 
 
 app = QApplication(sys.argv)
