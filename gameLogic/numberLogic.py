@@ -3,6 +3,76 @@ import regex as re
 from math import floor, ceil, log
 import gamedefine
 
+
+def evaluateCostEquation(costEquation: str, *args: int) -> int:
+    """
+    Evaluates the cost equation.
+
+    Args:
+        costEquation (str): The cost equation to evaluate.
+        *args: The arguments to put into the cost equation.
+
+    Returns:
+        int: The result of the cost equation.    
+    """
+
+    # if there are too many arguments, it will break
+    if f"%{len(args) + 1}%" in costEquation:
+        # failed, 0
+        return -1
+    # if there are too few arguments, it will break
+    if f"%{len(args)}%" in costEquation:
+        # failed, 0
+        return -1
+    # break up the equation into a list of strings
+    equation = splitCostEquation(costEquation)
+
+    amountVarsFound = 1
+    for i in range(len(equation)):
+        # if it's a number, replace it with the argument
+        if equation[i] == "%":
+            equation[i] = str(args[amountVarsFound - 1])
+            amountVarsFound += 1
+    # join the list of strings into one string
+    equation = "".join(equation)
+    expr = sp.sympify(equation)
+
+    return expr.evalf()
+
+
+def splitCostEquation(costEquation: str) -> list[str]:
+    """
+    Splits the cost equation into a list of strings.
+
+    Args:
+        costEquation (str): The cost equation to split.
+
+    Returns:
+        list[str]: The list of strings.
+    """
+
+    groups = []
+    latestGroup = ""
+    i = 0
+    while i < len(costEquation):
+        if costEquation[i] == "%":
+            if latestGroup != "":
+                groups.append(latestGroup)
+                latestGroup = ""
+            if costEquation[i + 1].isnumeric():
+                groups.append("%")
+                i = i + 1
+        else:
+            latestGroup += costEquation[i]
+        i += 1
+    if latestGroup != "":
+        groups.append(latestGroup)
+    return (groups)
+
+
+
+
+
 def nonilize(number):
     if number == 0:
         return 0

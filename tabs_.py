@@ -5,6 +5,7 @@ import sys
 
 import tabs.maintab as maintab
 import tabs.automationtab as automationtab
+import tabs.settingstab as settingstab
 
 class mainTab(QWidget):
     def updateDisplay(self):
@@ -55,8 +56,10 @@ class settingsTab(QWidget):
     def __init__(self):
         super().__init__()
         self.layout_ = QVBoxLayout()
-        self.layout_.addWidget(QLabel("Settings Tab"))
+        self.tabContent = settingstab.content()
+        self.layout_.addWidget(self.tabContent)
         self.setLayout(self.layout_)
+        
     def updateDisplay(self):
         return 0
     
@@ -75,4 +78,4 @@ class achievementsTab(QWidget):
     def name(): #type: ignore
         return "Achevements"
 
-tabs = [mainTab, automationTab, settingsTab, achievementsTab]
+tabs = [mainTab, automationTab, achievementsTab]

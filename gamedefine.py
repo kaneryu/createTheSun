@@ -1,3 +1,7 @@
+
+
+
+
 itemVisualDefine = {
     "quarks": {
         "visualName": "Quarks",
@@ -168,7 +172,7 @@ automationInternalDefine = {
         "firstCost": [
             {
                 "what": "quarks",
-                "amount": 50
+                "amount": 100
                             
             },
             {
@@ -177,7 +181,7 @@ automationInternalDefine = {
             },
             {
                 "what": "protons",
-                "amount": 20
+                "amount": 30
             }
         ],
        
@@ -190,7 +194,7 @@ automationInternalDefine = {
                 "upgradeCost" : [            
                     {
                         "what": "quarks",
-                        "amount": 50       
+                        "amount": 300       
                     },
                     {
                         "what": "electrons",
@@ -219,7 +223,7 @@ automationInternalDefine = {
                 "upgradeCost" : [            
                     {
                         "what": "quarks",
-                        "amount": 30000    
+                        "amount": 370    
                     },
                     {
                         "what": "electrons",
@@ -241,7 +245,7 @@ automationInternalDefine = {
                     "equationType": "amountEquation",
                     "amountEquation": [
                         {
-                        "timeEquation": "(%1-30)+3"
+                        "equation": "(%1-30)+3"
                         }
                     ]
                 }
@@ -393,7 +397,7 @@ automationVisualDefine = {
             
             "currentUpgradeUsefulDescription": "You are currently gaining %%% Quarks every 0.011 seconds",
             "upgradeUsefulDescription": "Upgrade to gain %%% Quarks every 0.011 seconds",
-            "usefulDescriptionBlank": "tickTime",
+            "usefulDescriptionBlank": "amount",
             
             "id": ["particleAccelerator", 0]
 
@@ -434,9 +438,9 @@ purchaseToCreate = ["quarks", "protons"]
 automationsToCreate = ["particleAccelerator", "protonicForge"]
 
 amounts = {
-    "quarks": 100,
+    "quarks": 0,
     "electrons": 100,
-    "protons": 100,
+    "protons": 0,
     "hydrogen": 0,
     "stars": 0,
     "galaxies": 0,
@@ -466,15 +470,15 @@ multiplierList = {
 mainTabBuyMultiple = 1
 
 electronDetails = {
-    "waitTime": 1,
+    "waitTime": 1000,
     "amount": 1,
     "maxAmount": 100,
     "minAmount": 0, 
 }
 
 upgradeLevels = {
-    "particleAccelerator" : 20,
-    "protonicForge": 20
+    "particleAccelerator" : 0,
+    "protonicForge": 0
 }
 upgradeDisabledState = {
     "particleAccelerator" : (False, "0"),
@@ -567,3 +571,6 @@ achevementVisualDefine = {
 }
 
 unlockedAchevements = []
+
+saveable = [amounts, clickGainMultiplierList, multiplierList, upgradeLevels, upgradeDisabledState, unlockedAchevements]
+saveableStr = ["amounts", "clickGainMultiplierList", "multiplierList", "upgradeLevels", "upgradeDisabledState", "unlockedAchevements"]
