@@ -11,10 +11,10 @@ from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, QSizePolicy, QMessageBox
 from PyQt6.QtCore import QPropertyAnimation, Qt, QTimer, QRunnable, pyqtSlot, pyqtSignal, QThreadPool
 #local imports
-import tabs
-import electrons
+import tabs_ as tabs
+import tabs.electrons as electrons
 import logging_ as logging
-import urbanistFont
+import assets.fonts.urbanist.urbanistFont as urbanistFont
 
 logging.logLevel = 1
 logging.specialLogs = []
@@ -162,13 +162,13 @@ if __name__ == "__main__":
     myappid = u'mycompany.myproduct.subproduct.version'
     ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
-    file = open(os.path.join(basedir,'stylesheet.qss'), 'r')
+    file = open(os.path.join(basedir, 'assets', 'stylesheet.qss'), 'r')
     stylesheet = file.read()
     file.close()
     
     app = QApplication([])
 
-    app.setWindowIcon(QIcon(basedir + r"\icon.ico"))
+    app.setWindowIcon(QIcon(basedir + r"\assets\images\icon.ico"))
     window = MainWindow()
     urbanistFont.createFonts()
     app.setStyleSheet(stylesheet)
