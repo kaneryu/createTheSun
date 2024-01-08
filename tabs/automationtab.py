@@ -60,6 +60,14 @@ class automationBlock(QFrame):
         else:
             self.upgradeLabel.setText(automationGameLogic.parseUpgradeName(self.name))
             
+        try:
+            if type(gamedefine.force.index("automation")) == int:
+                print(f"forced update for Automation Tab, {gamedefine.force}")
+                self.updateEverything()
+                gamedefine.force = []
+        except ValueError:
+            pass
+        
         
     def updateInternal(self):
         if not gamedefine.upgradeLevels[self.name] == 0:

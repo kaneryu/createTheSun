@@ -10,6 +10,7 @@ from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, QSizePolicy, QMessageBox
 from PyQt6.QtCore import QPropertyAnimation, Qt, QTimer, QRunnable, pyqtSlot, pyqtSignal, QThreadPool
 #local imports
+import observerModel
 import tabs_ as tabs
 import tabs.electrons as electrons
 import logging_ as logging
@@ -164,7 +165,9 @@ class MainWindow(QMainWindow):
         
         if not os.path.exists(SAVEDIR):
             os.mkdir(SAVEDIR)
-    
+
+
+
 if __name__ == "__main__":
     #change icon in taskbar
     myappid = u'mycompany.myproduct.subproduct.version'
@@ -177,7 +180,12 @@ if __name__ == "__main__":
     app = QApplication([])
 
     app.setWindowIcon(QIcon(basedir + r"\assets\images\icon.ico"))
+
     window = MainWindow()
+        
+    def forceUpdate():
+        window.forceUpdate()
+        
     urbanistFont.createFonts()
     app.setStyleSheet(stylesheet)
     

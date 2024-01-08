@@ -5,7 +5,7 @@ import gamedefine
 import gameLogic.numberLogic as numberLogic
 
 
-def canAfford(item: str) -> bool:
+def canAfford(item: str, doBuyMultiply = True) -> bool:
     """
     Checks if you can afford an item.
 
@@ -16,7 +16,7 @@ def canAfford(item: str) -> bool:
         bool: Whether you can afford the item or not.
     """
     
-    buyMultiplier = gamedefine.mainTabBuyMultiple
+    buyMultiplier = gamedefine.mainTabBuyMultiple if doBuyMultiply else 1
 
     if gamedefine.itemInternalDefine[item]["costEquation"] == "":
         return True
@@ -31,7 +31,7 @@ def canAfford(item: str) -> bool:
     
     return ongoing
 
-def purchase(item: str) -> None:
+def purchase(item: str, doBuyMultiply = False) -> None:
     """
     Purchases an item.
 
@@ -40,7 +40,7 @@ def purchase(item: str) -> None:
         cost (int): The cost of the item.
     """
 
-    buyMultiplier = gamedefine.mainTabBuyMultiple
+    buyMultiplier = gamedefine.mainTabBuyMultiple if doBuyMultiply else 1
     
     if gamedefine.itemInternalDefine[item]["costEquation"] == "":
         gamedefine.amounts[item] += 1
@@ -128,14 +128,38 @@ def parseCost(name):
     
     return "".join(string)
 
+
+
 def maxAll():
+    
+    def maxAllPurchase(item):
+        whatItCosts = gamedefine.itemInternalDefine[item]["whatItCosts"]
+        whatItGives = gamedefine.itemInternalDefine[item]["whatItGives"]
+        
+        maxAmountPossible = 1
+        
+        for i in whatItCosts:
+            maxAmountPossible = gamedefine.amounts[i["what"]] // i["amount"]
+            
+        for i in whatItCosts:
+            gamedefine.amounts[i["what"]] -= i["amount"] * maxAmountPossible
+        for i in whatItGives:
+            gamedefine.amounts[i["what"]] += i["amount"] * maxAmountPossible
+
+        
+        print(f"max all purchased {maxAmountPossible} of {item}, now have {gamedefine.amounts[item]}")
+        
+        return
+    
     affordList = []
     for i in gamedefine.itemInternalDefine:
         if not gamedefine.itemInternalDefine[i]["whatItCosts"][0]["what"] == "nothing":
             if i in gamedefine.purchaseToCreate:
-                if canAfford(i):
+                if canAfford(i, doBuyMultiply = False):
                     affordList.append(i)
-                    
+    
+    
     for i in affordList:
-        purchase(i) # this fixes the 'cascade effect' of the max all button by not actually purchasing it until the end
+        maxAllPurchase(i) # this fixes the 'cascade effect' of the max all button by not actually purchasing it until the end
+
         
