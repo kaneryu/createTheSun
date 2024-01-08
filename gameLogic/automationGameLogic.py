@@ -113,7 +113,7 @@ def updateUpgradeStatus(upgrade : str) -> None:
         
         if idleGenDict["equationType"] == "timeEquation":
             
-            gamedefine.upgradeDetails[upgrade]["timeToWait"] = numberLogic.evaluateCostEquation(idleGenDict["timeEquation"], gamedefine.upgradeLevels[upgrade])
+            gamedefine.upgradeDetails[upgrade]["timeToWait"] = numberLogic.evaluateCostEquation(idleGenDict["timeEquation"], gamedefine.upgradeLevels[upgrade]) 
             for i in range(len(idleGenDict["whatItGives"])):
                 gamedefine.upgradeDetails[upgrade]["whatItGives"][i]["amount"] = idleGenDict["whatItGives"][i]["amount"]
             

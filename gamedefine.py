@@ -572,21 +572,83 @@ achevementVisualDefine = {
 
 unlockedAchevements = []
 
-saveable = [amounts, clickGainMultiplierList, multiplierList, upgradeLevels, upgradeDisabledState, unlockedAchevements]
-saveableStr = ["amounts", "clickGainMultiplierList", "multiplierList", "upgradeLevels", "upgradeDisabledState", "unlockedAchevements"]
+saveable = [amounts, clickGainMultiplierList, multiplierList, upgradeLevels, upgradeDisabledState, upgradeDetails, unlockedAchevements, electronDetails]
+saveableStr = ["amounts", "clickGainMultiplierList", "multiplierList", "upgradeLevels", "upgradeDisabledState", "upgradeDetails", "unlockedAchevements", "electronDetails"]
 force = [] # for force loading
 
-def loadSave(saveDict):
-    global amounts, clickGainMultiplierList, multiplierList, upgradeLevels, upgradeDisabledState, unlockedAchevements
+def loadSave(saveDict: dict):
+    global amounts, clickGainMultiplierList, multiplierList, upgradeLevels, upgradeDisabledState, upgradeDetails, unlockedAchevements, electronDetails
+    saveDict = convertStrToFloats(saveDict)
     amounts = saveDict["amounts"]
     clickGainMultiplierList = saveDict["clickGainMultiplierList"]
     multiplierList = saveDict["multiplierList"]
     upgradeLevels = saveDict["upgradeLevels"]
     upgradeDisabledState = saveDict["upgradeDisabledState"]
+    upgradeDetails = saveDict["upgradeDetails"]
     unlockedAchevements = saveDict["unlockedAchevements"]
-
+    electronDetails = saveDict["electronDetails"]
+    
 def getSaveData():
     saveDict = {}
     for i in range(len(saveable)):
         saveDict[saveableStr[i]] = saveable[i]
-    return saveDict    
+    return convertFloatsToStr(saveDict)    
+
+def convertFloatsToStr(input: dict | list):
+    def convertFloatsToStrFromList(input_: list):
+        workingList = input_
+        for i in workingList:
+            if type(i) == dict:
+                convertFloatsToStrFromDict(i)
+            if type(i) == list:
+                convertFloatsToStrFromList(i)
+            if type(i) == float:
+                workingList[workingList.index(i)] = str(i) + "f" #bruhhhh why doesnt i = str(i) + "f" work
+        return workingList
+                
+    def convertFloatsToStrFromDict(input: dict):
+        for keys in input:
+            if type(input[keys]) == float:
+                input[keys] = str(input[keys]) + "f"
+            if type(input[keys]) == dict:
+                input[keys] = convertFloatsToStrFromDict(input[keys])
+            if type(input[keys]) == list:
+                input[keys] = convertFloatsToStrFromList(input[keys])
+        return input
+    
+    if type(input) == dict:
+        return convertFloatsToStrFromDict(input)
+    if type(input) == list:
+        return convertFloatsToStrFromList(input)    
+    
+
+def convertStrToFloats(input: dict):
+    def convertStrToFloatsFromList(input_: list):
+        workingList = input_
+        for i in workingList:
+            if type(i) == dict:
+                convertStrToFloatFromDict(i)
+            if type(i) == list:
+                convertStrToFloatsFromList(i)
+            if type(i) == str:
+                if i.endswith("f") and "." in i:
+                    workingList[workingList.index(i)] = float(i[:-1])
+        return workingList
+                
+    def convertStrToFloatFromDict(input: dict):
+        for keys in input:
+            if type(input[keys]) == str:
+                if input[keys].endswith("f") and "." in input[keys]:
+                    input[keys] = float(str(input[keys])[:-1])
+            if type(input[keys]) == dict:
+                input[keys] = convertStrToFloatFromDict(input[keys])
+            if type(input[keys]) == list:
+                input[keys] = convertStrToFloatsFromList(input[keys])
+        return input
+    
+    if type(input) == dict:
+        return convertStrToFloatFromDict(input)
+    if type(input) == list:
+        return convertStrToFloatsFromList(input)   
+    
+

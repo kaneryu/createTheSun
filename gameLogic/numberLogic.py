@@ -90,7 +90,6 @@ def magnitude(number):
 def humanReadableNumber(number):
     if number == 0:
         return "0"
-    
     if magnitude(number) > 11:
         if not len(str(number)) > 307: # max float size fix (also shout out to antimatter dimensions 1.79e308!!!)
             return '{:.2e}'.format(number)
