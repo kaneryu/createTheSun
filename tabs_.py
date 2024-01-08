@@ -2,11 +2,11 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
 #from PyQt6.QtGui import 
 import sys
-
+import save
 import tabs.maintab as maintab
 import tabs.automationtab as automationtab
 import tabs.settingstab as settingstab
-
+saveModule = save # I don't know if importing save from main.py will cause a circular import, but this feels safer for now.
 class mainTab(QWidget):
     def updateDisplay(self):
         self.tabContent.updateDisplay()
@@ -48,6 +48,9 @@ class automationTab(QWidget):
         
     def updateInternal(self):
         self.tabContent.updateInternal()
+        
+    def updateEverything(self):
+        self.tabContent.updateEverything()
     
     def name(): #type: ignore
         return "Automation"
