@@ -25,12 +25,12 @@ class electrons(QWidget):
     def __init__(self):
         super().__init__()
         self.lastTickTime = 0
-        self.layout = QVBoxLayout()
-        self.layout.setAlignment(Qt.AlignmentFlag.AlignVCenter)
+        self.layout_ = QVBoxLayout()
+        self.layout_.setAlignment(Qt.AlignmentFlag.AlignVCenter)
         self.label = QLabel()
         self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.layout.addWidget(self.label)
+        self.layout_.addWidget(self.label)
         
         
         self.amountBar = QProgressBar()
@@ -39,7 +39,7 @@ class electrons(QWidget):
         self.amountBar.setFormat("")
         self.setToolTip("Electrons")
         
-        self.layout.addWidget(self.amountBar)
+        self.layout_.addWidget(self.amountBar)
         
-        self.setLayout(self.layout)
+        self.setLayout(self.layout_)
         

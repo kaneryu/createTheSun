@@ -574,3 +574,18 @@ unlockedAchevements = []
 
 saveable = [amounts, clickGainMultiplierList, multiplierList, upgradeLevels, upgradeDisabledState, unlockedAchevements]
 saveableStr = ["amounts", "clickGainMultiplierList", "multiplierList", "upgradeLevels", "upgradeDisabledState", "unlockedAchevements"]
+
+def loadSave(saveDict):
+    global amounts, clickGainMultiplierList, multiplierList, upgradeLevels, upgradeDisabledState, unlockedAchevements
+    amounts = saveDict["amounts"]
+    clickGainMultiplierList = saveDict["clickGainMultiplierList"]
+    multiplierList = saveDict["multiplierList"]
+    upgradeLevels = saveDict["upgradeLevels"]
+    upgradeDisabledState = saveDict["upgradeDisabledState"]
+    unlockedAchevements = saveDict["unlockedAchevements"]
+
+def getSaveData():
+    saveDict = {}
+    for i in range(len(saveable)):
+        saveDict[saveableStr[i]] = saveable[i]
+    return saveDict    

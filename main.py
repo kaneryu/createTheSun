@@ -141,6 +141,15 @@ class MainWindow(QMainWindow):
             
             if not threading.main_thread().is_alive():
                 return 0
+            
+    def forceUpdate(self):
+        """
+        Forces an update of the display by calling the updateEverything method of some tabs.
+        """
+        #update automation tab
+        self.tabs[1]["class"].updateEverything()
+
+        self.electrons.updateDisplay()
     
     def closeEvent(self, *args, **kwargs):
         super().closeEvent(*args, **kwargs)
