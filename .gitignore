@@ -1,0 +1,9 @@
+/.vscode
+/venv
+/build
+/dist
+/installer/dist
+/installer/build
+main.spec
+*.pyc
+/appdata

@@ -1,0 +1,128 @@
+{
+    "quarks": {
+        "whatItCosts": [
+            {
+                "what": "nothing",
+                "amount": -1
+            }
+        ],
+        "defaultCost": -1,
+        "costEquation": "",
+        "whatItGives": [
+            {
+                "what": "quarks",
+                "amount": 1
+            }
+        ],
+        "visualName": "Quarks",
+        "visualDescription": "Quarks are the building blocks of protons. They are made of nothing...?",
+        "internalName": "quarks",
+        "id": "quarks",
+        "numberID": 0
+    },
+    "protons": {
+        "whatItCosts": [
+            {
+                "what": "quarks",
+                "amount": 6
+            }
+        ],
+        "defaultCost": 1,
+        "costEquation": "%quarks% * 6",
+        "whatItGives": [
+            {
+                "what": "protons",
+                "amount": 2
+            }
+        ],
+        "visualName": "Protons",
+        "visualDescription": "Protons are the building blocks of atoms. They are made of quarks.",
+        "internalName": "protons",
+        "id": "protons",
+        "numberID": 1
+    },
+    "hydrogen": {
+        "whatItCosts": [
+            {
+                "what": "protons",
+                "amount": 1
+            }
+        ],
+        "defaultCost": 1,
+        "costEquation": "%protons% * 1",
+        "whatItGives": [
+            {
+                "what": "hydrogen",
+                "amount": 1
+            }
+        ],
+        "visualName": "Hydrogen",
+        "visualDescription": "Hydrogen is the simplest element. It is made of one proton and one electron.",
+        "internalName": "hydrogen",
+        "id": "hydrogen",
+        "numberID": 2
+    },
+    "stars": {
+        "whatItCosts": [
+            {
+                "what": "hydrogen",
+                "amount": 1e57
+            }
+        ],
+        "defaultCost": 1e57,
+        "costEquation": "%hydrogen% * 1e57",
+        "whatItGives": [
+            {
+                "what": "Stars",
+                "amount": 2
+            }
+        ],
+        "visualName": "Stars",
+        "visualDescription": "Stars are the building blocks of galaxies. They are made of hydrogen.",
+        "internalName": "stars",
+        "id": "stars",
+        "numberID": 3
+    },
+    "galaxies": {
+        "whatItCosts": [
+            {
+                "what": "stars",
+                "amount": 1e11
+            }
+        ],
+        "defaultCost": 1e57,
+        "costEquation": "%Stars% * 1e57",
+        "whatItGives": [
+            {
+                "what": "galaxies",
+                "amount": 1
+            }
+        ],
+        "visualName": "Galaxies",
+        "visualDescription": "Galaxies are the building blocks of superclusters. They are made of stars.",
+        "internalName": "galaxies",
+        "id": "galaxies",
+        "numberID": 4
+    },
+    "superclusters": {
+        "whatItCosts": [
+            {
+                "what": "galaxies",
+                "amount": 100000
+            }
+        ],
+        "defaultCost": 1e57,
+        "costEquation": "%galaxies% * 100000",
+        "whatItGives": [
+            {
+                "what": "superclusters",
+                "amount": 1
+            }
+        ],
+        "visualName": "Superclusters",
+        "visualDescription": "Superclusters are the building blocks of the universe. They are made of galaxies.",
+        "internalName": "superclusters",
+        "id": "superclusters",
+        "numberID": 5
+    }
+}
