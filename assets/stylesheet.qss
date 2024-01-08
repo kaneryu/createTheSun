@@ -10,6 +10,9 @@ QLabel {
     font-size: 15px;
     
 }
+QLineEdit {
+    font-family: "Urbanist Medium";
+}
 /*222222*/
 QPushButton {
     background: #1e1e1e;
