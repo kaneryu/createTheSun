@@ -3,13 +3,13 @@ import copy
 from PyQt6.QtCore import QSaveFile
 import os
 import json
+from PyQt6.QtWidgets import QDialog, QVBoxLayout, QLabel, QDialogButtonBox, QVBoxLayout
 
 save_ = {}
 
 
 def save():
-    for i in gamedefine.saveable:
-        save_[gamedefine.saveableStr[gamedefine.saveable.index(i)]] = json.dumps(i)
+    save_ = gamedefine.getSaveData()
     
     appdata = os.environ["APPDATA"]
     savedir = os.path.join(appdata, "CreateTheSun", "Saves")
@@ -21,6 +21,11 @@ def save():
     
     
 def load():
+    dialog = CustomDialog("Are you sure you want to load? This will overwrite your current save.", "Load", True, QDialogButtonBox.StandardButton.Yes | QDialogButtonBox.StandardButton.No)
+    
+    if dialog.exec() == QDialog.DialogCode.Rejected:
+        return
+    
     appdata = os.environ["APPDATA"]
     savedir = os.path.join(appdata, "CreateTheSun", "Saves")
     if not os.path.exists(savedir):
@@ -31,7 +36,29 @@ def load():
     with open(savefile, "r") as f:
         save_ = json.load(f)
     
-    for i in save_:
+    gamedefine.loadSave(save_)
+    
+    
+class CustomDialog(QDialog):
+    def __init__(self, text, windowTitle = "Dialog", cancelable = True, customQBtn = None ):
+        super().__init__()
 
-        gamedefine.saveable[gamedefine.saveableStr.index(i)] = copy.deepcopy(save_[i])
+        self.setWindowTitle(windowTitle)
+        if not customQBtn == None:
+            if cancelable == True:
+                QBtn = QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
+            else:
+                QBtn = QDialogButtonBox.StandardButton.Ok
+        else:
+            QBtn = customQBtn
+
+        self.buttonBox = QDialogButtonBox(QBtn)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+
+        self.layout_ = QVBoxLayout()
+        message = QLabel(text)
+        self.layout_.addWidget(message)
+        self.layout_.addWidget(self.buttonBox)   
+        self.setLayout(self.layout_)
         

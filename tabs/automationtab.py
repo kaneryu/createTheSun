@@ -66,6 +66,13 @@ class automationBlock(QFrame):
             if automationGameLogic.getCurrentInternalMultiLevelUpgrade(self.name)["type"] == "idleGenerator":
                 self.lastTickTime = automationGameLogic.doUpgradeTask(self.name, self.lastTickTime)
             
+    def updateEverything(self):
+        self.updateDisplay()
+        self.updateInternal()
+        self.usefulDescription.setText(automationGameLogic.parseUsefulDescription(self.name))
+        self.upgradeDescription.setText(automationGameLogic.getDescription(self.name))
+        self.upgradeLabel.setText(automationGameLogic.parseUpgradeName(self.name))
+        self.upgradeButton.setText(automationGameLogic.parseCost(self.name))
         
 
         
@@ -89,3 +96,7 @@ class content(QWidget):
     def updateInternal(self):
         for i in self.automationBlocks:
             i.updateInternal()
+            
+    def updateEverything(self):
+        for i in self.automationBlocks:
+            i.updateEverything()
