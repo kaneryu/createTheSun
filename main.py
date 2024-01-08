@@ -7,10 +7,11 @@ import os
 #third party imports
 from PyQt6 import QtCore
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, QSizePolicy, QMessageBox
+from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, QSizePolicy, QMessageBox, QDialog
 from PyQt6.QtCore import QPropertyAnimation, Qt, QTimer, QRunnable, pyqtSlot, pyqtSignal, QThreadPool
 #local imports
 import observerModel
+import gamedefine
 import tabs_ as tabs
 import tabs.electrons as electrons
 import logging_ as logging
@@ -97,29 +98,25 @@ class MainWindow(QMainWindow):
         
         self.setCentralWidget(self.container)
 
-        self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
         
         displayUpdate = Worker(self._updateDisplay)
         interalUpdate1 = Worker(self.updateThread1)
         self.threadpool.start(displayUpdate)
         self.threadpool.start(interalUpdate1)
         
-    
+
     def _updateDisplay(self):
         """
-        Updates the display continuously until the main thread is no longer alive.
-
-        This method emits the updateSignal and then sleeps for a short duration.
-        It checks if the main thread is still alive, and if not, it returns 0.
-
-        Returns:
-            int: 0 if the main thread is no longer alive.
+        Updates the display continuously.
+        Because this function directly interacts with the Qt Gui, there must be a short pause between updates,
+        or else there will be general instability in the application.        
         """
         while True:
             self.updateSignal.emit()
             time.sleep(0.001)
             if not threading.main_thread().is_alive():
-                return 0
+                return
+            
             
     def updateDisplay(self):
         """
@@ -131,6 +128,8 @@ class MainWindow(QMainWindow):
 
         logging.log("now updating electrons", specialType="updateLoopInfo")
         self.electrons.updateDisplay()
+        if not threading.main_thread().is_alive():
+            return
     
     def updateThread1(self):
         """
@@ -142,6 +141,10 @@ class MainWindow(QMainWindow):
             
             if not threading.main_thread().is_alive():
                 return 0
+            
+            if gamedefine.force == 1:
+                gamedefine.force = 0
+                forceUpdate()
             
     def forceUpdate(self):
         """
@@ -197,6 +200,12 @@ if __name__ == "__main__":
         error_dialog.setText('You have less than 2 available threads. At least 2 threads are needed to run the game')
         error_dialog.exec()
         sys.exit() 
+    
+            
+    if tabs.saveModule.lookForSave():
+        dialog = tabs.saveModule.CustomDialog("It appears you have a save. Would you like to load it?", "Load save", True)
+        if dialog.exec() == QDialog.DialogCode.Accepted:
+            tabs.saveModule.load(noSpeak = True)
         
     window.show()
     app.exec()

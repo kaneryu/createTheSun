@@ -438,9 +438,9 @@ purchaseToCreate = ["quarks", "protons"]
 automationsToCreate = ["particleAccelerator", "protonicForge"]
 
 amounts = {
-    "quarks": 0,
+    "quarks": 10000,
     "electrons": 100,
-    "protons": 0,
+    "protons": 100000,
     "hydrogen": 0,
     "stars": 0,
     "galaxies": 0,
@@ -471,7 +471,7 @@ mainTabBuyMultiple = 1
 
 electronDetails = {
     "waitTime": 1000,
-    "amount": 1,
+    "amount": 50,
     "maxAmount": 100,
     "minAmount": 0, 
 }

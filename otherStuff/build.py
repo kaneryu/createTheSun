@@ -44,6 +44,8 @@ def copyFiles():
     print("done zipping files, filename is " + f"{name}.zip")    
 
 def build():
+    print("DID YOU REMEMBER TO: \n change the version in save.py, test all features\nCheck if all gamedefine values are set to the base amount")
+    input("Press enter to continue")
     buildMainGame()
     buildLauncher()
     copyFiles()

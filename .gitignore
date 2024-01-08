@@ -6,3 +6,4 @@
 /installer/build
 main.spec
 *.pyc
+/appdata
