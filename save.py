@@ -4,20 +4,35 @@ from PyQt6.QtCore import QSaveFile
 import os
 import json
 from PyQt6.QtWidgets import QDialog, QVBoxLayout, QLabel, QDialogButtonBox, QVBoxLayout
+import base64
+
 
 save_ = {}
 
+def b64Encode(what: str) -> str:
+    return base64.b64encode(what.encode("utf-8")).decode("utf-8")
 
-def save():
-    save_ = gamedefine.getSaveData()
+def b64Decode(what: str) -> str:
+    return base64.b64decode(what.encode("utf-8")).decode("utf-8")
+
+def save(export = False, exportEncoded = False):
     
+    save_ = gamedefine.getSaveData()
+    encodedSave = b64Encode(json.dumps(save_))
+    
+    if export:
+        if exportEncoded:
+            return encodedSave
+        else:
+            return save_
+        
     appdata = os.environ["APPDATA"]
     savedir = os.path.join(appdata, "CreateTheSun", "Saves")
     if not os.path.exists(savedir):
         os.makedirs(savedir)
-    savefile = os.path.join(savedir, "save.json")
+    savefile = os.path.join(savedir, "save.save1")
     with open(savefile, "w") as f:
-        json.dump(save_, f)
+        f.write(encodedSave)
     
     
 def load():
@@ -28,16 +43,19 @@ def load():
     
     appdata = os.environ["APPDATA"]
     savedir = os.path.join(appdata, "CreateTheSun", "Saves")
+    
     if not os.path.exists(savedir):
         return
-    savefile = os.path.join(savedir, "save.json")
+    savefile = os.path.join(savedir, "save.save1")
+    
     if not os.path.exists(savefile):
         return
+    
     with open(savefile, "r") as f:
-        save_ = json.load(f)
+        save_ = json.loads(b64Decode(f.read()))
     
     gamedefine.loadSave(save_)
-    
+    gamedefine.force = ["automation"] #force update the display, but I should change how this is done in the future
     
 class CustomDialog(QDialog):
     def __init__(self, text, windowTitle = "Dialog", cancelable = True, customQBtn = None ):

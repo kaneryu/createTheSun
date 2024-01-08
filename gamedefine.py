@@ -574,6 +574,7 @@ unlockedAchevements = []
 
 saveable = [amounts, clickGainMultiplierList, multiplierList, upgradeLevels, upgradeDisabledState, unlockedAchevements]
 saveableStr = ["amounts", "clickGainMultiplierList", "multiplierList", "upgradeLevels", "upgradeDisabledState", "unlockedAchevements"]
+force = [] # for force loading
 
 def loadSave(saveDict):
     global amounts, clickGainMultiplierList, multiplierList, upgradeLevels, upgradeDisabledState, unlockedAchevements

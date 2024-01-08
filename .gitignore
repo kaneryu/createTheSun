@@ -1,8 +1,8 @@
 /.vscode
 /venv
-/__pycache__
 /build
 /dist
 /installer/dist
 /installer/build
 main.spec
+*.pyc

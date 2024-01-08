@@ -30,7 +30,6 @@ class purchaseStrip(QWidget):
             name = "proton"
             logging.log(f"error importing item '{name}' from gamedefine", 3)
             
-        print(gamedefine.itemVisualDefine[name])
         self.setToolTip(gamedefine.itemVisualDefine[name]["description"])
         self.setToolTipDuration(5000)
         
