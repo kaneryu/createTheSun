@@ -5,6 +5,7 @@ import os
 import pathlib
 import json
 from PyQt6.QtWidgets import QDialog, QVBoxLayout, QLabel, QDialogButtonBox, QVBoxLayout
+from PyQt6.QtMultimedia import QAudioOutput, QMediaPlayer 
 import base64
 
 
@@ -33,7 +34,7 @@ def lookForSave():
 
     return False
 
-def save(export = False, exportEncoded = False):
+def save(export = False, exportEncoded = False, notify = True):
     operationSucsess = CustomDialog("Saving Complete", "Saved")
     save_ = gamedefine.getSaveData()
     encodedSave = b64Encode(json.dumps(save_))
@@ -49,12 +50,14 @@ def save(export = False, exportEncoded = False):
     savefile = os.path.join(savedir, "save.save1")
     with open(savefile, "w") as f:
         f.write(encodedSave)
-    operationSucsess.exec()
+    
+    if notify:
+        operationSucsess.exec()
     
 def load(noSpeak = False, loadWarn = True):
     dialog = CustomDialog("Are you sure you want to load? This will overwrite your current save.", "Load", True)
     saveNotFoundDialog = CustomDialog("There was no save found.", "No save fould", False)
-    operationSucsess = CustomDialog("Saving Complete", "Saved")
+    operationSucsess = CustomDialog("Loading Complete", "Loaded")
     
     if not os.path.exists(savedir):
         saveNotFoundDialog.exec()
@@ -79,7 +82,7 @@ def load(noSpeak = False, loadWarn = True):
         operationSucsess.exec()
     
 class CustomDialog(QDialog):
-    def __init__(self, text, windowTitle = "Dialog", cancelable = True, customQBtn = None ):
+    def __init__(self, text, windowTitle = "Dialog", cancelable = True, customQBtn = None, preventClose = False):
         super().__init__()
 
         self.setWindowTitle(windowTitle)
@@ -90,14 +93,18 @@ class CustomDialog(QDialog):
                 QBtn = QDialogButtonBox.StandardButton.Ok
         else:
             QBtn = customQBtn
-
+            
+        self.preventClose = preventClose
         self.buttonBox = QDialogButtonBox(QBtn)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
-
         self.layout_ = QVBoxLayout()
         message = QLabel(text)
         self.layout_.addWidget(message)
         self.layout_.addWidget(self.buttonBox)   
         self.setLayout(self.layout_)
         
+    def closeEvent(self, event):
+        print("\a")
+        if self.preventClose:
+            event.ignore()

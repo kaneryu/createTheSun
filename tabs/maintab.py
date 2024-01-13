@@ -115,7 +115,7 @@ class header(QWidget):
         except:
             gamedefine.mainTabBuyMultiple = 1
             self.textEdit.setText("1")
-        print(gamedefine.mainTabBuyMultiple)
+
 
 
         

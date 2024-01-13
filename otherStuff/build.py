@@ -4,14 +4,17 @@ import random
 from datetime import datetime
 import pathlib
 
+noConsoleLauncher = True
+noConsoleGame = True
+
 def buildMainGame():
     print("building main game")
-    os.system("pyinstaller  --add-data=assets:assets --noconsole --icon=assets/images/icon.ico main.py")
+    os.system(f"pyinstaller  --add-data=assets:assets {"--noconsole" if noConsoleLauncher else ""} --icon=assets/images/icon.ico main.py")
 
 def buildLauncher():
     print("building launcher")
     os.chdir("installer")
-    os.system("pyinstaller  --noconsole --onefile --icon=icon.ico launcher.py")
+    os.system(f"pyinstaller {"--noconsole" if noConsoleGame else ""} --onefile --icon=icon.ico launcher.py")
 
 def copyFiles():
     if os.getcwd().endswith("installer"):

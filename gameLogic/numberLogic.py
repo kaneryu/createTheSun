@@ -15,15 +15,14 @@ def evaluateCostEquation(costEquation: str, *args: int) -> int:
     Returns:
         int: The result of the cost equation.    
     """
-
     # if there are too many arguments, it will break
     if f"%{len(args) + 1}%" in costEquation:
-        # failed, 0
-        return -1
+        raise ValueError(f"Incorrect number of arguments provided. Expected {costEquation.count("%")}, got {len(args)}")
+
     # if there are too few arguments, it will break
     if f"%{len(args)}%" in costEquation:
-        # failed, 0
-        return -1
+        raise ValueError(f"Incorrect number of arguments provided. Expected {costEquation.count("%")}, got {len(args)}")
+    
     # break up the equation into a list of strings
     equation = splitCostEquation(costEquation)
 

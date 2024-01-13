@@ -1,7 +1,3 @@
-
-
-
-
 itemVisualDefine = {
     "quarks": {
         "visualName": "Quarks",
@@ -438,9 +434,9 @@ purchaseToCreate = ["quarks", "protons"]
 automationsToCreate = ["particleAccelerator", "protonicForge"]
 
 amounts = {
-    "quarks": 10000,
+    "quarks": 0,
     "electrons": 100,
-    "protons": 100000,
+    "protons": 0,
     "hydrogen": 0,
     "stars": 0,
     "galaxies": 0,
@@ -471,7 +467,7 @@ mainTabBuyMultiple = 1
 
 electronDetails = {
     "waitTime": 1000,
-    "amount": 50,
+    "amount": 1,
     "maxAmount": 100,
     "minAmount": 0, 
 }
@@ -576,9 +572,12 @@ saveable = [amounts, clickGainMultiplierList, multiplierList, upgradeLevels, upg
 saveableStr = ["amounts", "clickGainMultiplierList", "multiplierList", "upgradeLevels", "upgradeDisabledState", "upgradeDetails", "unlockedAchevements", "electronDetails"]
 force = [] # for force loading
 
+lastAutosaveTime = 0
+autosaveTime = 300000
+
 def loadSave(saveDict: dict):
     global amounts, clickGainMultiplierList, multiplierList, upgradeLevels, upgradeDisabledState, upgradeDetails, unlockedAchevements, electronDetails
-    saveDict = convertStrToFloats(saveDict)
+    saveDict = convertStrToFloats(saveDict) # type: ignore
     amounts = saveDict["amounts"]
     clickGainMultiplierList = saveDict["clickGainMultiplierList"]
     multiplierList = saveDict["multiplierList"]

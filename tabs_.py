@@ -7,7 +7,9 @@ import tabs.maintab as maintab
 import tabs.automationtab as automationtab
 import tabs.settingstab as settingstab
 saveModule = save # I don't know if importing save from main.py will cause a circular import, but this feels safer for now.
+
 class mainTab(QWidget):
+    
     def updateDisplay(self):
         self.tabContent.updateDisplay()
     def updateInternal(self):
@@ -21,7 +23,10 @@ class mainTab(QWidget):
          
     def name(): #type: ignore
         return "Main Tab"
-
+    
+    def tooltip(): #type: ignore
+        return "The main tab of the game, where you can purchase quarks, protons, etc."
+    
 class upgradeTab(QWidget):
     def __init__(self):
         super().__init__()
@@ -35,6 +40,10 @@ class upgradeTab(QWidget):
     def name(): #type: ignore
         return "Upgrades"
 
+        
+    def tooltip(): #type: ignore
+        return "How can you see this?"
+    
 class automationTab(QWidget):
     def __init__(self):
         super().__init__()
@@ -54,7 +63,11 @@ class automationTab(QWidget):
     
     def name(): #type: ignore
         return "Automation"
-        
+    
+    def tooltip(): #type: ignore
+        return "The tab where you purchase automations, which do things for you."
+    
+    
 class settingsTab(QWidget):
     def __init__(self):
         super().__init__()
@@ -64,10 +77,17 @@ class settingsTab(QWidget):
         self.setLayout(self.layout_)
         
     def updateDisplay(self):
-        return 0
+        self.tabContent.updateDisplay()
+    def updateInternal(self):
+        self.tabContent.updateInternal()
     
     def name(): #type: ignore
         return "Settings"
+    
+        
+    def tooltip(): #type: ignore
+        return "The tab that contains all game settings, including saving and loading"
+    
     
 class achievementsTab(QWidget):
     def __init__(self):
@@ -80,5 +100,9 @@ class achievementsTab(QWidget):
     
     def name(): #type: ignore
         return "Achevements"
+    
+    def tooltip(): #type: ignore
+        return "Shhhh..."
+    
 
 tabs = [mainTab, automationTab, settingsTab]

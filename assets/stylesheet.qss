@@ -38,13 +38,14 @@ QPushButton:disabled {
 }
 QProgressBar {
     border: 1px solid #ffffff;
-    background: #1e1e1e;
-    color: white;
+    background: #494949;
+    color: #8082ff;
     text-align: center;
 }
 QProgressBar::chunk {
     background-color: #ffffff;
 }
+
 QDialog {
     background: #1e1e1e;
     border: 1px solid #ffffff;
@@ -97,7 +98,8 @@ QErrorMessage::QTextEdit{
 
 QComboBox {
     color: #ffffff
+}
 
-
-
+QComboBox::drop-down {
+    color: #ffffff;
 }

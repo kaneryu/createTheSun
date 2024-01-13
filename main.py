@@ -71,7 +71,8 @@ class MainWindow(QMainWindow):
         for i in tabs.tabs:
             self.tabs.append({"class" : i(), "name": i.name()})
             self.tabWidget.addTab(self.tabs[-1]["class"], i.name())
-            
+            self.tabWidget.setTabToolTip(len(self.tabs) - 1, i.tooltip())
+
         self.tabWidget.setMovable(True)
         self.topContainer = QWidget()
         self.label = QLabel("Create The Sun")
@@ -103,7 +104,7 @@ class MainWindow(QMainWindow):
         interalUpdate1 = Worker(self.updateThread1)
         self.threadpool.start(displayUpdate)
         self.threadpool.start(interalUpdate1)
-        
+
 
     def _updateDisplay(self):
         """
@@ -114,8 +115,7 @@ class MainWindow(QMainWindow):
         while True:
             self.updateSignal.emit()
             time.sleep(0.001)
-            if not threading.main_thread().is_alive():
-                return
+
             
             
     def updateDisplay(self):
@@ -138,6 +138,7 @@ class MainWindow(QMainWindow):
         while True:
             self.electrons.updateInternal()
             self.tabs[1]["class"].updateInternal()
+            self.tabs[2]["class"].updateInternal()
             
             if not threading.main_thread().is_alive():
                 return 0
@@ -157,25 +158,26 @@ class MainWindow(QMainWindow):
     
     def closeEvent(self, *args, **kwargs):
         super().closeEvent(*args, **kwargs)
+        self.threadpool.releaseThread()
         sys.exit(0) #stop all threads
         
-    def createSaveDir(self):
-        LOCALAPPDATA = os.getenv('LOCALAPPDATA')
-        if not LOCALAPPDATA:
-            LOCALAPPDATA = os.path.join(os.getenv('APPDATA'), r"\Local") #type:ignore this warning, it works fine
+    # def createSaveDir(self):
+    #     LOCALAPPDATA = os.getenv('LOCALAPPDATA')
+    #     if not LOCALAPPDATA:
+    #         LOCALAPPDATA = os.path.join(os.getenv('APPDATA'), r"\Local") #type:ignore
             
-        SAVEDIR = os.path.join(LOCALAPPDATA, r"CreateTheSun\Saves")
+    #     SAVEDIR = os.path.join(LOCALAPPDATA, r"CreateTheSun\Saves")
         
-        if not os.path.exists(SAVEDIR):
-            os.mkdir(SAVEDIR)
+    #     if not os.path.exists(SAVEDIR):
+    #         os.mkdir(SAVEDIR)
 
 
 
 if __name__ == "__main__":
     #change icon in taskbar
-    myappid = u'mycompany.myproduct.subproduct.version'
+    myappid = u'opensource.createthesun.main.pre-release'
     ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
-
+    
     file = open(os.path.join(basedir, 'assets', 'stylesheet.qss'), 'r')
     stylesheet = file.read()
     file.close()
@@ -203,8 +205,9 @@ if __name__ == "__main__":
     
             
     if tabs.saveModule.lookForSave():
-        dialog = tabs.saveModule.CustomDialog("It appears you have a save. Would you like to load it?", "Load save", True)
-        if dialog.exec() == QDialog.DialogCode.Accepted:
+        dialog = tabs.saveModule.CustomDialog("It appears you have a save. Would you like to load it?", "Load save", True, preventClose = True)
+        dialogResults = dialog.exec()
+        if dialogResults == QDialog.DialogCode.Accepted:
             tabs.saveModule.load(noSpeak = True)
         
     window.show()
