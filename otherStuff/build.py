@@ -9,12 +9,17 @@ noConsoleGame = True
 
 def buildMainGame():
     print("building main game")
-    os.system(f"pyinstaller  --add-data=assets:assets {"--noconsole" if noConsoleLauncher else ""} --icon=assets/images/icon.ico main.py")
+    os.system(f"pyinstaller  --add-data=assets:assets {"--noconsole" if noConsoleGame else ""} --icon=assets/images/icon.ico main.py")
 
 def buildLauncher():
     print("building launcher")
     os.chdir("installer")
-    os.system(f"pyinstaller {"--noconsole" if noConsoleGame else ""} --onefile --icon=icon.ico launcher.py")
+    os.system(f"pyinstaller {"--noconsole" if noConsoleLauncher else ""} --onefile --icon=icon.ico launcher.py")
+    
+def buildInstaller():
+    print("building installer")
+    os.chdir("installer")
+    os.system(f"pyinstaller {"--noconsole" if noConsoleLauncher else ""} --onefile --icon=icon.ico installer.py")
 
 def copyFiles():
     if os.getcwd().endswith("installer"):
@@ -47,11 +52,13 @@ def copyFiles():
     print("done zipping files, filename is " + f"{name}.zip")    
 
 def build():
-    print("DID YOU REMEMBER TO: \n change the version in save.py, test all features\nCheck if all gamedefine values are set to the base amount")
+    print("DID YOU REMEMBER TO: \n test all features\nCheck if all gamedefine values are set to the base amount")
     input("Press enter to continue")
     buildMainGame()
     buildLauncher()
+    buildInstaller()
     copyFiles()
+    input("Build complete, press enter to exit (installer is located in launcher/dist/installer.exe))")
 
 if __name__ == "__main__":
     build()

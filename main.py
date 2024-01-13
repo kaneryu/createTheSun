@@ -4,6 +4,7 @@ import ctypes
 import threading
 import sys
 import os
+import subprocess
 #third party imports
 from PyQt6 import QtCore
 from PyQt6.QtGui import QIcon
@@ -16,6 +17,7 @@ import tabs_ as tabs
 import tabs.electrons as electrons
 import logging_ as logging
 import assets.fonts.urbanist.urbanistFont as urbanistFont
+from installer import launcher
 
 logging.logLevel = 1
 logging.specialLogs = []
@@ -176,6 +178,29 @@ class MainWindow(QMainWindow):
 
 
 if __name__ == "__main__":
+    try:
+        file = open(os.path.join(basedir, 'launcherRan'), 'r')
+    except FileNotFoundError:
+        subprocess.Popen([sys.executable, os.path.join(basedir, 'launcher.exe')])
+        sys.exit(0)
+    else:
+        if file.read() == "False":
+            subprocess.Popen([sys.executable, os.path.join(basedir, 'launcher.exe')])
+            file.close()
+            sys.exit(0)
+        elif file.read() == "True":
+            file.close()
+            file = open(os.path.join(basedir, 'launcherRan'), 'w')
+            file.write("False")
+            file.close()
+        else:
+            file.close()
+            file = open(os.path.join(basedir, 'launcherRan'), 'w')
+            file.write("False")
+            file.close()
+            subprocess.Popen([sys.executable, os.path.join(basedir, 'launcher.exe')])
+            sys.exit(0)
+
     #change icon in taskbar
     myappid = u'opensource.createthesun.main.pre-release'
     ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
