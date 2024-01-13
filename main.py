@@ -205,7 +205,7 @@ if __name__ == "__main__":
     
             
     if tabs.saveModule.lookForSave():
-        dialog = tabs.saveModule.CustomDialog("It appears you have a save. Would you like to load it?", "Load save", True, preventClose = True)
+        dialog = tabs.saveModule.CustomDialog("It appears you have a save. Would you like to load it?", "Load save", True)
         dialogResults = dialog.exec()
         if dialogResults == QDialog.DialogCode.Accepted:
             tabs.saveModule.load(noSpeak = True)

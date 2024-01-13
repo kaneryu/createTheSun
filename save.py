@@ -108,3 +108,5 @@ class CustomDialog(QDialog):
         print("\a")
         if self.preventClose:
             event.ignore()
+        else:
+            self.reject()
