@@ -1,4 +1,9 @@
-
+QWidget{
+    background: #1e1e1e;
+    color: white;
+    font-family: "Urbanist Medium";
+    font-size: 15px;
+}
 QMainWindow{
     background: #1e1e1e;
     border-radius: 10px;
@@ -96,10 +101,21 @@ QErrorMessage::QTextEdit{
     color: #ffffff;
 }
 
-QComboBox {
-    color: #ffffff
+QComboBox
+{
+    color:white;
+    border-color: rgba(255,255,255,200);
+    border-width: 1px;
+    border-style: solid;
+    padding: 1px 0px 1px 3px; /*This makes text colour work*/
 }
-
-QComboBox::drop-down {
-    color: #ffffff;
+QWidget:item
+{
+    color: white;
+    border: 0px solid #999900;
+    background: transparent;
+}
+QWidget:item:checked
+{
+     font-weight: bold;
 }

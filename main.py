@@ -115,6 +115,8 @@ class MainWindow(QMainWindow):
         while True:
             self.updateSignal.emit()
             time.sleep(0.001)
+            if not threading.main_thread().is_alive():
+                return
 
             
             
