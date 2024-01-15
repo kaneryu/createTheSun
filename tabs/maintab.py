@@ -1,9 +1,14 @@
 #standard imports
 import json
 #third party imports
-from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QLineEdit, QSpacerItem
-from PyQt6.QtGui import QIntValidator
+# from PyQt6.QtCore import Qt
+# from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QLineEdit, QSpacerItem
+# from PyQt6.QtGui import QIntValidator
+
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QLineEdit, QSpacerItem
+from PySide6.QtGui import QIntValidator
+
 #local imports
 import gamedefine
 import gameLogic.itemGameLogic as itemGameLogic

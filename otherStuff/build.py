@@ -9,7 +9,7 @@ noConsoleGame = True
 
 def buildMainGame():
     print("building main game")
-    os.system(f"pyinstaller  --add-data=assets:assets {"--noconsole" if noConsoleGame else ""} --icon=assets/images/icon.ico main.py")
+    os.system(f"pyinstaller --noconfirm --add-data=assets:assets {"--noconsole" if noConsoleGame else ""} --icon=assets/images/icon.ico main.py")
 
 def buildLauncher():
     print("building launcher")
@@ -18,7 +18,8 @@ def buildLauncher():
     
 def buildInstaller():
     print("building installer")
-    os.chdir("installer")
+    if not os.getcwd().endswith("installer"):
+        os.chdir("installer")
     os.system(f"pyinstaller {"--noconsole" if noConsoleLauncher else ""} --onefile --icon=icon.ico installer.py")
 
 def copyFiles():

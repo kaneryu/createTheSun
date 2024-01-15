@@ -4,9 +4,15 @@ import time
 import copy
 from math import floor, ceil
 #third party imports
-from PyQt6.QtCore import *
-from PyQt6.QtWidgets import *
-from PyQt6.QtGui import *
+# from PyQt6.QtCore import *
+# from PyQt6.QtWidgets import *
+# from PyQt6.QtGui import *
+
+from PySide6.QtCore import QSize
+from PySide6.QtWidgets import QFrame, QGridLayout, QLabel, QPushButton, QVBoxLayout, QWidget
+from PySide6.QtGui import Qt
+
+
 #local imports
 import gamedefine
 import gameLogic.automationGameLogic as automationGameLogic

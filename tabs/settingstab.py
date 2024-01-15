@@ -2,9 +2,15 @@
 import json
 import time
 #third party imports
-from PyQt6.QtCore import Qt, QSize, pyqtSignal
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QFrame, QGridLayout, QProgressBar, QComboBox
-#from PyQt6.QtGui import 
+# from PyQt6.QtCore import Qt, QSize, pyqtSignal
+# from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QFrame, QGridLayout, QProgressBar, QComboBox
+# from PyQt6.QtGui import 
+
+from PySide6.QtCore import Qt, QSize, Signal as pyqtSignal
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QFrame, QGridLayout, QProgressBar, QComboBox
+# from PySide6.QtGui import
+
+
 #local imports
 import save
 import gamedefine

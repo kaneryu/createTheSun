@@ -221,8 +221,7 @@ def parseCost(name):
     return "".join(string)
 
 
-def parseUsefulDescription(upgrade):
-    
+def parseUsefulDescription(upgrade) -> str:
         if gamedefine.upgradeLevels[upgrade] == 0:
             index = getCurrentMultiLevelUpgradeIndex(upgrade)
             return gamedefine.automationVisualDefine[upgrade][index]["firstupgradeUsefulDescription"]
@@ -246,6 +245,8 @@ def parseUsefulDescription(upgrade):
                 futureDec = getFutureDescription(upgrade)
               
             return currentDec + " \n " + futureDec
+
+        return ""
 
 def getFutureDescription(upgrade):
     

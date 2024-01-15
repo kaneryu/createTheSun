@@ -4,12 +4,19 @@ import ctypes
 import threading
 import sys
 import os
+import json
+import requests
 import subprocess
 #third party imports
-from PyQt6 import QtCore
-from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, QSizePolicy, QMessageBox, QDialog
-from PyQt6.QtCore import QPropertyAnimation, Qt, QTimer, QRunnable, pyqtSlot, pyqtSignal, QThreadPool
+# from PyQt6 import QtCore
+# from PyQt6.QtGui import QIcon
+# from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, QSizePolicy, QMessageBox, QDialog
+# from PyQt6.QtCore import QPropertyAnimation, Qt, QTimer, QRunnable, pyqtSlot, pyqtSignal, QThreadPool
+from PySide6 import QtCore
+from PySide6.QtGui import QIcon
+from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, QSizePolicy, QMessageBox, QDialog
+from PySide6.QtCore import QPropertyAnimation, Qt, QTimer, QRunnable, Slot as pyqtSlot, Signal as pyqtSignal, QThreadPool
+
 #local imports
 import observerModel
 import gamedefine
@@ -17,11 +24,11 @@ import tabs_ as tabs
 import tabs.electrons as electrons
 import logging_ as logging
 import assets.fonts.urbanist.urbanistFont as urbanistFont
-from installer import launcher
 
 logging.logLevel = 1
 logging.specialLogs = []
 basedir = os.path.dirname(__file__)
+
 
 class Worker(QRunnable):
     '''
@@ -102,10 +109,10 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.container)
 
         
-        displayUpdate = Worker(self._updateDisplay)
-        interalUpdate1 = Worker(self.updateThread1)
-        self.threadpool.start(displayUpdate)
-        self.threadpool.start(interalUpdate1)
+        self.displayUpdate = Worker(self._updateDisplay)
+        self.interalUpdate1 = Worker(self.updateThread1)
+        self.threadpool.start(self.displayUpdate)
+        self.threadpool.start(self.interalUpdate1)
 
 
     def _updateDisplay(self):
@@ -162,7 +169,7 @@ class MainWindow(QMainWindow):
     
     def closeEvent(self, *args, **kwargs):
         super().closeEvent(*args, **kwargs)
-        self.threadpool.releaseThread()
+        self.displayUpdate.autoDelete()
         sys.exit(0) #stop all threads
         
     # def createSaveDir(self):
@@ -175,32 +182,48 @@ class MainWindow(QMainWindow):
     #     if not os.path.exists(SAVEDIR):
     #         os.mkdir(SAVEDIR)
 
+def preStartUp():
+    def updateCheck():
+        request = requests.request("GET", "https://api.github.com/repos/KaneryU/createTheSun/releases")
+        response = json.loads(request.text)
+        installpath = os.path.dirname(__file__) + "\\"
+        try:
+            file = open(f"{installpath}version.txt", "r")
+        except FileNotFoundError:
+            file = open(f"{installpath}version.txt", "w")
+            file.write("-1.0.0")
 
+        currentVersion = file.read()
+        file.close()
+        latestVersion = response[0]["tag_name"]
+        print(f"current version: {currentVersion}, latest version: {latestVersion}")
+        if currentVersion == latestVersion:
+            return True
+        else:
+            return False
+            
+    if not updateCheck(): # if not on the latest version
+        if os.path.exists(os.path.dirname(__file__) + "\\_internal"):
+            command = f"{os.path.dirname(__file__)}\\launcher.exe"
+            _ext = os.path.dirname(__file__) + "\\launcher.exe"
+        else:
+            command = f"py {os.path.dirname(__file__)}\\installer\\launcher.py"
+            _ext = os.path.join(os.path.dirname(__file__) + "\\installer\\launcher.py")
+            
+        if not os.path.exists(_ext):
+            error_dialog = QMessageBox()
+            error_dialog.setIcon(QMessageBox.Icon.Critical)
+            error_dialog.setWindowTitle("Error")
+            error_dialog.setText(r'You are not on the latest version and the launcher is missing. Please download the latest version from https:\\github.com\KaneryU\createTheSun')
+        
+        print(command)
+        subprocess.Popen([command])
+        sys.exit()
 
 if __name__ == "__main__":
-    try:
-        file = open(os.path.join(basedir, 'launcherRan'), 'r')
-    except FileNotFoundError:
-        subprocess.Popen([sys.executable, os.path.join(basedir, 'launcher.exe')])
-        sys.exit(0)
-    else:
-        if file.read() == "False":
-            subprocess.Popen([sys.executable, os.path.join(basedir, 'launcher.exe')])
-            file.close()
-            sys.exit(0)
-        elif file.read() == "True":
-            file.close()
-            file = open(os.path.join(basedir, 'launcherRan'), 'w')
-            file.write("False")
-            file.close()
-        else:
-            file.close()
-            file = open(os.path.join(basedir, 'launcherRan'), 'w')
-            file.write("False")
-            file.close()
-            subprocess.Popen([sys.executable, os.path.join(basedir, 'launcher.exe')])
-            sys.exit(0)
 
+
+    
     #change icon in taskbar
     myappid = u'opensource.createthesun.main.pre-release'
     ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
@@ -211,6 +234,8 @@ if __name__ == "__main__":
     
     app = QApplication([])
 
+    #preStartUp() 
+    
     app.setWindowIcon(QIcon(basedir + r"\assets\images\icon.ico"))
 
     window = MainWindow()
@@ -220,6 +245,7 @@ if __name__ == "__main__":
         
     urbanistFont.createFonts()
     app.setStyleSheet(stylesheet)
+    
     
     
     if  window.threadpool.maxThreadCount() < 2:
@@ -236,6 +262,6 @@ if __name__ == "__main__":
         dialogResults = dialog.exec()
         if dialogResults == QDialog.DialogCode.Accepted:
             tabs.saveModule.load(noSpeak = True)
-        
+    
     window.show()
     app.exec()
