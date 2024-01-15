@@ -170,6 +170,13 @@ class MainWindow(QMainWindow):
     def closeEvent(self, *args, **kwargs):
         super().closeEvent(*args, **kwargs)
         self.displayUpdate.autoDelete()
+        self.interalUpdate1.autoDelete()
+        
+        saveDialog = tabs.saveModule.CustomDialog("Would you like to save your game?", "Save game", True)
+        saveDialogResults = saveDialog.exec()
+        if saveDialogResults == QDialog.DialogCode.Accepted:
+            tabs.saveModule.save(notify = False)
+        
         sys.exit(0) #stop all threads
         
     # def createSaveDir(self):
@@ -187,11 +194,14 @@ def preStartUp():
         request = requests.request("GET", "https://api.github.com/repos/KaneryU/createTheSun/releases")
         response = json.loads(request.text)
         installpath = os.path.dirname(__file__) + "\\"
+        
         try:
             file = open(f"{installpath}version.txt", "r")
         except FileNotFoundError:
             file = open(f"{installpath}version.txt", "w")
             file.write("-1.0.0")
+            file.close()
+            file = open(f"{installpath}version.txt", "r")
 
         currentVersion = file.read()
         file.close()
@@ -207,9 +217,8 @@ def preStartUp():
             command = f"{os.path.dirname(__file__)}\\launcher.exe"
             _ext = os.path.dirname(__file__) + "\\launcher.exe"
         else:
-            command = f"py {os.path.dirname(__file__)}\\installer\\launcher.py"
-            _ext = os.path.join(os.path.dirname(__file__) + "\\installer\\launcher.py")
-            
+            return
+        
         if not os.path.exists(_ext):
             error_dialog = QMessageBox()
             error_dialog.setIcon(QMessageBox.Icon.Critical)
@@ -218,7 +227,7 @@ def preStartUp():
         
         print(command)
         subprocess.Popen([command])
-        sys.exit()
+        app.exit()
 
 if __name__ == "__main__":
 
@@ -234,7 +243,7 @@ if __name__ == "__main__":
     
     app = QApplication([])
 
-    #preStartUp() 
+    preStartUp() 
     
     app.setWindowIcon(QIcon(basedir + r"\assets\images\icon.ico"))
 

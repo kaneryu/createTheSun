@@ -54,7 +54,7 @@ def purchase(item: str, doBuyMultiply = False) -> None:
         gamedefine.amounts[i["what"]] -= i["amount"] * buyMultiplier
     for i in whatItGives:
         gamedefine.amounts[i["what"]] += i["amount"] * buyMultiplier
-    print(f"purchased {item}, now have {gamedefine.amounts[item]}")
+    print(f"purchased {item}, now have {gamedefine.amounts[item]}, with buy multiplier {buyMultiplier}")
     
     return
 

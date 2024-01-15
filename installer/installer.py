@@ -11,11 +11,13 @@ from threading import Thread
 import threading
 import zipfile
 import json
+import shutil
 #external imports
 from PyQt6 import QtGui
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
 from PyQt6.QtGui import *
+
 
 basedir = os.path.dirname(__file__)
 installpath = f"{os.getenv('LOCALAPPDATA')}/createTheSun/"
@@ -297,6 +299,14 @@ class MainWindow(QMainWindow):
         version = json.loads(request.text)[0]["tag_name"]
         with open(installDir + "version.txt", "w") as f:
             f.write(version)
+        
+        if os.path.exists(os.getenv("LOCALAPPDATA") + "/createTheSunUpdater/"): #type: ignore
+            removeDir(os.getenv("LOCALAPPDATA") + "/createTheSunUpdater/") #type: ignore
+            os.mkdir(os.getenv("LOCALAPPDATA") + "/createTheSunUpdater/") #type: ignore
+        else:
+            os.mkdir(os.getenv("LOCALAPPDATA") + "/createTheSunUpdater/") #type: ignore
+        
+        shutil.copy(installDir + "launcher.exe", os.getenv("LOCALAPPDATA") + "/createTheSunUpdater/") #type: ignore
         return 0
     
 class CustomDialog(QDialog):

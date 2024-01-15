@@ -58,7 +58,7 @@ class purchaseStrip(QWidget):
             return 0
         
         if itemGameLogic.canAfford(self.name):
-            itemGameLogic.purchase(self.name)
+            itemGameLogic.purchase(self.name, True)
 
     
     def updateTab(self):

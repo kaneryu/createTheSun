@@ -13,13 +13,20 @@ import threading
 import zipfile
 import json
 #external imports
-from PyQt6 import QtGui
-from PyQt6.QtCore import pyqtSignal, Qt, QThread, QTimer
-from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QProgressBar, QApplication, QDialog, QDialogButtonBox, QTextEdit
+# from PyQt6 import QtGui
+# from PyQt6.QtCore import pyqtSignal, Qt, QThread, QTimer
+# from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QProgressBar, QApplication, QDialog, QDialogButtonBox, QTextEdit
+
+from PySide6 import QtGui
+from PySide6.QtCore import Signal as pyqtSignal, Qt, QThread, QTimer
+from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QProgressBar, QApplication, QDialog, QDialogButtonBox, QTextEdit
+
 #from PyQt6.QtGui import 
 
 basedir = os.path.dirname(__file__)
 installpath = f"{os.getenv('LOCALAPPDATA')}/createTheSun/"
+applicationType = "updater" if "createTheSunUpdater" in __file__  else "installer"
+
 dark_stylesheet = """
 QWidget{
     background: #1e1e1e;
@@ -195,8 +202,14 @@ class MainWindow(QMainWindow):
         container.setLayout(layout)
         
         self.setCentralWidget(container)
+
         timer = QTimer(self)
-        timer.timeout.connect(self.checkConnection)
+        
+        if applicationType == "updater":
+            timer.timeout.connect(self.downloadLatestRelease)
+        else:
+            timer.timeout.connect(self.checkConnection)
+            
         timer.setSingleShot(True)
         timer.start(1000)
     
@@ -204,7 +217,8 @@ class MainWindow(QMainWindow):
         if requests.get("https://api.github.com").status_code == 200:
             self.installerLabel.setText("")
             if self.updateCheck() == 1:
-                self.downloadLatestRelease()
+                subprocess.Popen(os.path.join(os.getenv("LOCALAPPDATA") + "/createTheSunUpdater/launcher.exe")) #type: ignore
+                app.quit()
             else:
                 timer2 = QTimer(self)
                 timer2.timeout.connect(self.start)
@@ -233,6 +247,7 @@ class MainWindow(QMainWindow):
             file.write("0.0.0")
             file.close()
             file = open(f"{self.installpath}version.txt", "r")
+            
         currentVersion = file.read()
         file.close()
         self.latestVersion = response[0]["tag_name"]
@@ -360,9 +375,11 @@ class MainWindow(QMainWindow):
     def start(self):
         with open(os.path.join(basedir + "launcherRan"), "w") as f: #type: ignore
             f.write("True")
-            
-        #os.system(os.path.join(basedir + "main.exe")) #type: ignore
-        self.close()
+        if applicationType == "updater":
+            subprocess.Popen(os.path.join(installpath + "main.exe"))
+        else:
+            subprocess.Popen(os.path.join(basedir + "main.exe")) #type: ignore
+        app.quit()
 
 
     def closeEvent(self, *args, **kwargs):
@@ -441,7 +458,7 @@ class CustomDialog(QDialog):
         else:
             self.reject()
 
-        
+
 running = True
 app = QApplication(sys.argv)
 app.setWindowIcon(QtGui.QIcon(os.path.join(basedir, "icon.ico")))
