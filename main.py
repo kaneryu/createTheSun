@@ -61,10 +61,8 @@ class Worker(QRunnable):
 class MainWindow(QMainWindow):
     updateSignal = pyqtSignal()
     sUpdateThread1 = pyqtSignal()
-        
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
-
         self.threadpool = QThreadPool()
         self.updateSignal.connect(self.updateDisplay)
         self.sUpdateThread1.connect(self.sUpdateThread1)
@@ -131,7 +129,7 @@ class MainWindow(QMainWindow):
             
     def updateDisplay(self):
         """
-        Updates the display by calling the updateDisplay method of each tab and the electrons.
+        Updates the display by calling the updateDisplay method whatever needs to be updated.
         """
         for i in self.tabs:
             logging.log(f"now updating tab {i["name"]}", specialType="updateLoopInfo")
@@ -191,7 +189,11 @@ class MainWindow(QMainWindow):
 
 def preStartUp():
     def updateCheck():
-        request = requests.request("GET", "https://api.github.com/repos/KaneryU/createTheSun/releases")
+        try:
+            request = requests.request("GET", "https://api.github.com/repos/KaneryU/createTheSun/releases")
+        except:
+            return True
+        
         response = json.loads(request.text)
         installpath = os.path.dirname(__file__) + "\\"
         
@@ -214,12 +216,11 @@ def preStartUp():
             
     if not updateCheck(): # if not on the latest version
         if os.path.exists(os.path.dirname(__file__) + "\\_internal"):
-            command = f"{os.path.dirname(__file__)}\\launcher.exe"
-            _ext = os.path.dirname(__file__) + "\\launcher.exe"
+            command = f"{os.getenv('LOCALAPPDATA')}\\'/createTheSunUpdater\\installer.exe"
         else:
             return
         
-        if not os.path.exists(_ext):
+        if not os.path.exists(command):
             error_dialog = QMessageBox()
             error_dialog.setIcon(QMessageBox.Icon.Critical)
             error_dialog.setWindowTitle("Error")

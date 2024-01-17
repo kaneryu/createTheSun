@@ -2,6 +2,7 @@
 import json
 import time
 import copy
+import observerModel
 from math import floor, ceil
 #third party imports
 # from PyQt6.QtCore import *
@@ -44,7 +45,8 @@ class automationBlock(QFrame):
         self.setLayout(self.layout_)
         
     
-    def purchase(self): 
+    def purchase(self):
+        observerModel.callEvent(observerModel.Observable.AUTOMATION_OBSERVABLE, observerModel.Observable.GAINED, (self.name, gamedefine.upgradeLevels[self.name])) 
         if automationGameLogic.canAffordUpgrade(self.name):
             automationGameLogic.purchaseUpgrade(self.name)
             automationGameLogic.updateUpgradeStatus(self.name)

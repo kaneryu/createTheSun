@@ -44,7 +44,7 @@ def copyFiles():
     
     shutil.copytree(os.path.join(rootdir, "dist", "main"), buildDir, dirs_exist_ok=True)
     
-    shutil.copy(os.path.join(rootdir, "installer", "dist", "launcher.exe"), buildDir)
+    #shutil.copy(os.path.join(rootdir, "installer", "dist", "launcher.exe"), buildDir)
     
     print("done copying files")
     print("zipping files")

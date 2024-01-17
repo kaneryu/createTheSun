@@ -200,11 +200,18 @@ class MainWindow(QMainWindow):
         timer.timeout.connect(self.checkConnection)
         timer.setSingleShot(True)
         timer.start(1000)
+        
+        
+    def getChangelog(self, version):
+        request = requests.request("GET", "https://api.github.com/repos/KaneryU/createTheSun/releases")
+        response = json.loads(request.text)
+        changelog = response[0]["body"]
+        return changelog
     
     def checkConnection(self):
         if requests.get("https://api.github.com").status_code == 200:
             self.installerLabel.setText("")
-            askForPermission = CustomDialog("Do you want to download the game?", "Create The Sun Installer")
+            askForPermission = changeLogDialog(f"Do you want to install the game?", "Create The Sun", True, self.getChangelog("v1.0.0"))
             askForPermission.exec()
             if askForPermission.result() == 1:
                 self.downloadLatestRelease()
@@ -214,7 +221,7 @@ class MainWindow(QMainWindow):
             self.installerLabel.setText("No internet connection")
             self.installerProgressBar.setRange(0, 0)
             
-    
+
     def downloadLatestRelease(self):
         self.installerLabel.setText("Downloading latest release...")
         self.progress_signal.connect(self.installerProgressBar.setValue)
@@ -301,12 +308,16 @@ class MainWindow(QMainWindow):
             f.write(version)
         
         if os.path.exists(os.getenv("LOCALAPPDATA") + "/createTheSunUpdater/"): #type: ignore
-            removeDir(os.getenv("LOCALAPPDATA") + "/createTheSunUpdater/") #type: ignore
+            removeDir(os.getenv("LOCALAPPDATA") + "/createTheSunUpdater/", False) #type: ignore
             os.mkdir(os.getenv("LOCALAPPDATA") + "/createTheSunUpdater/") #type: ignore
         else:
             os.mkdir(os.getenv("LOCALAPPDATA") + "/createTheSunUpdater/") #type: ignore
+            
+        with open(os.getenv("LOCALAPPDATA") + "/createTheSunUpdater/icon.ico", "wb") as f: #type: ignore
+            f.write(requests.request("GET", "https://raw.githubusercontent.com/KaneryU/createTheSun/main/assets/images/icon.ico").content) #type: ignore
+            
+        shutil.copy(__file__, os.getenv("LOCALAPPDATA") + "/createTheSunUpdater/") #type: ignore
         
-        shutil.copy(installDir + "launcher.exe", os.getenv("LOCALAPPDATA") + "/createTheSunUpdater/") #type: ignore
         return 0
     
 class CustomDialog(QDialog):
@@ -339,7 +350,30 @@ class CustomDialog(QDialog):
         else:
             self.reject()
 
+class changeLogDialog(QDialog):
+    def __init__(self, text, windowTitle = "Dialog", cancelable = True, markdownText = ""):
+        super().__init__()
+        self.setGeometry(100, 100, 600, 500)
+        self.setWindowTitle(windowTitle)
+        if cancelable == True:
+            QBtn = QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
+        else:
+            QBtn = QDialogButtonBox.StandardButton.Ok
 
+        self.buttonBox = QDialogButtonBox(QBtn)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+
+        self.layout_ = QVBoxLayout()
+        message = QTextEdit(text)
+        if markdownText != "":
+            message.setMarkdown(markdownText)
+        message.setReadOnly(True)
+        self.layout_.addWidget(message)
+        self.layout_.addWidget(self.buttonBox)
+        self.setLayout(self.layout_)
+        
+        
 app = QApplication(sys.argv)
 app.setWindowIcon(QtGui.QIcon(os.path.join(basedir, "icon.ico")))
 app.setStyleSheet(dark_stylesheet)

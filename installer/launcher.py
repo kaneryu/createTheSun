@@ -25,7 +25,8 @@ from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QProgre
 
 basedir = os.path.dirname(__file__)
 installpath = f"{os.getenv('LOCALAPPDATA')}/createTheSun/"
-applicationType = "updater" if "createTheSunUpdater" in __file__  else "installer"
+updaterpath = f"{os.getenv('LOCALAPPDATA')}/createTheSunUpdater/"
+
 
 dark_stylesheet = """
 QWidget{
@@ -204,11 +205,8 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(container)
 
         timer = QTimer(self)
-        
-        if applicationType == "updater":
-            timer.timeout.connect(self.downloadLatestRelease)
-        else:
-            timer.timeout.connect(self.checkConnection)
+        self.start()
+        timer.timeout.connect(self.checkConnection)
             
         timer.setSingleShot(True)
         timer.start(1000)
@@ -217,8 +215,7 @@ class MainWindow(QMainWindow):
         if requests.get("https://api.github.com").status_code == 200:
             self.installerLabel.setText("")
             if self.updateCheck() == 1:
-                subprocess.Popen(os.path.join(os.getenv("LOCALAPPDATA") + "/createTheSunUpdater/launcher.exe")) #type: ignore
-                app.quit()
+                self.downloadLatestRelease()
             else:
                 timer2 = QTimer(self)
                 timer2.timeout.connect(self.start)
@@ -299,18 +296,7 @@ class MainWindow(QMainWindow):
             app.processEvents()
         
         self.label_signal.emit("Extracting files...")
-
-        thread = Thread(target=self.extractThread)
-        thread.start()
         
-        while thread.is_alive():
-            app.processEvents()
-        
-        self.label_signal.emit("Creating shortcut...")
-        createShortcut(installpath + "main.exe", os.path.join(os.getenv("APPDATA"), "Microsoft/Windows/Start Menu/Programs/Create The Sun.lnk")) #type: ignore
-        
-        complete = CustomDialog("Installation complete.", "Create The Sun Installer", False)
-        complete.exec()
         app.quit()
         
     def downloadThread(self):
@@ -318,67 +304,25 @@ class MainWindow(QMainWindow):
         size = 0
         askForLatest = requests.request("GET", "https://api.github.com/repos/KaneryU/createTheSun/releases")
         response = json.loads(askForLatest.text)
-        url = response[0]["assets"][0]["browser_download_url"]
+        url = f"https://github.com/KaneryU/createTheSun/releases/download/{response[0]["tag_name"]}/installer.exe"
 
         with requests.get(url, headers = HEADERS, stream = True) as r:
             r.raise_for_status()
             total_size = int(r.headers.get("content-length", 0))
-            with open("application.zip", "wb") as f:
-                
+            with open(f"{updaterpath}/installer.exe", "wb") as f:
                 for chunk in r.iter_content(chunk_size = 8192):
                     size = size + f.write(chunk)
                     self.progress_signal.emit(int(size / total_size * 100))
                     self.label_signal.emit(f"Downloading: {size / 1000000:.2f} MB / {total_size / 1000000:.2f} MB")
                     if threading.main_thread().is_alive() == False:
                         f.close()
-                        os.remove("application.zip")
+                        os.remove("installer.exe")
                         return -1
-        return 0
-
-    def extractThread(self):
-        self.zipFile = zipfile.ZipFile("application.zip")
-        installDir = os.getenv("LOCALAPPDATA") + "/createTheSun/" #type: ignore
-        if not os.path.exists(installDir):
-            os.mkdir(installDir)
-        else:
-            self.label_signal.emit("Removing old files...")
-            removeDir(installDir, False)
-            self.label_signal.emit("Installing...")
-            os.mkdir(installDir)
-        
-        currentValue = 0
-        for member in self.zipFile.infolist():
-            currentValue += 1
-            self.progress_signal.emit(int(currentValue / len(self.zipFile.infolist()) * 100))
-            
-            self.label_signal.emit(f"Extracting Files: {member.filename}")
-            self.zipFile.extract(member, installDir)
-            
-            if threading.main_thread().is_alive() == False:
-                self.zipFile.close()
-                os.remove("application.zip")
-                removeDir(installDir)
-                return -1
-
-        self.zipFile.close()
-        os.remove("application.zip")
-        self.progress_signal.emit(100)
-        
-        request = requests.request("GET", "https://api.github.com/repos/KaneryU/createTheSun/releases")
-        version = json.loads(request.text)[0]["tag_name"]
-        with open(installDir + "version.txt", "w") as f:
-            f.write(version)
-            
         return 0
     
 
     def start(self):
-        with open(os.path.join(basedir + "launcherRan"), "w") as f: #type: ignore
-            f.write("True")
-        if applicationType == "updater":
-            subprocess.Popen(os.path.join(installpath + "main.exe"))
-        else:
-            subprocess.Popen(os.path.join(basedir + "main.exe")) #type: ignore
+        subprocess.Popen(os.path.join(os.getenv("LOCALAPPDATA") + "/createTheSunUpdater/installer.exe")) # type: ignore
         app.quit()
 
 

@@ -1,5 +1,6 @@
 #standard imports
 import json
+from copy import deepcopy
 #third party imports
 # from PyQt6.QtCore import Qt
 # from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QLineEdit, QSpacerItem
@@ -51,8 +52,7 @@ class purchaseStrip(QWidget):
         self.setLayout(self.layout_)
     
     def purchase(self):
-        observerModel.g_observable.notify_observers(type = "purchase", name = self.name)
-
+        observerModel.callEvent(observerModel.Observable.ITEM_OBSERVABLE, observerModel.Observable.GAINED, self.name)
         if self.name == "quarks":
             itemGameLogic.purchase("quarks")
             return 0
@@ -135,7 +135,7 @@ class content(QWidget):
         self.header_ = header()
         self.layout_.addWidget(self.header_)
         
-        self.purchaseStrips = []
+        self.purchaseStrips: list[purchaseStrip] = []
         for i in gamedefine.purchaseToCreate:
             if not i == "electrons":
                 print("Creating " + str(i))
@@ -147,4 +147,19 @@ class content(QWidget):
     def updateDisplay(self):
         for i in self.purchaseStrips:
             i.updateTab()
+        
+        if not len(self.purchaseStrips) == len(gamedefine.purchaseToCreate):
+            whatToAdd: list = deepcopy(gamedefine.purchaseToCreate)
+            for i in self.purchaseStrips:
+                if i.name in whatToAdd:
+                    whatToAdd.remove(i.name)
+            
+            for i in whatToAdd:
+                self.purchaseStrips.insert(gamedefine.purchaseToCreate.index(i) - 1, purchaseStrip(i))
+            
+            for i in range(self.layout_.count()):
+                self.layout_.removeItem(self.layout_.itemAt(i))
+            
+            for i in self.purchaseStrips:
+                self.layout_.addWidget(i)
             

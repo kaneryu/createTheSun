@@ -568,16 +568,44 @@ achevementVisualDefine = {
 
 unlockedAchevements = []
 
-saveable = [amounts, clickGainMultiplierList, multiplierList, upgradeLevels, upgradeDisabledState, upgradeDetails, unlockedAchevements, electronDetails]
-saveableStr = ["amounts", "clickGainMultiplierList", "multiplierList", "upgradeLevels", "upgradeDisabledState", "upgradeDetails", "unlockedAchevements", "electronDetails"]
+unlockables = {
+    "hydrogenUnlock": {
+            "visual": False,
+            "unlockType": "item",
+            "whatUnlocks": "hydrogen",
+            "needs": [
+                {
+                    "type": "automation",
+                    "what": "particleAccelerator",
+                    "amount": 2
+                }
+            ]
+        }
+}
+
+unlockedUnlockables = []
+
+
+
+
+
+
+
+
+saveable = [amounts, clickGainMultiplierList, multiplierList, upgradeLevels, upgradeDisabledState, upgradeDetails, unlockedAchevements, electronDetails, unlockedUnlockables, purchaseToCreate, automationsToCreate]
+saveableStr = ["amounts", "clickGainMultiplierList", "multiplierList", "upgradeLevels", "upgradeDisabledState", "upgradeDetails", "unlockedAchevements", "electronDetails", "unlockedUnlockables", "purchaseToCreate", "automationsToCreate"]
 force = [] # for force loading
 
 lastAutosaveTime = 0
 autosaveTime = 300000
 
 def loadSave(saveDict: dict):
-    global amounts, clickGainMultiplierList, multiplierList, upgradeLevels, upgradeDisabledState, upgradeDetails, unlockedAchevements, electronDetails
+    global amounts, clickGainMultiplierList, multiplierList, upgradeLevels, upgradeDisabledState, upgradeDetails, unlockedAchevements, electronDetails, unlockedUnlockables, purchaseToCreate, automationsToCreate
     saveDict = convertStrToFloats(saveDict) # type: ignore
+    for i in saveableStr:
+        if not i in saveDict:
+            saveDict[i] = ""
+            
     amounts = saveDict["amounts"]
     clickGainMultiplierList = saveDict["clickGainMultiplierList"]
     multiplierList = saveDict["multiplierList"]
@@ -586,6 +614,9 @@ def loadSave(saveDict: dict):
     upgradeDetails = saveDict["upgradeDetails"]
     unlockedAchevements = saveDict["unlockedAchevements"]
     electronDetails = saveDict["electronDetails"]
+    unlockedUnlockables = saveDict["unlockedUnlockables"]
+    purchaseToCreate = saveDict["purchaseToCreate"]
+    automationsToCreate = saveDict["automationsToCreate"]
     
 def getSaveData():
     saveDict = {}
