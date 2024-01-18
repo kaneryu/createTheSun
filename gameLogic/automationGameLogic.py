@@ -240,12 +240,13 @@ def parseUsefulDescription(upgrade) -> str:
                 futureDec = getFutureDescription(upgrade)
                 
             elif currentVisualDict["usefulDescriptionBlank"] == "amount":
-                currentDec = currentDec.replace("%%%", str(round(gamedefine.automationDetails[upgrade]["whatItGives"][0]["amount"], 3)))
+                currentDec = currentDec.replace("%%%", str(round(gamedefine.automationDetails[upgrade]["whatItGives"][0]["amount"])))
                 
                 futureDec = getFutureDescription(upgrade)
-              
+            
+            print(currentDec + " \n " + futureDec)
             return currentDec + " \n " + futureDec
-
+        
         return ""
 
 def getFutureDescription(upgrade):
@@ -263,7 +264,7 @@ def getFutureDescription(upgrade):
         elif futureVisualDict["usefulDescriptionBlank"] == "amount":
             futureNum = numberLogic.evaluateCostEquation(futureInternalDict["idleGenerator"]["amountEquation"][0]["equation"], gamedefine.automationLevels[upgrade] + 1)
 
-            futureDec = futureDec.replace("%%%", str(round(futureNum, 3)))
+            futureDec = futureDec.replace("%%%", str(round(futureNum)))
         
         return futureDec
 
