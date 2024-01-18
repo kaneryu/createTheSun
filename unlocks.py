@@ -3,11 +3,8 @@ from gamedefine import unlockables, unlockedUnlockables
 import gamedefine
 
 
-
-
-
 def checkUnlocks(event):
-    
+    print(event)
     for key in unlockables:
         ongoingCheck = True
         if not key in unlockedUnlockables:
@@ -17,7 +14,7 @@ def checkUnlocks(event):
                         ongoingCheck = False
                 
                 if item["type"] == "automation": #type: ignore
-                    if not gamedefine.upgradeLevels >= item["amount"] #type: ignore
+                    if not gamedefine.automationLevels >= item["amount"] #type: ignore
                         ongoingCheck = False
             
             if ongoingCheck == True:
@@ -27,8 +24,7 @@ def unlock(key):
     unlockable = unlockables[key]
     if unlockable["type"] == "item":
         gamedefine.purchaseToCreate.append[key["whatUnlocks"]] #type: ignore
-        
-
     
+
 newObserver(checkUnlocks, Observable.ITEM_OBSERVABLE, Observable.GAINED)
 newObserver(checkUnlocks, Observable.AUTOMATION_OBSERVABLE, Observable.GAINED)

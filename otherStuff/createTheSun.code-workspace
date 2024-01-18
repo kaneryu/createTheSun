@@ -16,5 +16,8 @@
 				"justMyCode": false
 			}
 		]
+	},
+	"settings": {
+		"austin.mode": "Wall time"
 	}
 }	

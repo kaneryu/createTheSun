@@ -194,7 +194,7 @@ automationInternalDefine = {
                     },
                     {
                         "what": "electrons",
-                        "amount": 50
+                        "amount": 25
                     }      
                 ],
                 "withRequirement": False,
@@ -223,7 +223,7 @@ automationInternalDefine = {
                     },
                     {
                         "what": "electrons",
-                        "amount": 60
+                        "amount": 50
                     }      
                 ],
                 "withRequirement": False,
@@ -281,7 +281,7 @@ automationInternalDefine = {
                     },
                     {
                         "what": "electrons",
-                        "amount": 50
+                        "amount": 25
                     }
                 ],
                 
@@ -323,7 +323,7 @@ automationInternalDefine = {
                     },
                     {
                         "what": "electrons",
-                        "amount": 60
+                        "amount": 50
                     },
                 ],
                 "type" : "idleGenerator",
@@ -434,9 +434,9 @@ purchaseToCreate = ["quarks", "protons"]
 automationsToCreate = ["particleAccelerator", "protonicForge"]
 
 amounts = {
-    "quarks": 0,
+    "quarks": 100000,
     "electrons": 100,
-    "protons": 0,
+    "protons": 1000000,
     "hydrogen": 0,
     "stars": 0,
     "galaxies": 0,
@@ -466,22 +466,22 @@ multiplierList = {
 mainTabBuyMultiple = 1
 
 electronDetails = {
-    "waitTime": 1000,
+    "waitTime": 0.2,
     "amount": 1,
     "maxAmount": 100,
     "minAmount": 0, 
 }
 
-upgradeLevels = {
-    "particleAccelerator" : 0,
+automationLevels = {
+    "particleAccelerator" : 2,
     "protonicForge": 0
 }
-upgradeDisabledState = {
+automationDisabledState = {
     "particleAccelerator" : (False, "0"),
     "protonicForge": (False, "0")
 }
 
-upgradeDetails = {
+automationDetails = {
     "particleAccelerator" : {
         "timeToWait" : 1000,
         "whatItGives" : [
@@ -580,6 +580,35 @@ unlockables = {
                     "amount": 2
                 }
             ]
+        },
+    "upgradeTabUnlock": {
+            "visual": False,
+            "unlockType": "tab",
+            "whatUnlocks": "upgradeTab",
+            "needs": [
+                {
+                    "type": "item",
+                    "what": "protons",
+                    "amount": 2000                
+                },
+                {
+                    "type": "time",
+                    "what": "timePlayed",
+                    "amount": 0 #just for future refrence
+                }
+            ]
+        },
+    "protonSpilloverUnlock": {
+            "visual": False,
+            "unlockType": "upgrade",
+            "whatUnlocks": "protonSpillover",
+            "needs": [
+                {
+                    "type": "item",
+                    "what": "protons",
+                    "amount": 2000
+                }                
+            ]
         }
 }
 
@@ -592,7 +621,7 @@ unlockedUnlockables = []
 
 
 
-saveable = [amounts, clickGainMultiplierList, multiplierList, upgradeLevels, upgradeDisabledState, upgradeDetails, unlockedAchevements, electronDetails, unlockedUnlockables, purchaseToCreate, automationsToCreate]
+saveable = [amounts, clickGainMultiplierList, multiplierList, automationLevels, automationDisabledState, automationDetails, unlockedAchevements, electronDetails, unlockedUnlockables, purchaseToCreate, automationsToCreate]
 saveableStr = ["amounts", "clickGainMultiplierList", "multiplierList", "upgradeLevels", "upgradeDisabledState", "upgradeDetails", "unlockedAchevements", "electronDetails", "unlockedUnlockables", "purchaseToCreate", "automationsToCreate"]
 force = [] # for force loading
 
@@ -600,7 +629,7 @@ lastAutosaveTime = 0
 autosaveTime = 300000
 
 def loadSave(saveDict: dict):
-    global amounts, clickGainMultiplierList, multiplierList, upgradeLevels, upgradeDisabledState, upgradeDetails, unlockedAchevements, electronDetails, unlockedUnlockables, purchaseToCreate, automationsToCreate
+    global amounts, clickGainMultiplierList, multiplierList, automationLevels, automationDisabledState, automationDetails, unlockedAchevements, electronDetails, unlockedUnlockables, purchaseToCreate, automationsToCreate
     saveDict = convertStrToFloats(saveDict) # type: ignore
     for i in saveableStr:
         if not i in saveDict:
@@ -609,9 +638,9 @@ def loadSave(saveDict: dict):
     amounts = saveDict["amounts"]
     clickGainMultiplierList = saveDict["clickGainMultiplierList"]
     multiplierList = saveDict["multiplierList"]
-    upgradeLevels = saveDict["upgradeLevels"]
-    upgradeDisabledState = saveDict["upgradeDisabledState"]
-    upgradeDetails = saveDict["upgradeDetails"]
+    automationLevels = saveDict["upgradeLevels"]
+    automationDisabledState = saveDict["upgradeDisabledState"]
+    automationDetails = saveDict["upgradeDetails"]
     unlockedAchevements = saveDict["unlockedAchevements"]
     electronDetails = saveDict["electronDetails"]
     unlockedUnlockables = saveDict["unlockedUnlockables"]
@@ -622,6 +651,7 @@ def getSaveData():
     saveDict = {}
     for i in range(len(saveable)):
         saveDict[saveableStr[i]] = saveable[i]
+    print(convertFloatsToStr(saveDict))
     return convertFloatsToStr(saveDict)    
 
 def convertFloatsToStr(input: dict | list):
@@ -682,3 +712,4 @@ def convertStrToFloats(input: dict):
         return convertStrToFloatsFromList(input)   
     
 
+testdict_ = {'amounts': {'quarks': 1138772.00000000, 'electrons': 100, 'protons': 2161998.60000018, 'hydrogen': 0, 'stars': 0, 'galaxies': 0, 'superclusters': 0}, 'clickGainMultiplierList': {'quarks': [1], 'electrons': [1], 'protons': [1], 'hydrogen': [1], 'stars': [1], 'galaxies': [1], 'superclusters': [1]}, 'multiplierList': {'quarks': [1], 'electrons': [1], 'protons': [1], 'hydrogen': [1], 'stars': [1], 'galaxies': [1], 'superclusters': [1]}, 'upgradeLevels': {'particleAccelerator': 127, 'protonicForge': 68}, 'upgradeDisabledState': {'particleAccelerator': (False, '0'), 'protonicForge': (False, '0')}, 'upgradeDetails': {'particleAccelerator': {'timeToWait': 10, 'whatItGives': [{'what': 'quarks', 'amount': 100.000000000000}]}, 'protonicForge': {'timeToWait': 10, 'whatItGives': [{'what': 'protons', 'amount': 4.60000000000000}], 'whatItCosts': [{'what': 'quarks', 'amount': 'atMarketPrice'}]}}, 'unlockedAchevements': [], 'electronDetails': {'waitTime': 1000, 'amount': 100, 'maxAmount': 100, 'minAmount': 0}, 'unlockedUnlockables': [], 'purchaseToCreate': ['quarks', 'protons'], 'automationsToCreate': ['particleAccelerator', 'protonicForge']}

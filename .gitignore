@@ -7,3 +7,4 @@
 main.spec
 *.pyc
 /appdata
+tasks.json

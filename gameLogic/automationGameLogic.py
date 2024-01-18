@@ -21,7 +21,7 @@ def getCurrentMultiLevelUpgradeIndex(upgrade: str, level: int | None = None) -> 
     
     
     if level == None:
-        currentLevel = gamedefine.upgradeLevels[upgrade]
+        currentLevel = gamedefine.automationLevels[upgrade]
     else:
         currentLevel = level
     
@@ -59,7 +59,7 @@ def canAffordUpgradeTask(upgrade : str) -> bool:
         bool: Whether you can afford the upgrade's task or not.
     """
     
-    if gamedefine.upgradeLevels[upgrade] == 0:
+    if gamedefine.automationLevels[upgrade] == 0:
         costs = getCurrentInternalMultiLevelUpgrade(upgrade)[1]
     else:
         costs = getCurrentInternalMultiLevelUpgrade(upgrade)["idleGenerator"]["whatItCosts"]
@@ -83,16 +83,16 @@ def purchaseUpgrade(upgrade : str) -> None:
     Args:
         upgrade (str): The upgrade to purchase.
     """
-    if gamedefine.upgradeLevels[upgrade] == 0:
+    if gamedefine.automationLevels[upgrade] == 0:
         costs = gamedefine.automationInternalDefine[upgrade]["firstCost"]
     else:
         costs = getCurrentInternalMultiLevelUpgrade(upgrade)["upgradeCost"]
     
     for i in costs:
         gamedefine.amounts[i["what"]] -= i["amount"]
-    gamedefine.upgradeLevels[upgrade] += 1
+    gamedefine.automationLevels[upgrade] += 1
     
-    print(f"purchased {upgrade}, now have {gamedefine.upgradeLevels[upgrade]}")
+    print(f"purchased {upgrade}, now have {gamedefine.automationLevels[upgrade]}")
     return
 
 def updateUpgradeStatus(upgrade : str) -> None:
@@ -100,7 +100,7 @@ def updateUpgradeStatus(upgrade : str) -> None:
     Updates the status of a upgrade.
     For example, if you just upgraded protonic forge from level 1-2, the time to wait will be updated to 0.5 instead of 1.
     """
-    if gamedefine.upgradeLevels[upgrade] == 0:
+    if gamedefine.automationLevels[upgrade] == 0:
         return
     
     currentUpgradeDict = getCurrentInternalMultiLevelUpgrade(upgrade)
@@ -113,26 +113,26 @@ def updateUpgradeStatus(upgrade : str) -> None:
         
         if idleGenDict["equationType"] == "timeEquation":
             
-            gamedefine.upgradeDetails[upgrade]["timeToWait"] = numberLogic.evaluateCostEquation(idleGenDict["timeEquation"], gamedefine.upgradeLevels[upgrade]) 
+            gamedefine.automationDetails[upgrade]["timeToWait"] = numberLogic.evaluateCostEquation(idleGenDict["timeEquation"], gamedefine.automationLevels[upgrade]) 
             for i in range(len(idleGenDict["whatItGives"])):
-                gamedefine.upgradeDetails[upgrade]["whatItGives"][i]["amount"] = idleGenDict["whatItGives"][i]["amount"]
+                gamedefine.automationDetails[upgrade]["whatItGives"][i]["amount"] = idleGenDict["whatItGives"][i]["amount"]
             
             if idleGenDict["withRequirement"]:
                 
                 for i in range(len(idleGenDict["whatItCosts"])):
-                    gamedefine.upgradeDetails[upgrade]["whatItCosts"][i]["amount"] = idleGenDict["whatItCosts"][i]["amount"]
+                    gamedefine.automationDetails[upgrade]["whatItCosts"][i]["amount"] = idleGenDict["whatItCosts"][i]["amount"]
             
         elif idleGenDict["equationType"] == "amountEquation":
             
-            gamedefine.upgradeDetails[upgrade]["timeToWait"] = idleGenDict["time"]
+            gamedefine.automationDetails[upgrade]["timeToWait"] = idleGenDict["time"]
             for i in range(len(idleGenDict["whatItGives"])):
-                amount = numberLogic.evaluateCostEquation(idleGenDict["amountEquation"][i]["equation"], gamedefine.upgradeLevels[upgrade])
-                gamedefine.upgradeDetails[upgrade]["whatItGives"][i]["amount"] = amount
+                amount = numberLogic.evaluateCostEquation(idleGenDict["amountEquation"][i]["equation"], gamedefine.automationLevels[upgrade])
+                gamedefine.automationDetails[upgrade]["whatItGives"][i]["amount"] = amount
                 
             if idleGenDict["withRequirement"]:
                 for i in range(len(idleGenDict["whatItCosts"])):
-                    amount = numberLogic.evaluateCostEquation(idleGenDict["costEquation"][i], gamedefine.upgradeLevels[upgrade])
-                    gamedefine.upgradeDetails[upgrade]["whatItCosts"][i]["amount"] = amount
+                    amount = numberLogic.evaluateCostEquation(idleGenDict["costEquation"][i], gamedefine.automationLevels[upgrade])
+                    gamedefine.automationDetails[upgrade]["whatItCosts"][i]["amount"] = amount
 
 
 
@@ -149,7 +149,7 @@ def canAffordUpgrade(upgrade : str) -> bool:
     Returns:
         bool: Whether you can afford the upgrade or not.
     """
-    if gamedefine.upgradeLevels[upgrade] == 0:
+    if gamedefine.automationLevels[upgrade] == 0:
         costs = gamedefine.automationInternalDefine[upgrade]["firstCost"]
     else:
         costs = getCurrentInternalMultiLevelUpgrade(upgrade)["upgradeCost"]
@@ -163,40 +163,40 @@ def canAffordUpgrade(upgrade : str) -> bool:
     return ongoing
 
 def doUpgradeTask(upgrade, lastTickTime):
-    if gamedefine.upgradeLevels[upgrade] == 0:
+    if gamedefine.automationLevels[upgrade] == 0:
         return lastTickTime
     else:
         internalDefine = getCurrentInternalMultiLevelUpgrade(upgrade)["idleGenerator"]
-    if gamedefine.upgradeLevels[upgrade] > 0:
-        if time.time() * 1000 - lastTickTime > gamedefine.upgradeDetails[upgrade]["timeToWait"]:
-            gamedefine.upgradeDisabledState[upgrade] = (False, "0")
+    if gamedefine.automationLevels[upgrade] > 0:
+        if time.time() * 1000 - lastTickTime > gamedefine.automationDetails[upgrade]["timeToWait"]:
+            gamedefine.automationDisabledState[upgrade] = (False, "0")
             lastTickTime = time.time() * 1000
             if internalDefine["withRequirement"]:
                 if canAffordUpgradeTask(upgrade):
-                    for i in gamedefine.upgradeDetails[upgrade]["whatItGives"]:
-                        gamedefine.amounts[i["what"]] += i["amount"]
+                    for i in gamedefine.automationDetails[upgrade]["whatItGives"]:
+                        gamedefine.amounts[i["what"]] += int(i["amount"])
                         
-                    for i in gamedefine.upgradeDetails[upgrade]["whatItCosts"]:
+                    for i in gamedefine.automationDetails[upgrade]["whatItCosts"]:
                         if i["amount"] == "atMarketPrice":
-                            gamedefine.amounts[i["what"]] -= gamedefine.itemInternalDefine[i["what"]]["whatItCosts"][0]["amount"]
+                            gamedefine.amounts[i["what"]] -= int(gamedefine.itemInternalDefine[i["what"]]["whatItCosts"][0]["amount"])
                         else:
-                            gamedefine.amounts[i["what"]] -= i["amount"]
+                            gamedefine.amounts[i["what"]] -= int(i["amount"])
                 else:
                     lastTickTime += 10000 # softlock prevention; add 10 seconds
-                    gamedefine.upgradeDisabledState[upgrade] = (True, "10") # type: ignore
+                    gamedefine.automationDisabledState[upgrade] = (True, "10") # type: ignore
             else:         
-                for i in gamedefine.upgradeDetails[upgrade]["whatItGives"]:
-                    gamedefine.amounts[i["what"]] += i["amount"]
+                for i in gamedefine.automationDetails[upgrade]["whatItGives"]:
+                    gamedefine.amounts[i["what"]] += int(i["amount"])
         else:
-            if gamedefine.upgradeDisabledState[upgrade][0] == True:
-                gamedefine.upgradeDisabledState[upgrade] = (True, str(ceil((gamedefine.upgradeDetails[upgrade]["timeToWait"] - (time.time() * 1000 - lastTickTime))/1000))) # type: ignore
+            if gamedefine.automationDisabledState[upgrade][0] == True:
+                gamedefine.automationDisabledState[upgrade] = (True, str(ceil((gamedefine.automationDetails[upgrade]["timeToWait"] - (time.time() * 1000 - lastTickTime))/1000))) # type: ignore
     return lastTickTime
         
 
 
 
 def parseCost(name):
-    if gamedefine.upgradeLevels[name] == 0:
+    if gamedefine.automationLevels[name] == 0:
         what = gamedefine.automationInternalDefine[name]["firstCost"]
         string = ["Purchase for "]    
     else:
@@ -222,7 +222,7 @@ def parseCost(name):
 
 
 def parseUsefulDescription(upgrade) -> str:
-        if gamedefine.upgradeLevels[upgrade] == 0:
+        if gamedefine.automationLevels[upgrade] == 0:
             index = getCurrentMultiLevelUpgradeIndex(upgrade)
             return gamedefine.automationVisualDefine[upgrade][index]["firstupgradeUsefulDescription"]
         else:
@@ -235,12 +235,12 @@ def parseUsefulDescription(upgrade) -> str:
             futureDec = ""
             
             if currentVisualDict["usefulDescriptionBlank"] == "tickTime":
-                currentDec = currentDec.replace("%%%", str(round( gamedefine.upgradeDetails[upgrade]["timeToWait"]/1000, 3)))
+                currentDec = currentDec.replace("%%%", str(round( gamedefine.automationDetails[upgrade]["timeToWait"]/1000, 3)))
                 
                 futureDec = getFutureDescription(upgrade)
                 
             elif currentVisualDict["usefulDescriptionBlank"] == "amount":
-                currentDec = currentDec.replace("%%%", str(round(gamedefine.upgradeDetails[upgrade]["whatItGives"][0]["amount"], 3)))
+                currentDec = currentDec.replace("%%%", str(round(gamedefine.automationDetails[upgrade]["whatItGives"][0]["amount"], 3)))
                 
                 futureDec = getFutureDescription(upgrade)
               
@@ -250,18 +250,18 @@ def parseUsefulDescription(upgrade) -> str:
 
 def getFutureDescription(upgrade):
     
-    futureInternalDict = getCurrentInternalMultiLevelUpgrade(upgrade, gamedefine.upgradeLevels[upgrade] + 1)
-    futureVisualDict = getCurrentVisualMultiLevelUpgrade(upgrade, gamedefine.upgradeLevels[upgrade] + 1)
+    futureInternalDict = getCurrentInternalMultiLevelUpgrade(upgrade, gamedefine.automationLevels[upgrade] + 1)
+    futureVisualDict = getCurrentVisualMultiLevelUpgrade(upgrade, gamedefine.automationLevels[upgrade] + 1)
     
     if futureInternalDict["type"] == "idleGenerator":
         futureDec = str(futureVisualDict["upgradeUsefulDescription"])
         
         if futureVisualDict["usefulDescriptionBlank"] == "tickTime":
-            futureNum = numberLogic.evaluateCostEquation(futureInternalDict["idleGenerator"]["timeEquation"], gamedefine.upgradeLevels[upgrade] + 1)
+            futureNum = numberLogic.evaluateCostEquation(futureInternalDict["idleGenerator"]["timeEquation"], gamedefine.automationLevels[upgrade] + 1)
 
             futureDec = futureDec.replace("%%%", str(round(futureNum/1000, 3)))
         elif futureVisualDict["usefulDescriptionBlank"] == "amount":
-            futureNum = numberLogic.evaluateCostEquation(futureInternalDict["idleGenerator"]["amountEquation"][0]["equation"], gamedefine.upgradeLevels[upgrade] + 1)
+            futureNum = numberLogic.evaluateCostEquation(futureInternalDict["idleGenerator"]["amountEquation"][0]["equation"], gamedefine.automationLevels[upgrade] + 1)
 
             futureDec = futureDec.replace("%%%", str(round(futureNum, 3)))
         
@@ -270,18 +270,18 @@ def getFutureDescription(upgrade):
 
 def parseUpgradeName(upgrade):
     
-    if gamedefine.upgradeLevels[upgrade] == 0:
+    if gamedefine.automationLevels[upgrade] == 0:
         
         return gamedefine.automationVisualDefine[upgrade][0]["visualName"]
     else:
         
         currentDict = getCurrentVisualMultiLevelUpgrade(upgrade)
-        return f"Level {gamedefine.upgradeLevels[upgrade]} {currentDict["visualName"]} \n {currentDict["description"]} \n"
+        return f"Level {gamedefine.automationLevels[upgrade]} {currentDict["visualName"]} \n {currentDict["description"]} \n"
 
 def getDescription(upgrade):
     index = getCurrentMultiLevelUpgradeIndex(upgrade)
     
-    if gamedefine.upgradeLevels[upgrade] == 0:
+    if gamedefine.automationLevels[upgrade] == 0:
         return f"{gamedefine.automationVisualDefine[upgrade][index]["upgradeVisualName"]} \n {gamedefine.automationVisualDefine[upgrade][index]["upgradeDescription"]}"
     else:
 

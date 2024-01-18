@@ -1,6 +1,7 @@
 #standard imports
 import json
 from copy import deepcopy
+import sys
 #third party imports
 # from PyQt6.QtCore import Qt
 # from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QLineEdit, QSpacerItem
@@ -120,11 +121,7 @@ class header(QWidget):
         except:
             gamedefine.mainTabBuyMultiple = 1
             self.textEdit.setText("1")
-
-
-
-        
-        
+            
         
 class content(QWidget):
     def __init__(self):
@@ -149,6 +146,7 @@ class content(QWidget):
             i.updateTab()
         
         if not len(self.purchaseStrips) == len(gamedefine.purchaseToCreate):
+
             whatToAdd: list = deepcopy(gamedefine.purchaseToCreate)
             for i in self.purchaseStrips:
                 if i.name in whatToAdd:
@@ -162,4 +160,7 @@ class content(QWidget):
             
             for i in self.purchaseStrips:
                 self.layout_.addWidget(i)
+            
+            print(f"{"".join(self.purchaseStrips)} {"".join(gamedefine.purchaseToCreate)}") #type: ignore
+            sys.exit()
             

@@ -7,7 +7,7 @@ import time
 # from PyQt6.QtGui import 
 
 from PySide6.QtCore import Qt, QSize, Signal as pyqtSignal
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QFrame, QGridLayout, QProgressBar, QComboBox
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QFrame, QGridLayout, QProgressBar, QComboBox, QErrorMessage
 # from PySide6.QtGui import
 
 
@@ -62,6 +62,7 @@ class autosaveWidget(QWidget):
         self.setLayout(self.layout_)
         
     def updateDisplay(self):
+        self.chooseOption.setCurrentIndex(self.chooseOptionMs.index(gamedefine.autosaveTime))
         if int((gamedefine.autosaveTime - (time.time() * 1000 - gamedefine.lastAutosaveTime)) // 1000) < 2 or (time.time() * 1000 - gamedefine.lastAutosaveTime) // 1000 < 2:
             # if the time less is less than 2 seconds or less than 2 seconds after last autosave, then autosave is happening
             self.progressbar.setMaximum(0)
@@ -74,6 +75,7 @@ class autosaveWidget(QWidget):
             self.progressbar.setValue(-1)
             self.progressbar.setFormat("Autosave is off")
             self.progressbar.setMaximum(0)
+            
     def updateInternal(self):
         if not gamedefine.autosaveTime == -1 and not gamedefine.autosaveTime == 0 and not gamedefine.autosaveTime == None:
             if time.time() * 1000 - gamedefine.lastAutosaveTime >= gamedefine.autosaveTime:

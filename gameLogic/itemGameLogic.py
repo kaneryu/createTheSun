@@ -142,9 +142,9 @@ def maxAll():
             maxAmountPossible = gamedefine.amounts[i["what"]] // i["amount"]
             
         for i in whatItCosts:
-            gamedefine.amounts[i["what"]] -= i["amount"] * maxAmountPossible
+            gamedefine.amounts[i["what"]] -= int(i["amount"] * maxAmountPossible)
         for i in whatItGives:
-            gamedefine.amounts[i["what"]] += i["amount"] * maxAmountPossible
+            gamedefine.amounts[i["what"]] += int(i["amount"] * maxAmountPossible)
 
         
         print(f"max all purchased {maxAmountPossible} of {item}, now have {gamedefine.amounts[item]}")

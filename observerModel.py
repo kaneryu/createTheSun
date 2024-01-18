@@ -64,7 +64,7 @@ def callEvent(what: Observable, callType: Observable, information: Union[str, tu
     """
     Function to call an event
     """
-
+    print("Calling event " + str(information))
     allowedEvents = [
     "itemObserv",
     "acheObserv",

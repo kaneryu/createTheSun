@@ -1,12 +1,14 @@
 import gamedefine
 import copy
-from PyQt6.QtCore import QSaveFile
 import os
 import pathlib
 import json
-from PyQt6.QtWidgets import QDialog, QVBoxLayout, QLabel, QDialogButtonBox, QVBoxLayout
-from PyQt6.QtMultimedia import QAudioOutput, QMediaPlayer 
 import base64
+
+from PyQt6.QtWidgets import QDialog
+
+
+from customWidgets import dialogs
 
 
 save_ = {}
@@ -35,10 +37,15 @@ def lookForSave():
     return False
 
 def save(export = False, exportEncoded = False, notify = True):
-    operationSucsess = CustomDialog("Saving Complete", "Saved")
-    save_ = gamedefine.getSaveData()
-    encodedSave = b64Encode(json.dumps(save_))
+    operationSucsess = dialogs.popupNotification("Saved", "Saving Complete")
     
+    save_ = gamedefine.getSaveData()
+    try:
+        encodedSave = b64Encode(json.dumps(save_))
+    except Exception as e:
+        dialogs.errorDialog("Error", f"There was an error saving your game. Please report this to the developer:\n{e}").exec()
+        gamedefine.autosaveTime = -1
+        return
     if export:
         if exportEncoded:
             return encodedSave
@@ -54,26 +61,29 @@ def save(export = False, exportEncoded = False, notify = True):
     if notify:
         operationSucsess.exec()
     
-def load(noSpeak = False, loadWarn = True):
-    dialog = CustomDialog("Are you sure you want to load? This will overwrite your current save.", "Load", True)
-    saveNotFoundDialog = CustomDialog("There was no save found.", "No save fould", False)
-    operationSucsess = CustomDialog("Loading Complete", "Loaded")
+def load(noSpeak = False, loadWarn = True, save = None):
+    dialog = dialogs.yesNoDialog( "Load", "Are you sure you want to load? This will overwrite your current save.", preventClose_ = True)
+    saveNotFoundDialog = dialogs.warningDialog("No save fould", "There was no save found.")
+    operationSucsess = dialogs.popupNotification("Loaded", "Loading Complete")
     
-    if not os.path.exists(savedir):
-        saveNotFoundDialog.exec()
-        return
-    
-    if loadWarn:
-        if dialog.exec() == QDialog.DialogCode.Rejected:
+    if save == None:
+        if not os.path.exists(savedir):
+            saveNotFoundDialog.exec()
             return
         
-    savefile = os.path.join(savedir, "save.save1")
-    
-    if not os.path.exists(savefile):
-        return
-    
-    with open(savefile, "r") as f:
-        save_ = json.loads(b64Decode(f.read()))
+        if loadWarn:
+            if dialog.exec() == QDialog.DialogCode.Rejected:
+                return
+            
+        savefile = os.path.join(savedir, "save.save1")
+        
+        if not os.path.exists(savefile):
+            return
+        
+        with open(savefile, "r") as f:
+            save_ = json.loads(b64Decode(f.read()))
+    else:
+        save_ = save
     
     gamedefine.loadSave(save_)
     gamedefine.force = 1
@@ -81,32 +91,4 @@ def load(noSpeak = False, loadWarn = True):
     if not noSpeak:
         operationSucsess.exec()
     
-class CustomDialog(QDialog):
-    def __init__(self, text, windowTitle = "Dialog", cancelable = True, customQBtn = None, preventClose = False):
-        super().__init__()
 
-        self.setWindowTitle(windowTitle)
-        if customQBtn == None:
-            if cancelable == True:
-                QBtn = QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
-            else:
-                QBtn = QDialogButtonBox.StandardButton.Ok
-        else:
-            QBtn = customQBtn
-            
-        self.preventClose = preventClose
-        self.buttonBox = QDialogButtonBox(QBtn)
-        self.buttonBox.accepted.connect(self.accept)
-        self.buttonBox.rejected.connect(self.reject)
-        self.layout_ = QVBoxLayout()
-        message = QLabel(text)
-        self.layout_.addWidget(message)
-        self.layout_.addWidget(self.buttonBox)   
-        self.setLayout(self.layout_)
-        
-    def closeEvent(self, event):
-        print("\a")
-        if self.preventClose:
-            event.ignore()
-        else:
-            self.reject()

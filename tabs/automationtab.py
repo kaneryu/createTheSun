@@ -46,7 +46,7 @@ class automationBlock(QFrame):
         
     
     def purchase(self):
-        observerModel.callEvent(observerModel.Observable.AUTOMATION_OBSERVABLE, observerModel.Observable.GAINED, (self.name, gamedefine.upgradeLevels[self.name])) 
+        observerModel.callEvent(observerModel.Observable.AUTOMATION_OBSERVABLE, observerModel.Observable.GAINED, (self.name, gamedefine.automationLevels[self.name])) 
         if automationGameLogic.canAffordUpgrade(self.name):
             automationGameLogic.purchaseUpgrade(self.name)
             automationGameLogic.updateUpgradeStatus(self.name)
@@ -63,14 +63,14 @@ class automationBlock(QFrame):
         else:
             self.upgradeButton.setEnabled(False)
             
-        if gamedefine.upgradeDisabledState[self.name][0]:
-            self.upgradeLabel.setText(f"Disabled with {gamedefine.upgradeDisabledState[self.name][1]} seconds left | {automationGameLogic.parseUpgradeName(self.name)}")
+        if gamedefine.automationDisabledState[self.name][0]:
+            self.upgradeLabel.setText(f"Disabled with {gamedefine.automationDisabledState[self.name][1]} seconds left | {automationGameLogic.parseUpgradeName(self.name)}")
         else:
             self.upgradeLabel.setText(automationGameLogic.parseUpgradeName(self.name))
         
         
     def updateInternal(self):
-        if not gamedefine.upgradeLevels[self.name] == 0:
+        if not gamedefine.automationLevels[self.name] == 0:
             if automationGameLogic.getCurrentInternalMultiLevelUpgrade(self.name)["type"] == "idleGenerator":
                 self.lastTickTime = automationGameLogic.doUpgradeTask(self.name, self.lastTickTime)
             

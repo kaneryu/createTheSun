@@ -13,8 +13,8 @@ import subprocess
 # from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, QSizePolicy, QMessageBox, QDialog
 # from PyQt6.QtCore import QPropertyAnimation, Qt, QTimer, QRunnable, pyqtSlot, pyqtSignal, QThreadPool
 from PySide6 import QtCore
-from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, QSizePolicy, QMessageBox, QDialog
+from PySide6.QtGui import QIcon, QPixmap, QAction
+from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, QSizePolicy, QDialog, QSplashScreen
 from PySide6.QtCore import QPropertyAnimation, Qt, QTimer, QRunnable, Slot as pyqtSlot, Signal as pyqtSignal, QThreadPool
 
 #local imports
@@ -24,6 +24,7 @@ import tabs_ as tabs
 import tabs.electrons as electrons
 import logging_ as logging
 import assets.fonts.urbanist.urbanistFont as urbanistFont
+from customWidgets import dialogs
 
 logging.logLevel = 1
 logging.specialLogs = []
@@ -170,7 +171,7 @@ class MainWindow(QMainWindow):
         self.displayUpdate.autoDelete()
         self.interalUpdate1.autoDelete()
         
-        saveDialog = tabs.saveModule.CustomDialog("Would you like to save your game?", "Save game", True)
+        saveDialog = dialogs.yesNoDialog("Save game", "Would you like to save your game?", True)
         saveDialogResults = saveDialog.exec()
         if saveDialogResults == QDialog.DialogCode.Accepted:
             tabs.saveModule.save(notify = False)
@@ -215,16 +216,14 @@ def preStartUp():
             return False
             
     if not updateCheck(): # if not on the latest version
-        if os.path.exists(os.path.dirname(__file__) + "\\_internal"):
+        if os.path.exists(os.path.dirname(__file__) + "\\_internal"): #if installed
             command = f"{os.getenv('LOCALAPPDATA')}\\'/createTheSunUpdater\\installer.exe"
         else:
             return
         
         if not os.path.exists(command):
-            error_dialog = QMessageBox()
-            error_dialog.setIcon(QMessageBox.Icon.Critical)
-            error_dialog.setWindowTitle("Error")
-            error_dialog.setText(r'You are not on the latest version and the launcher is missing. Please download the latest version from https:\\github.com\KaneryU\createTheSun')
+            error_dialog = dialogs.errorDialog("Error", r'You are not on the latest version and the launcher is missing. Please download the latest version from https:\\github.com\KaneryU\createTheSun')
+            error_dialog.exec()
         
         print(command)
         subprocess.Popen([command])
@@ -238,40 +237,46 @@ if __name__ == "__main__":
     myappid = u'opensource.createthesun.main.pre-release'
     ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
     
+    app = QApplication([])
+    
     file = open(os.path.join(basedir, 'assets', 'stylesheet.qss'), 'r')
     stylesheet = file.read()
     file.close()
+    app.setStyleSheet(stylesheet)
     
-    app = QApplication([])
-
+    splashScreen = QSplashScreen(QPixmap(basedir + r"\assets\images\icon.ico"))
+    splashScreen.setStyleSheet("color: white; font: 16pt;")
+    splashScreen.show()
+    splashScreen.showMessage("Loading...", Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignCenter, Qt.GlobalColor.white)
+    
     preStartUp() 
     
     app.setWindowIcon(QIcon(basedir + r"\assets\images\icon.ico"))
 
-    window = MainWindow()
-        
-    def forceUpdate():
-        window.forceUpdate()
-        
-    urbanistFont.createFonts()
-    app.setStyleSheet(stylesheet)
-    
-    
-    
-    if  window.threadpool.maxThreadCount() < 2:
-        error_dialog = QMessageBox()
-        error_dialog.setIcon(QMessageBox.Icon.Critical)
-        error_dialog.setWindowTitle("Error")
-        error_dialog.setText('You have less than 2 available threads. At least 2 threads are needed to run the game')
-        error_dialog.exec()
-        sys.exit() 
-    
             
     if tabs.saveModule.lookForSave():
-        dialog = tabs.saveModule.CustomDialog("It appears you have a save. Would you like to load it?", "Load save", True)
+        dialog = dialogs.yesNoDialog("Load save", "It appears you have a save. Would you like to load it?", True)
+        splashScreen.showMessage("Respond to the dialog", Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignCenter, Qt.GlobalColor.white)
         dialogResults = dialog.exec()
         if dialogResults == QDialog.DialogCode.Accepted:
             tabs.saveModule.load(noSpeak = True)
+
+    splashScreen.showMessage("Loading...", Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignCenter, Qt.GlobalColor.white)
     
+    window = MainWindow()
+
+    if window.threadpool.maxThreadCount() < 2:
+        error_dialog = dialogs.errorDialog("Error", 'You have less than 2 available threads. At least 2 threads are needed to run the game')
+        error_dialog.exec()
+        sys.exit() 
+    
+    def forceUpdate():
+        window.forceUpdate()
+    
+    urbanistFont.createFonts()
+    action = QAction("Force update", window)
+    action.triggered.connect(forceUpdate)
+    splashScreen.showMessage("Done!", Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignCenter, Qt.GlobalColor.white)
     window.show()
+    splashScreen.hide()
     app.exec()
