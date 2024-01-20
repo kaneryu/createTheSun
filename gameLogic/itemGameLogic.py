@@ -97,10 +97,11 @@ def parseCost(name):
         string = ["Purchase "]                    
     else:
         return "Free"
-
+    exempt = ["hydrogen"]
     for i in get:
         string.append(str(i["amount"] * buyMultiplier) + " ")
-        if i["amount"] * buyMultiplier == 1:
+        
+        if i["amount"] * buyMultiplier == 1 and not i["what"] in exempt:
             string.append(i["what"][:-1])
         else:
             string.append(i["what"])
@@ -114,7 +115,8 @@ def parseCost(name):
 
     for i in what:
         string.append(str(i["amount"] * buyMultiplier) + " ")
-        if i["amount"] * buyMultiplier == 1:
+        
+        if i["amount"] * buyMultiplier == 1 and not i["what"] in exempt:
             string.append(i["what"][:-1])
         else:
             string.append(i["what"])

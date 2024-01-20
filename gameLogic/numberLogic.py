@@ -1,7 +1,7 @@
 import sympy as sp
 import regex as re
 from math import floor, ceil, log
-import gamedefine
+
 
 
 def evaluateCostEquation(costEquation: str, *args: int) -> int:
@@ -72,29 +72,31 @@ def splitCostEquation(costEquation: str) -> list[str]:
 
 
 
-def nonilize(number):
-    if number == 0:
-        return 0
-    
-    k = 1000.0
-    magnitude = int(floor(log(number, k)))
-    return '%.1f %s' % (number / k**magnitude, magnitudeDict[magnitude - 1])
+
 
 def magnitude(number):
     if number == 0:
         return 0
+
+    return int(log(number, 1000))
+
+def nonilize(number):
+    if number == 0:
+        return 0
+
     k = 1000.0
-    return int(round(log(number, k)))
+    magnitude_ = magnitude(number)
+    return '%.1f %s' % ((number*10) // (k**magnitude_) / 10, magnitudeDict[magnitude_ - 1])
 
 def humanReadableNumber(number):
     if number == 0:
         return "0"
-    if magnitude(number) > 11:
+    if magnitude(number) > 100:
         if not len(str(number)) > 307: # max float size fix (also shout out to antimatter dimensions 1.79e308!!!)
             return '{:.2e}'.format(number)
         else:
-            number = str(number) 
-            return number[1] + "." + number[2] + number[3] + "e" + str(len(number) - 1) 
+            number = str(number)
+            return number[1] + "." + number[2] + number[3] + "e" + str(len(number) - 1)
     else:
         if number < 1000:
             return str(number)

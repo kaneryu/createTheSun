@@ -17,14 +17,14 @@ class Observable(StrEnum):
     #Probably will not be used. For any other observable not specific enough to fit in a single catagory
     #But in that case, it will most likely get it's own observable.
   
-
+class ObservableCallType(StrEnum):
     #What to call on
     GAINED = "gained"
     TIME = "time"
     ALL = "all"
     OTHER = "other"
     
-    
+class ObservableCheckType(StrEnum):
     #AMOUNT = "amount"
     TYPE = "type"
 
@@ -38,7 +38,8 @@ Observables and their documentation are defined in the class above.
 
 observers = []
 
-def newObserver(function_, what: Observable, callType: Observable, checkType: Observable | None = None, check: str | None = None) -> None:
+def newObserver(function_, what: Observable, callType: ObservableCallType, checkType: ObservableCheckType | None = None, check: str | None = None) -> None:
+    print(f"new observer for {what} when {callType} occurs")
     allowedCallTypes = ["gained", "time", "all", "other"]
     allowedEvents = [
     "itemObserv",
@@ -51,20 +52,21 @@ def newObserver(function_, what: Observable, callType: Observable, checkType: Ob
     if not what in allowedEvents:
         raise TypeError("Incorrect type for what to call on, it should be a Enum from Observable")
     if not callType in allowedCallTypes:
-        raise TypeError("Incorrect type for callType. Use the Observable enum.")
+        raise TypeError("Incorrect type for callType. Use the ObservableCallType enum.")
     if not checkType == "amount" and not checkType == None:
-        raise TypeError("Incorrect type for checkType, it should use the Observable enum")
+        raise TypeError("Incorrect type for checkType, it should use the ObservableCheckType enum")
     if not check == str and not check == None:
         raise TypeError("Check should be a str")
     
     observers.append([function_, what, callType, (checkType, check)])
     
     
-def callEvent(what: Observable, callType: Observable, information: Union[str, tuple, int]):
+def callEvent(what: Observable, callType: ObservableCallType, information: Union[str, tuple, int]):
     """
     Function to call an event
     """
-    print("Calling event " + str(information))
+    print("Calling event " + what)
+    
     allowedEvents = [
     "itemObserv",
     "acheObserv",
@@ -72,18 +74,19 @@ def callEvent(what: Observable, callType: Observable, information: Union[str, tu
     "timeObserv",
     "otherObserv"
     ]
+    
     allowedCallTypes = ["gained", "time", "all", "other"]
     
     if not callType in allowedCallTypes:
-        raise TypeError("Incorrect type for callType. Use the Observable enum.")
+        raise TypeError("Incorrect type for callType. Use the ObservableCallType enum.")
     if not what in allowedEvents:
-        raise TypeError("Incorrect type for what to call, it should be a Enum from Observable")
+        raise TypeError("Incorrect type for what to call, it should be a enum from Observable")
     
     
     for item in observers:
         if item[1] == what:
             if item[2] == callType:
-                if item[3][0] == Observable.TYPE:
+                if item[3][0] == ObservableCheckType.TYPE:
                     if information == item[3][1]:
                         item[0](information) #if there is a check and the check is sucsessful
                 else:

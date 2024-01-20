@@ -25,6 +25,7 @@ import tabs.electrons as electrons
 import logging_ as logging
 import assets.fonts.urbanist.urbanistFont as urbanistFont
 from customWidgets import dialogs
+import unlocks # this is the only interaction needed to start the unlocks service
 
 logging.logLevel = 1
 logging.specialLogs = []
@@ -68,7 +69,7 @@ class MainWindow(QMainWindow):
         self.updateSignal.connect(self.updateDisplay)
         self.sUpdateThread1.connect(self.sUpdateThread1)
         logging.log("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount(), 1)
-
+        self.lastUpdateTime = time.time() * 1000
         
         self.setWindowTitle("Create The Sun")
         self.tabWidget = QTabWidget()
@@ -149,6 +150,15 @@ class MainWindow(QMainWindow):
             self.electrons.updateInternal()
             self.tabs[1]["class"].updateInternal()
             self.tabs[2]["class"].updateInternal()
+            
+            
+            if time.time() * 1000 - self.lastUpdateTime > 5000: # every 5 seconds
+                self.lastUpdateTime = time.time() * 1000
+                observerModel.callEvent(observerModel.Observable.ITEM_OBSERVABLE, observerModel.ObservableCallType.TIME, "")
+                observerModel.callEvent(observerModel.Observable.AUTOMATION_OBSERVABLE, observerModel.ObservableCallType.TIME, "")
+                observerModel.callEvent(observerModel.Observable.TIME_OBSERVABLE, observerModel.ObservableCallType.TIME, "")
+                
+            
             
             if not threading.main_thread().is_alive():
                 return 0
@@ -231,7 +241,7 @@ def preStartUp():
 
 if __name__ == "__main__":
 
-
+    quickLaunch = True
     
     #change icon in taskbar
     myappid = u'opensource.createthesun.main.pre-release'
@@ -249,17 +259,18 @@ if __name__ == "__main__":
     splashScreen.show()
     splashScreen.showMessage("Loading...", Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignCenter, Qt.GlobalColor.white)
     
-    preStartUp() 
+     
     
     app.setWindowIcon(QIcon(basedir + r"\assets\images\icon.ico"))
 
-            
-    if tabs.saveModule.lookForSave():
-        dialog = dialogs.yesNoDialog("Load save", "It appears you have a save. Would you like to load it?", True)
-        splashScreen.showMessage("Respond to the dialog", Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignCenter, Qt.GlobalColor.white)
-        dialogResults = dialog.exec()
-        if dialogResults == QDialog.DialogCode.Accepted:
-            tabs.saveModule.load(noSpeak = True)
+    if not quickLaunch:
+        preStartUp() 
+        if tabs.saveModule.lookForSave():
+            dialog = dialogs.yesNoDialog("Load save", "It appears you have a save. Would you like to load it?", True)
+            splashScreen.showMessage("Respond to the dialog", Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignCenter, Qt.GlobalColor.white)
+            dialogResults = dialog.exec()
+            if dialogResults == QDialog.DialogCode.Accepted:
+                tabs.saveModule.load(noSpeak = True)
 
     splashScreen.showMessage("Loading...", Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignCenter, Qt.GlobalColor.white)
     

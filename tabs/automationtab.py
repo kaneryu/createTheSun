@@ -46,7 +46,7 @@ class automationBlock(QFrame):
         
     
     def purchase(self):
-        observerModel.callEvent(observerModel.Observable.AUTOMATION_OBSERVABLE, observerModel.Observable.GAINED, (self.name, gamedefine.automationLevels[self.name])) 
+        observerModel.callEvent(observerModel.Observable.AUTOMATION_OBSERVABLE, observerModel.ObservableCallType.GAINED, (self.name, gamedefine.automationLevels[self.name])) 
         if automationGameLogic.canAffordUpgrade(self.name):
             automationGameLogic.purchaseUpgrade(self.name)
             automationGameLogic.updateUpgradeStatus(self.name)

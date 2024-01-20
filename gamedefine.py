@@ -350,9 +350,7 @@ automationInternalDefine = {
                             "equation": "(%1-45)/5",
                             
                         }
-                        
-                        
-                        
+
                     ]
                 }
             }

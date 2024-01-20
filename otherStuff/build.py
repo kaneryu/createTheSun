@@ -53,7 +53,7 @@ def copyFiles():
     print("done zipping files, filename is " + f"{name}.zip")    
 
 def build():
-    print("DID YOU REMEMBER TO: \n test all features\nCheck if all gamedefine values are set to the base amount")
+    print("DID YOU REMEMBER TO: \n test all features\nCheck if all gamedefine values are set to the base amount\nEnsure that quickLaunch is set to False")
     input("Press enter to continue")
     buildMainGame()
     buildLauncher()

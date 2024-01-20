@@ -130,9 +130,13 @@ def updateUpgradeStatus(upgrade : str) -> None:
                 gamedefine.automationDetails[upgrade]["whatItGives"][i]["amount"] = amount
                 
             if idleGenDict["withRequirement"]:
-                for i in range(len(idleGenDict["whatItCosts"])):
-                    amount = numberLogic.evaluateCostEquation(idleGenDict["costEquation"][i], gamedefine.automationLevels[upgrade])
-                    gamedefine.automationDetails[upgrade]["whatItCosts"][i]["amount"] = amount
+                for i in idleGenDict["whatItCosts"]:
+                    try:
+                        i["equation"]
+                    except KeyError:
+                        continue
+                    amount = numberLogic.evaluateCostEquation(i["equation"], gamedefine.automationLevels[upgrade])
+                    i["amount"] = amount
 
 
 
@@ -244,7 +248,7 @@ def parseUsefulDescription(upgrade) -> str:
                 
                 futureDec = getFutureDescription(upgrade)
             
-            print(currentDec + " \n " + futureDec)
+            
             return currentDec + " \n " + futureDec
         
         return ""

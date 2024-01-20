@@ -53,7 +53,7 @@ class purchaseStrip(QWidget):
         self.setLayout(self.layout_)
     
     def purchase(self):
-        observerModel.callEvent(observerModel.Observable.ITEM_OBSERVABLE, observerModel.Observable.GAINED, self.name)
+        observerModel.callEvent(observerModel.Observable.ITEM_OBSERVABLE, observerModel.ObservableCallType.GAINED, self.name)
         if self.name == "quarks":
             itemGameLogic.purchase("quarks")
             return 0
@@ -146,21 +146,17 @@ class content(QWidget):
             i.updateTab()
         
         if not len(self.purchaseStrips) == len(gamedefine.purchaseToCreate):
-
+            
             whatToAdd: list = deepcopy(gamedefine.purchaseToCreate)
             for i in self.purchaseStrips:
                 if i.name in whatToAdd:
                     whatToAdd.remove(i.name)
             
             for i in whatToAdd:
-                self.purchaseStrips.insert(gamedefine.purchaseToCreate.index(i) - 1, purchaseStrip(i))
-            
-            for i in range(self.layout_.count()):
-                self.layout_.removeItem(self.layout_.itemAt(i))
-            
-            for i in self.purchaseStrips:
-                self.layout_.addWidget(i)
-            
-            print(f"{"".join(self.purchaseStrips)} {"".join(gamedefine.purchaseToCreate)}") #type: ignore
-            sys.exit()
-            
+                self.purchaseStrips.insert(gamedefine.purchaseToCreate.index(i), purchaseStrip(i))
+                self.layout_.insertWidget(gamedefine.purchaseToCreate.index(i) + 1, self.purchaseStrips[gamedefine.purchaseToCreate.index(i)])
+
+
+    
+        
+        self.setLayout(self.layout_)
