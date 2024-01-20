@@ -274,20 +274,18 @@ def getFutureDescription(upgrade):
 
 
 def parseUpgradeName(upgrade):
-    
+            
+    currentDict = getCurrentVisualMultiLevelUpgrade(upgrade)
     if gamedefine.automationLevels[upgrade] == 0:
-        
-        return gamedefine.automationVisualDefine[upgrade][0]["visualName"]
+        return f"{currentDict["visualName"]} \n {currentDict["description"]} \n"
     else:
-        
-        currentDict = getCurrentVisualMultiLevelUpgrade(upgrade)
         return f"Level {gamedefine.automationLevels[upgrade]} {currentDict["visualName"]} \n {currentDict["description"]} \n"
 
 def getDescription(upgrade):
     index = getCurrentMultiLevelUpgradeIndex(upgrade)
     
     if gamedefine.automationLevels[upgrade] == 0:
-        return f"{gamedefine.automationVisualDefine[upgrade][index]["upgradeVisualName"]} \n {gamedefine.automationVisualDefine[upgrade][index]["upgradeDescription"]}"
+        return f""
     else:
 
         return f"{gamedefine.automationVisualDefine[upgrade][index]["upgradeVisualName"]} \n {gamedefine.automationVisualDefine[upgrade][index]["upgradeDescription"]}"

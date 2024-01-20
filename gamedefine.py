@@ -628,7 +628,7 @@ autosaveTime = 300000
 
 def loadSave(saveDict: dict):
     global amounts, clickGainMultiplierList, multiplierList, automationLevels, automationDisabledState, automationDetails, unlockedAchevements, electronDetails, unlockedUnlockables, purchaseToCreate, automationsToCreate
-    saveDict = convertStrToFloats(saveDict) # type: ignore
+    saveDict = saveDict # type: ignore
     for i in saveableStr:
         if not i in saveDict:
             saveDict[i] = ""
@@ -649,28 +649,33 @@ def getSaveData():
     saveDict = {}
     for i in range(len(saveable)):
         saveDict[saveableStr[i]] = saveable[i]
-    print(convertFloatsToStr(saveDict))
-    return convertFloatsToStr(saveDict)    
+    return saveDict    
 
 def convertFloatsToStr(input: dict | list):
     def convertFloatsToStrFromList(input_: list):
         workingList = input_
         for i in workingList:
             if type(i) == dict:
-                convertFloatsToStrFromDict(i)
+                print(f"entering {i}")
+                workingList[workingList.index(i)] = convertFloatsToStrFromDict(i)
             if type(i) == list:
-                convertFloatsToStrFromList(i)
+                print(f"entering {i}")
+                workingList[workingList.index(i)] = convertFloatsToStrFromList(i)
             if type(i) == float:
+                print(f"fixing {i}")
                 workingList[workingList.index(i)] = str(i) + "f" #bruhhhh why doesnt i = str(i) + "f" work
         return workingList
                 
     def convertFloatsToStrFromDict(input: dict):
         for keys in input:
             if type(input[keys]) == float:
+                print(f"fixing {input[keys]}")
                 input[keys] = str(input[keys]) + "f"
             if type(input[keys]) == dict:
+                print(f"entering {input[keys]}")
                 input[keys] = convertFloatsToStrFromDict(input[keys])
             if type(input[keys]) == list:
+                print(f"entering {input[keys]}")
                 input[keys] = convertFloatsToStrFromList(input[keys])
         return input
     
@@ -710,4 +715,6 @@ def convertStrToFloats(input: dict):
         return convertStrToFloatsFromList(input)   
     
 
-testdict_ = {'amounts': {'quarks': 1138772.00000000, 'electrons': 100, 'protons': 2161998.60000018, 'hydrogen': 0, 'stars': 0, 'galaxies': 0, 'superclusters': 0}, 'clickGainMultiplierList': {'quarks': [1], 'electrons': [1], 'protons': [1], 'hydrogen': [1], 'stars': [1], 'galaxies': [1], 'superclusters': [1]}, 'multiplierList': {'quarks': [1], 'electrons': [1], 'protons': [1], 'hydrogen': [1], 'stars': [1], 'galaxies': [1], 'superclusters': [1]}, 'upgradeLevels': {'particleAccelerator': 127, 'protonicForge': 68}, 'upgradeDisabledState': {'particleAccelerator': (False, '0'), 'protonicForge': (False, '0')}, 'upgradeDetails': {'particleAccelerator': {'timeToWait': 10, 'whatItGives': [{'what': 'quarks', 'amount': 100.000000000000}]}, 'protonicForge': {'timeToWait': 10, 'whatItGives': [{'what': 'protons', 'amount': 4.60000000000000}], 'whatItCosts': [{'what': 'quarks', 'amount': 'atMarketPrice'}]}}, 'unlockedAchevements': [], 'electronDetails': {'waitTime': 1000, 'amount': 100, 'maxAmount': 100, 'minAmount': 0}, 'unlockedUnlockables': [], 'purchaseToCreate': ['quarks', 'protons'], 'automationsToCreate': ['particleAccelerator', 'protonicForge']}
+# testdict_ = {'amounts': {'quarks': 100037, 'electrons': 100, 'protons': 1000000, 'hydrogen': 0, 'stars': 0, 'galaxies': 0, 'superclusters': 0}, 'clickGainMultiplierList': {'quarks': [1], 'electrons': [1], 'protons': [1], 'hydrogen': [1], 'stars': [1], 'galaxies': [1], 'superclusters': [1]}, 'multiplierList': {'quarks': [1], 'electrons': [1], 'protons': [1], 'hydrogen': [1], 'stars': [1], 'galaxies': [1], 'superclusters': [1]}, 'upgradeLevels': {'particleAccelerator': 2, 'protonicForge': 0}, 'upgradeDisabledState': {'particleAccelerator': (False, '0'), 'protonicForge': (False, '0')}, 'upgradeDetails': {'particleAccelerator': {'timeToWait': 428.134117105719, 'whatItGives': [{'what': 'quarks', 'amount': 1}]}, 'protonicForge': {'timeToWait': 1000, 'whatItGives': [{'what': 'protons', 'amount': 1}], 'whatItCosts': [{'what': 'quarks', 'amount': 3}]}}, 'unlockedAchevements': [], 'electronDetails': {'waitTime': '0.2f', 'amount': 1, 'maxAmount': 100, 'minAmount': 0}, 'unlockedUnlockables': ['hydrogenUnlock', 'upgradeTabUnlock', 'protonSpilloverUnlock'], 'purchaseToCreate': ['quarks', 'protons', 'hydrogen'], 'automationsToCreate': ['particleAccelerator', 'protonicForge']}
+
+# print(convertFloatsToStr(testdict_))

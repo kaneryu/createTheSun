@@ -147,6 +147,7 @@ class MainWindow(QMainWindow):
         A seperate thread for updating electrons and tabs, so it can run as fast as possible without waiting for display referesh
         """
         while True:
+            
             self.electrons.updateInternal()
             self.tabs[1]["class"].updateInternal()
             self.tabs[2]["class"].updateInternal()

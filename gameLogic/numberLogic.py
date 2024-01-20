@@ -4,7 +4,7 @@ from math import floor, ceil, log
 
 
 
-def evaluateCostEquation(costEquation: str, *args: int) -> int:
+def evaluateCostEquation(costEquation: str, *args: int) -> int | float:
     """
     Evaluates the cost equation.
 
@@ -35,8 +35,10 @@ def evaluateCostEquation(costEquation: str, *args: int) -> int:
     # join the list of strings into one string
     equation = "".join(equation)
     expr = sp.sympify(equation)
-
-    return expr.evalf()
+    result = expr.evalf()
+    if type(result) == sp.Float:
+        result = float(result)
+    return result
 
 
 def splitCostEquation(costEquation: str) -> list[str]:
