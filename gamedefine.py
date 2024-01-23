@@ -1,3 +1,4 @@
+
 itemVisualDefine = {
     "quarks": {
         "visualName": "Quarks",
@@ -347,8 +348,7 @@ automationInternalDefine = {
                     # in this case, %1 is upgrade level
                     "amountEquation": [
                         {
-                            "equation": "(%1-45)/5",
-                            
+                            "equation": "(%1-45)/2+3",
                         }
 
                     ]
@@ -510,15 +510,16 @@ automationDetails = {
 
 achevementInternalDefine = {
     "theBeginning": {
-        
         "hidden": False,
         
         "whatItRequires": [
             {
+                "type": "item",
                 "what": "quarks",
                 "amount": 1
             },
             {
+                "type": "item",
                 "what": "protons",
                 "amount": 1                
             }        
@@ -527,6 +528,7 @@ achevementInternalDefine = {
         "type": "show",
         "whatItGives": [
             {
+                "type": "item",
                 "what": "nothing",
                 "amount": -1
             }
@@ -537,15 +539,58 @@ achevementInternalDefine = {
         "hidden": False,
         "whatItRequires": [
             {
-                "what": "particleAccelerator",
+                "type": "automation",
+                "what": "protonicForge",
                 "amount": 1
             }  
         ],
         "type": "itemReward",
         "whatItGives": [
             {
+                "type": "item",
                 "what": "protons",
+                "specialAmount": False,
                 "amount": 10
+            }
+        ]
+    },
+    
+    "rewrite": {
+        "hidden": False,
+        "whatItRequires": [
+            {
+                "type": "item",
+                "what": "hydrogen",
+                "amount": 10
+            }  
+        ],
+        "type": "show",
+        "whatItGives": [
+            {
+                "type": "item",
+                "what": "nothing",
+                "specialAmount": False,
+                "amount": -1
+            }
+        ]
+    },
+    
+    "perpetualMotion": {
+        "hidden": False,
+        "whatItRequires": [
+            {
+                "type": "rewrite",
+                "what": "protonSpillover",
+                "amount": 1
+            }  
+        ],
+        "type": "itemReward",
+        "whatItGives": [
+            {
+                "type": "item",
+                "what": "quarks",
+                "specialAmount": True,
+                "amount" : {"type": "double", "cap": 100_000_000}
             }
         ]
     }
@@ -554,13 +599,26 @@ achevementInternalDefine = {
 achevementVisualDefine = {
     "theBeginning": {
         "visualName": "The Beginning",
-        "hoverDescription": "At the start, there was nothing... \n Create your first quark and proton" 
+        "hoverDescription": "At the start, there was nothing... \n Create your first quark and proton.",
+        "rewardDescription": ""
     },
     
     "automation": {
         "visualName": "Automation",
-        "hoverDescription": "Automation is upon us. \n Create your first particle accelerator",
+        "hoverDescription": "Automation is upon us. \n Create your first protonic forge.",
         "rewardDescription": "Unlock to recive 10 protons"
+    },
+    
+    "rewrite": {
+        "visualName": "Rewrite",
+        "hoverDescription": "The universe is being rewritten. \n Unlock the rewrite tab.",
+        "rewardDescription": ""
+    },
+    
+    "perpetualMotion": {
+        "visualName": "Perpetual Motion",
+        "hoverDescription": "Pretty sure that's illegal somehow... \n Unlock the Proton Spillover rewrite.",
+        "rewardDescription": "Gain double your current amount of quarks, capped to 100M"
     }
 }
 
@@ -575,48 +633,59 @@ unlockables = {
                 {
                     "type": "automation",
                     "what": "particleAccelerator",
-                    "amount": 2
+                    "amount": 100
                 }
             ]
         },
-    "upgradeTabUnlock": {
-            "visual": False,
-            "unlockType": "tab",
-            "whatUnlocks": "upgradeTab",
-            "needs": [
-                {
-                    "type": "item",
-                    "what": "protons",
-                    "amount": 2000                
-                },
-                {
-                    "type": "time",
-                    "what": "timePlayed",
-                    "amount": 0 #just for future refrence
-                }
-            ]
-        },
-    "protonSpilloverUnlock": {
-            "visual": False,
-            "unlockType": "upgrade",
-            "whatUnlocks": "protonSpillover",
-            "needs": [
-                {
-                    "type": "item",
-                    "what": "protons",
-                    "amount": 2000
-                }                
-            ]
-        }
+    "rewriteTabUnlock": {
+        "visual": False,
+        "unlockType": "tab",
+        "whatUnlocks": "rewrite",
+        "needs": [
+            {
+                "type": "item",
+                "what": "hydrogen",
+                "amount": 10
+            }
+        ]
+    },
 }
 
 unlockedUnlockables = []
 
+rewriteInternalDefine = {}
 
+rewriteVisualDefine = {
+    "protonSpillover": {
+        "name": "Proton Spillover",
+        "description": "A small amount of protons will decompose into 4 quarks.",
+        "technicalDescription": "There will be a 5% chance every second that a proton will decompose into 4 quarks."
+    },
+    "hydrogenSpillover": {
+        "name": "Hydrogen Spillover",
+        "description": "A small amount of hydrogen will decompose into 2 protons.",
+        "technicalDescription": "There will be a 5% chance every second that a hydrogen will decompose into 2 protons."
+    },
+    "quarkEfficency": {
+        "name": "Quark Efficency",
+        "description": "Protons now cost 2 quarks instead of 3.",
+        "technicalDescription": ""
+    },
+    "folding": {
+        "name": "Folding",
+        "description": "In exchange for removing your hydrogen spillover, you now gain a multiplier to your proton gain corresponding to how much hydrogen you have.",
+        "technicalDescription": "The multiplier is (hydrogen / 100) + 1"
+    },
+    "hyperfolding": {
+        "name": "Hyperfolding",
+        "description": "In exchange for removing your proton spillover, you now gain a multiplier to your quark gain corresponding to how much protons you have.",
+        "technicalDescription": "The multiplier is (protons / 200) + 1"
+    }
+}
 
+unlockedRewrites = []
 
-
-
+lastAchevementGain = ("nothing", -1) #achevement name, timestamp
 
 
 saveable = [amounts, clickGainMultiplierList, multiplierList, automationLevels, automationDisabledState, automationDetails, unlockedAchevements, electronDetails, unlockedUnlockables, purchaseToCreate, automationsToCreate]

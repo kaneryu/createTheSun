@@ -1,8 +1,7 @@
-import achevements
 import warnings
 from typing import Union
 from enum import StrEnum
-from PyQt6.QtCore import pyqtSignal
+
 
 class Observable(StrEnum):
     ITEM_OBSERVABLE = "itemObserv"
@@ -38,7 +37,7 @@ Observables and their documentation are defined in the class above.
 
 observers = []
 
-def newObserver(function_, what: Observable, callType: ObservableCallType, checkType: ObservableCheckType | None = None, check: str | None = None) -> None:
+def registerObserver(function_, what: Observable, callType: ObservableCallType, checkType: ObservableCheckType | None = None, check: str | None = None) -> None:
     print(f"new observer for {what} when {callType} occurs")
     allowedCallTypes = ["gained", "time", "all", "other"]
     allowedEvents = [
@@ -65,7 +64,8 @@ def callEvent(what: Observable, callType: ObservableCallType, information: Union
     """
     Function to call an event
     """
-    print("Calling event " + what)
+    if not callType == "time":
+        print("Calling event " + what)
     
     allowedEvents = [
     "itemObserv",
@@ -84,8 +84,8 @@ def callEvent(what: Observable, callType: ObservableCallType, information: Union
     
     
     for item in observers:
-        if item[1] == what:
-            if item[2] == callType:
+        if item[1] == what: #it it's the correct observable
+            if item[2] == callType or item[2] == ObservableCallType.ALL: # if it has the correct calltype
                 if item[3][0] == ObservableCheckType.TYPE:
                     if information == item[3][1]:
                         item[0](information) #if there is a check and the check is sucsessful

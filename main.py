@@ -31,6 +31,9 @@ logging.logLevel = 1
 logging.specialLogs = []
 basedir = os.path.dirname(__file__)
 
+devmode = True if os.path.exists(f"{basedir}\\otherStuff\\build.py") else False
+if devmode:
+    print("Devmode is On")
 
 class Worker(QRunnable):
     '''
@@ -123,6 +126,7 @@ class MainWindow(QMainWindow):
         """
         while True:
             self.updateSignal.emit()
+                
             time.sleep(0.001)
             if not threading.main_thread().is_alive():
                 return
@@ -133,26 +137,53 @@ class MainWindow(QMainWindow):
         """
         Updates the display by calling the updateDisplay method whatever needs to be updated.
         """
-        for i in self.tabs:
-            logging.log(f"now updating tab {i["name"]}", specialType="updateLoopInfo")
-            i["class"].updateDisplay()
+        def inner():
+            for i in self.tabs:
+                    logging.log(f"now updating tab {i["name"]}", specialType="updateLoopInfo")
+                    i["class"].updateDisplay()
 
-        logging.log("now updating electrons", specialType="updateLoopInfo")
-        self.electrons.updateDisplay()
-        if not threading.main_thread().is_alive():
-            return
+            logging.log("now updating electrons", specialType="updateLoopInfo")
+            self.electrons.updateDisplay()
+            
+            if time.time() * 1000 - gamedefine.lastAchevementGain[1] > 10000 and not gamedefine.lastAchevementGain[0] == "nothing": #if achevement gained in the last 10 seconds
+                self.label.setText(f"You just got the achevement {gamedefine.achevementVisualDefine[gamedefine.lastAchevementGain[0]]["visualName"]}")
+            else:
+                self.label.setText("Create The Sun...")
+            
+            if not threading.main_thread().is_alive():
+                return
+            
+        if not devmode:
+            try:
+                inner()
+            except Exception as e:
+                dialogs.errorDialog("Error", e).exec()
+                self.close()
+        else:
+            inner() 
+        
     
     def updateThread1(self):
         """
         A seperate thread for updating electrons and tabs, so it can run as fast as possible without waiting for display referesh
         """
-        while True:
-            
+        def checkForNewTabs():
+            if not len(self.tabs) == len(tabs.tabs):
+                #items will only be appended, not inserted
+                lastTab = self.tabs[-1]["class"]
+                indexInTabsToAdd = tabs.tabs.index(lastTab)
+                
+                for i in range(indexInTabsToAdd + 1, len(tabs.tabs) - 1):
+                    current = tabs.tabs[i]
+                    self.tabs.append({"class" : current(), "name": current.name()})
+                    self.tabWidget.addTab(self.tabs[-1]["class"], current.name())
+                    self.tabWidget.setTabToolTip(len(self.tabs) - 1, current.tooltip())
+                    
+        def inner():
+            checkForNewTabs()
             self.electrons.updateInternal()
             self.tabs[1]["class"].updateInternal()
-            self.tabs[2]["class"].updateInternal()
-            
-            
+            self.tabs[3]["class"].updateInternal()
             if time.time() * 1000 - self.lastUpdateTime > 5000: # every 5 seconds
                 self.lastUpdateTime = time.time() * 1000
                 observerModel.callEvent(observerModel.Observable.ITEM_OBSERVABLE, observerModel.ObservableCallType.TIME, "")
@@ -167,6 +198,16 @@ class MainWindow(QMainWindow):
             if gamedefine.force == 1:
                 gamedefine.force = 0
                 forceUpdate()
+                
+        if devmode:
+            while True:
+                inner()
+        else:
+            while True:
+                try:
+                    inner()
+                except Exception as e:
+                    dialogs.errorDialog("Error", e)
             
     def forceUpdate(self):
         """
@@ -186,8 +227,6 @@ class MainWindow(QMainWindow):
         saveDialogResults = saveDialog.exec()
         if saveDialogResults == QDialog.DialogCode.Accepted:
             tabs.saveModule.save(notify = False)
-        
-        sys.exit(0) #stop all threads
         
     # def createSaveDir(self):
     #     LOCALAPPDATA = os.getenv('LOCALAPPDATA')
@@ -228,7 +267,7 @@ def preStartUp():
             
     if not updateCheck(): # if not on the latest version
         if os.path.exists(os.path.dirname(__file__) + "\\_internal"): #if installed
-            command = f"{os.getenv('LOCALAPPDATA')}\\'/createTheSunUpdater\\installer.exe"
+            command = f"{os.getenv('LOCALAPPDATA')}\\createTheSunUpdater\\installer.exe"
         else:
             return
         
@@ -291,4 +330,4 @@ if __name__ == "__main__":
     splashScreen.showMessage("Done!", Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignCenter, Qt.GlobalColor.white)
     window.show()
     splashScreen.hide()
-    app.exec()
+    sys.exit(app.exec())
