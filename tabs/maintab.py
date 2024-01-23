@@ -17,7 +17,6 @@ import gameLogic.itemGameLogic as itemGameLogic
 import logging_ as logging
 import assets.fonts.urbanist.urbanistFont as urbanistFont
 import observerModel
-import achevements
 import gameLogic.numberLogic as numberLogic
 
 class purchaseStrip(QWidget):
@@ -81,11 +80,6 @@ class purchaseStrip(QWidget):
                 self.purchaseButton.setDisabled(False)
         else:
             self.purchaseButton.setText("Free")
-            
-    def showAchevement(self, achevement):
-        hecker = achevements.achevementPopup("theBeginning")
-        
-        hecker.show()
         
             
 class header(QWidget):

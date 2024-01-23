@@ -100,7 +100,7 @@ class content(QWidget):
     def updateDisplay(self):
         for i in self.automationBlocks:
             i.updateDisplay()
-    
+        
     def updateInternal(self):
         for i in self.automationBlocks:
             i.updateInternal()

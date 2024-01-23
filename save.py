@@ -4,6 +4,7 @@ import os
 import pathlib
 import json
 import base64
+import unlocks
 
 from PyQt6.QtWidgets import QDialog
 
@@ -87,6 +88,9 @@ def load(noSpeak = False, loadWarn = True, save = None):
     
     gamedefine.loadSave(save_)
     gamedefine.force = 1
+    
+    for i in gamedefine.unlockedUnlockables:
+        unlocks.unlock(i)
     
     if not noSpeak:
         operationSucsess.exec()

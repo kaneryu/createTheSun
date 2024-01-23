@@ -11,6 +11,7 @@ import save
 import tabs.maintab as maintab
 import tabs.automationtab as automationtab
 import tabs.settingstab as settingstab
+import tabs.achevementsTab as achevementsTab_
 saveModule = save # I don't know if importing save from main.py will cause a circular import, but this feels safer for now.
 
 class mainTab(QWidget):
@@ -98,16 +99,39 @@ class achievementsTab(QWidget):
     def __init__(self):
         super().__init__()
         self.layout_ = QVBoxLayout()
-        self.layout_.addWidget(QLabel("Achievements Tab"))
+        self.content = achevementsTab_.content()
+        self.layout_.addWidget(self.content)
         self.setLayout(self.layout_)
+        
     def updateDisplay(self):
-        return 0
+        self.content.displayUpdate()
     
     def name(): #type: ignore
         return "Achevements"
     
     def tooltip(): #type: ignore
-        return "Shhhh..."
+        return "The tab that contains of the achevements you have"
     
+class rewriteTab(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.layout_ = QVBoxLayout()
+        self.layout_.addWidget(QLabel("Upgrade Tab"))
+        self.setLayout(self.layout_)
+        
+    def updateDisplay(self):
+        return 0
+    
+    def updateInternal(self):
+        return 0
+    
+    def name(): #type: ignore
+        return "Rewrites"
 
-tabs = [mainTab, automationTab, settingsTab]
+        
+    def tooltip(): #type: ignore
+        return "The tab where rewrites can be purchased"
+
+tabs = [mainTab, automationTab, achievementsTab, settingsTab]
+internalUpdateList = [automationTab.updateInternal, settingsTab.updateInternal]
+internalUpdateable = [automationTab.updateInternal, settingsTab.updateInternal, rewriteTab.updateInternal]

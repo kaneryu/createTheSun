@@ -1,7 +1,7 @@
-from observerModel import newObserver, Observable, ObservableCallType
+from observerModel import registerObserver, Observable, ObservableCallType
 from gamedefine import unlockables, unlockedUnlockables
 import gamedefine
-
+import time
 
 def checkUnlocks(event):
     for key in unlockables:
@@ -23,10 +23,36 @@ def checkUnlocks(event):
                 
 def unlock(key):
     currentDict = unlockables[key]
-    
     if currentDict["unlockType"] == "item":
         gamedefine.purchaseToCreate.append(currentDict["whatUnlocks"]) #type: ignore
     
+    
+def checkAchevements(event):
+    for i in gamedefine.achevementInternalDefine:
+        if not i in gamedefine.unlockedAchevements:
+            
+            ongoingCheck = True
+            currentDict = gamedefine.achevementInternalDefine[i]
+            for item in currentDict["whatItRequires"]: #type: ignore
+                if item["type"] == "item": #type: ignore
+                    if not gamedefine.amounts[item["what"]] >= item["amount"]: #type: ignore
+                        ongoingCheck = False
+                
+                if item["type"] == "automation": #type: ignore
+                    if not gamedefine.automationLevels[item["what"]] >= item["amount"]: #type: ignore
+                        ongoingCheck = False
+                        
+                if item["type"] == "rewrite":
+                    if not item["what"] in gamedefine.unlockedRewrites:
+                        ongoingCheck = False
+            
+            if ongoingCheck == True:
+                gamedefine.unlockedAchevements.append(i)
+                gamedefine.lastAchevementGain = (i, time.time() * 1000)
 
-newObserver(checkUnlocks, Observable.ITEM_OBSERVABLE, ObservableCallType.TIME)
-newObserver(checkUnlocks, Observable.AUTOMATION_OBSERVABLE, ObservableCallType.TIME)
+def reciever(event):
+    checkUnlocks(event)
+    checkAchevements(event)
+
+registerObserver(reciever, Observable.ITEM_OBSERVABLE, ObservableCallType.ALL)
+registerObserver(reciever, Observable.AUTOMATION_OBSERVABLE, ObservableCallType.ALL)
