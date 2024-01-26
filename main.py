@@ -146,7 +146,7 @@ class MainWindow(QMainWindow):
             self.electrons.updateDisplay()
             
             if time.time() * 1000 - gamedefine.lastAchevementGain[1] > 10000 and not gamedefine.lastAchevementGain[0] == "nothing": #if achevement gained in the last 10 seconds
-                self.label.setText(f"You just got the achevement {gamedefine.achevementVisualDefine[gamedefine.lastAchevementGain[0]]["visualName"]}")
+                self.label.setText(f"You just got an achevement - {gamedefine.achevementVisualDefine[gamedefine.lastAchevementGain[0]]["visualName"]}")
             else:
                 self.label.setText("Create The Sun...")
             

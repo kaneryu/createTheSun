@@ -88,7 +88,7 @@ def nonilize(number):
 
     k = 1000.0
     magnitude_ = magnitude(number)
-    return '%.1f %s' % ((number*10) // (k**magnitude_) / 10, magnitudeDict[magnitude_ - 1])
+    return '%.2f %s' % ((number*10) // (k**magnitude_) / 10, magnitudeDict[magnitude_ - 1])
 
 def humanReadableNumber(number):
     if number == 0:
