@@ -29,7 +29,7 @@ import unlocks # this is the only interaction needed to start the unlocks servic
 
 logging.logLevel = 1
 logging.specialLogs = []
-basedir = os.path.dirname(__file__)
+basedir = os.path.realpath(__file__)
 
 devmode = True if os.path.exists(f"{basedir}\\otherStuff\\build.py") else False
 if devmode:
@@ -266,13 +266,9 @@ def preStartUp():
             return False
             
     if not updateCheck(): # if not on the latest version
-        if os.path.exists(os.path.dirname(__file__) + "\\_internal"): #if installed
-            command = f"{os.getenv('LOCALAPPDATA')}\\createTheSunUpdater\\installer.exe"
-        else:
-            return
-        
+        command = f"{os.getenv('LOCALAPPDATA')}\\createTheSunUpdater\\installer.exe"
         if not os.path.exists(command):
-            error_dialog = dialogs.errorDialog("Error", r'You are not on the latest version and the launcher is missing. Please download the latest version from https:\\github.com\KaneryU\createTheSun')
+            error_dialog = dialogs.errorDialog("Error", r'You are not on the latest version and the launcher is missing. Please download the latest version from https:\\github.com\KaneryU\createTheSun ')
             error_dialog.exec()
         
         print(command)

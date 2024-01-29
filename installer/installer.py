@@ -209,16 +209,20 @@ class MainWindow(QMainWindow):
         return changelog
     
     def checkConnection(self):
-        if requests.get("https://api.github.com").status_code == 200:
-            self.installerLabel.setText("")
-            askForPermission = changeLogDialog(f"Do you want to install the game?", "Create The Sun", True, self.getChangelog("v1.0.0"))
-            askForPermission.exec()
-            if askForPermission.result() == 1:
-                self.downloadLatestRelease()
+        try:
+            if requests.get("https://api.github.com").status_code == 200:
+                self.installerLabel.setText("")
+                askForPermission = changeLogDialog(f"Do you want to install the game?", "Create The Sun", True, self.getChangelog("v1.0.0"))
+                askForPermission.exec()
+                if askForPermission.result() == 1:
+                    self.downloadLatestRelease()
+                else:
+                    self.close()
             else:
-                self.close()
-        else:
-            self.installerLabel.setText("No internet connection")
+                self.installerLabel.setText("No internet connection")
+                self.installerProgressBar.setRange(0, 0)
+        except requests.exceptions.ConnectionError as e:
+            self.installerLabel.setText(f"No internet connection \n {e}")
             self.installerProgressBar.setRange(0, 0)
             
 
