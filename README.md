@@ -42,3 +42,4 @@ py otherStuff\build.py
 Accept the reminder by pressing enter, wait for the builds to finish, then enter any version number you want, then you can find the files where the builder tells you.
 
     
+![Alt](https://repobeats.axiom.co/api/embed/17a6846fef2e07147e82eae88fa69ea6fa88f051.svg "Repobeats analytics image")
