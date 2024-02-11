@@ -29,9 +29,9 @@ import unlocks # this is the only interaction needed to start the unlocks servic
 
 logging.logLevel = 1
 logging.specialLogs = []
-basedir = os.path.realpath(__file__)
+basedir = os.path.join(os.path.abspath(__file__), os.path.pardir)
 
-devmode = True if os.path.exists(f"{basedir}\\otherStuff\\build.py") else False
+devmode = False if os.path.exists(f"{basedir}\\otherStuff\\build.py") else True
 if devmode:
     print("Devmode is On")
 
@@ -66,6 +66,8 @@ class Worker(QRunnable):
 class MainWindow(QMainWindow):
     updateSignal = pyqtSignal()
     sUpdateThread1 = pyqtSignal()
+    errored = False
+    
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
         self.threadpool = QThreadPool()
@@ -125,7 +127,8 @@ class MainWindow(QMainWindow):
         or else there will be general instability in the application.        
         """
         while True:
-            self.updateSignal.emit()
+            if not self.errored:
+                self.updateSignal.emit()
                 
             time.sleep(0.001)
             if not threading.main_thread().is_alive():
@@ -153,11 +156,14 @@ class MainWindow(QMainWindow):
             if not threading.main_thread().is_alive():
                 return
             
+            #raise Exception("This is a test")
+                
+            
         if not devmode:
             try:
                 inner()
             except Exception as e:
-                dialogs.errorDialog("Error", e).exec()
+                dialogs.errorDialog("Error", str(e)).exec()
                 self.close()
         else:
             inner() 
@@ -205,9 +211,11 @@ class MainWindow(QMainWindow):
         else:
             while True:
                 try:
-                    inner()
+                    if not self.errored:
+                        inner()
                 except Exception as e:
-                    dialogs.errorDialog("Error", e)
+                    self.errored = True
+                    dialogs.errorDialog("Error", str(e)).exec()
             
     def forceUpdate(self):
         """
@@ -220,9 +228,7 @@ class MainWindow(QMainWindow):
     
     def closeEvent(self, *args, **kwargs):
         super().closeEvent(*args, **kwargs)
-        self.displayUpdate.autoDelete()
-        self.interalUpdate1.autoDelete()
-        
+        self.threadpool.clear()
         saveDialog = dialogs.yesNoDialog("Save game", "Would you like to save your game?", True)
         saveDialogResults = saveDialog.exec()
         if saveDialogResults == QDialog.DialogCode.Accepted:
@@ -266,7 +272,7 @@ def preStartUp():
             return False
             
     if not updateCheck(): # if not on the latest version
-        command = f"{os.getenv('LOCALAPPDATA')}\\createTheSunUpdater\\installer.exe"
+        command = f"{os.getenv('LOCALAPPDATA')}\\createTheSunUpdater\\installer.exe"  
         if not os.path.exists(command):
             error_dialog = dialogs.errorDialog("Error", r'You are not on the latest version and the launcher is missing. Please download the latest version from https:\\github.com\KaneryU\createTheSun ')
             error_dialog.exec()
