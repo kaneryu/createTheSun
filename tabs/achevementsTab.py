@@ -1,3 +1,4 @@
+from PySide6 import QtGui
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGraphicsBlurEffect, QGridLayout
 from PySide6.QtCore import QPropertyAnimation, Qt, QTimer, QEasingCurve
@@ -11,12 +12,16 @@ basedir = os.path.dirname(os.path.realpath(__file__))
 
 mediadir = os.path.join(str(pathlib.Path(basedir).parent) + "\\assets\\")
 
+achevementPopupQueue = []
 class achevementPopup(QWidget):
     def __init__(self, achevement : str, open : bool = False):
         super().__init__()
         self.setWindowTitle("Test")
         self.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.FramelessWindowHint)
-        self.setGeometry(0, 0, 200, 200)
+        
+        globalMousePos = QtGui.QCursor.pos()
+        
+        self.setGeometry(globalMousePos.x(), globalMousePos.y(), 200, 200)
         self.adjustSize()  # Ensure size hint is updated
         self.fadein = QPropertyAnimation(self, b"windowOpacity")
         self.fadein.setDuration(200)
@@ -39,14 +44,20 @@ class achevementPopup(QWidget):
         self.fadeout.finished.connect(self.close)
         
         if open:
-            self.show()
-            self.fadein.start()
-            
-            self.timer = QTimer()
-            self.timer.timeout.connect(self.close)
-            self.timer.start(5000)
-            
-            self.fadeout.start()
+            self.popup()
+        
+        else:
+            achevementPopupQueue.append(self)
+        
+    def popup(self):
+        self.show()
+        self.fadein.start()
+        
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.close)
+        self.timer.start(5000)
+        
+        self.fadeout.start()
             
 
        
@@ -102,6 +113,7 @@ class achevementWidget(QWidget):
                 self.blurIn.stop()
                 self.blurOut.start()
                 self.alreadyBlurredIn = False
+        
 
             
 class content(QWidget):
@@ -132,3 +144,8 @@ class content(QWidget):
         for i in self.widgets:
             i: achevementWidget
             i.displayUpdate()
+        
+        for j in achevementPopupQueue:
+            j: achevementPopup
+            j.popup()
+            achevementPopupQueue.remove(j)

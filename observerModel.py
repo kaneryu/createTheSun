@@ -131,7 +131,17 @@ def callEvent(event: Observable, callType: ObservableCallType, information: Unio
     
     item: observer
     somebodyRecieved = False
-    
+    for item in observers[event]["all"]: # for every observer that has the correct event type and all calltypes
+        if item.checkType == ObservableCheckType.TYPE:
+            if information == item.check:
+                log["recievedEvents"].append(item.id)
+                item.function(information)
+                somebodyRecieved = True
+                
+        else:
+            log["recievedEvents"].append(item.id)
+            item.function(information)
+        
     for item in observers[event][callType]: # for every observer that has the correct call type and event type
         if item.checkType == ObservableCheckType.TYPE:
             if information == item.check:

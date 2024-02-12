@@ -73,6 +73,8 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__(*args, **kwargs)
         self.threadpool = QThreadPool()
         
+        self.killThreads = False
+        
         self.updateSignal.connect(self.updateDisplay)
         self.sUpdateThread1.connect(self.sUpdateThread1)
         self.errorDialogSignal.connect(self.errorDialog)
@@ -136,6 +138,10 @@ class MainWindow(QMainWindow):
             time.sleep(0.001)
             if not threading.main_thread().is_alive():
                 return
+            
+            if self.killThreads:
+                return
+            
 
             
             
@@ -216,8 +222,12 @@ class MainWindow(QMainWindow):
         if devmode:
             while True:
                 inner()
+                if self.killThreads:
+                    return
         else:
             while True:
+                if self.killThreads:
+                    return
                 try:
 
                     inner()
@@ -238,7 +248,9 @@ class MainWindow(QMainWindow):
     
     def closeEvent(self, *args, **kwargs):
         super().closeEvent(*args, **kwargs)
-        self.threadpool.clear()
+
+        self.killThreads = True
+        
         saveDialog = dialogs.yesNoDialog("Save game", "Would you like to save your game?", True)
         saveDialogResults = saveDialog.exec()
         if saveDialogResults == QDialog.DialogCode.Accepted:
@@ -286,6 +298,7 @@ def preStartUp():
         if not os.path.exists(command):
             error_dialog = dialogs.errorDialog("Error", r'You are not on the latest version and the launcher is missing. Please download the latest version from https:\\github.com\KaneryU\createTheSun ')
             error_dialog.exec()
+            return
         
         print(command)
         subprocess.Popen([command])
@@ -342,4 +355,5 @@ if __name__ == "__main__":
     splashScreen.showMessage("Done!", Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignCenter, Qt.GlobalColor.white)
     window.show()
     splashScreen.hide()
+
     sys.exit(app.exec())

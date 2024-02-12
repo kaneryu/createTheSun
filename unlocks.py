@@ -51,11 +51,12 @@ def checkAchevements(event):
             if ongoingCheck == True:
                 gamedefine.unlockedAchevements.append(i)
                 gamedefine.lastAchevementGain = (i, time.time() * 1000)
-                achevementsTab.achevementPopup(i, True)
+                achevementsTab.achevementPopup(i)
 
 def reciever(event):
     checkUnlocks(event)
     checkAchevements(event)
+    print("Unlocks and achevements checked hh")
 
-registerObserver(reciever, Observable.ITEM_OBSERVABLE, ObservableCallType.ALL)
-registerObserver(reciever, Observable.AUTOMATION_OBSERVABLE, ObservableCallType.ALL)
+itemObserver = registerObserver(reciever, Observable.ITEM_OBSERVABLE, ObservableCallType.ALL)
+automationObserver = registerObserver(reciever, Observable.AUTOMATION_OBSERVABLE, ObservableCallType.ALL)
