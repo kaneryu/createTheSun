@@ -4,7 +4,7 @@ from math import floor, ceil, log
 
 
 
-def evaluateCostEquation(costEquation: str, *args: int) -> int | float:
+def evaluateCostEquation(costEquation: str, *args: int, arglist: list = [None]) -> int | float:
     """
     Evaluates the cost equation.
 
@@ -15,6 +15,9 @@ def evaluateCostEquation(costEquation: str, *args: int) -> int | float:
     Returns:
         int: The result of the cost equation.    
     """
+    if not arglist[0] == None:
+        args = tuple(arglist)
+        
     # if there are too many arguments, it will break
     if f"%{len(args) + 1}%" in costEquation:
         raise ValueError(f"Incorrect number of arguments provided. Expected {costEquation.count("%")}, got {len(args)}")

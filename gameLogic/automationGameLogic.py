@@ -1,5 +1,4 @@
 import sympy as sp
-import regex as re
 import time
 from math import floor, ceil, log
 import gamedefine
@@ -87,9 +86,11 @@ def purchaseUpgrade(upgrade : str) -> None:
         costs = gamedefine.automationInternalDefine[upgrade]["firstCost"]
     else:
         costs = getCurrentInternalMultiLevelUpgrade(upgrade)["upgradeCost"]
-    
+        
+    index = 0
     for i in costs:
-        gamedefine.amounts[i["what"]] -= i["amount"]
+        gamedefine.amounts[i["what"]] -= getCostWithIndex(index, upgrade)
+        index += 1 
     gamedefine.automationLevels[upgrade] += 1
     
     print(f"purchased {upgrade}, now have {gamedefine.automationLevels[upgrade]}")
@@ -159,10 +160,12 @@ def canAffordUpgrade(upgrade : str) -> bool:
         costs = getCurrentInternalMultiLevelUpgrade(upgrade)["upgradeCost"]
     
     ongoing = True
-    
+    index = 0
     for i in costs:
-        if gamedefine.amounts[i["what"]] < i["amount"]:
+        if gamedefine.amounts[i["what"]] < getCostWithIndex(index, upgrade):
             ongoing = False
+            
+        index += 1 
     
     return ongoing
 
@@ -197,8 +200,41 @@ def doUpgradeTask(upgrade, lastTickTime):
     return lastTickTime
         
 
-
-
+def getCostWithIndex(index: int, automation: str) -> int:
+    
+    what: list
+    if gamedefine.automationLevels[automation] == 0:
+        what = gamedefine.automationInternalDefine[automation]["firstCost"]
+    else:
+        what = getCurrentInternalMultiLevelUpgrade(automation)["upgradeCost"]
+    
+    if index > len(what) - 1:
+        raise IndexError(f"Index {index} is incompatible with list {what}.")
+    if index < 0:
+        raise IndexError(f"Index cannot be less than one, but Index is {index}.")
+    
+    item = what[index]
+    
+    if type(item["amount"]) == str:
+        variablelist = []
+        
+        for i in item["variables"]:
+            
+            if i == "level":
+                variablelist.append(gamedefine.automationLevels[automation])
+            
+        result = numberLogic.evaluateCostEquation(item["amount"], arglist = variablelist)
+ 
+        result = round(result)
+        
+    elif type(item["amount"]) == int:
+        result = item["amount"]
+        
+    else:
+        raise TypeError(f"Type of amount in upgrade {automation} with level {gamedefine.automationLevels[automation]} has the wrong type.")
+    
+    return result
+    
 def parseCost(name):
     if gamedefine.automationLevels[name] == 0:
         what = gamedefine.automationInternalDefine[name]["firstCost"]
@@ -207,10 +243,11 @@ def parseCost(name):
         what = getCurrentInternalMultiLevelUpgrade(name)["upgradeCost"]
         string = ["Upgradge for "]                    
 
-                                            
+    index = 0                             
     for i in what:
-        string.append(str(i["amount"]) + " ")
-        if i["amount"] == 1:
+        cost = getCostWithIndex(index, name)
+        string.append(str(cost) + " ")
+        if cost == 1:
             string.append(i["what"][:-1])
         else:
             string.append(i["what"])
@@ -222,6 +259,7 @@ def parseCost(name):
         else:
             string.append(".")
     
+        index += 1
     return "".join(string)
 
 

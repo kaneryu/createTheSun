@@ -191,7 +191,8 @@ automationInternalDefine = {
                 "upgradeCost" : [            
                     {
                         "what": "quarks",
-                        "amount": 300       
+                        "amount": "(%1 - 1) * 15 + 100",
+                        "variables": ["level"]
                     },
                     {
                         "what": "electrons",
@@ -432,9 +433,9 @@ purchaseToCreate = ["quarks", "protons"]
 automationsToCreate = ["particleAccelerator", "protonicForge"]
 
 amounts = {
-    "quarks": 100000,
+    "quarks": 0,
     "electrons": 100,
-    "protons": 1000000,
+    "protons": 0,
     "hydrogen": 0,
     "stars": 0,
     "galaxies": 0,
@@ -464,14 +465,14 @@ multiplierList = {
 mainTabBuyMultiple = 1
 
 electronDetails = {
-    "waitTime": 0.2,
+    "waitTime": 1000,
     "amount": 1,
     "maxAmount": 100,
     "minAmount": 0, 
 }
 
 automationLevels = {
-    "particleAccelerator" : 2,
+    "particleAccelerator" : 0,
     "protonicForge": 0
 }
 automationDisabledState = {
@@ -622,7 +623,7 @@ achevementVisualDefine = {
     }
 }
 
-unlockedAchevements = []
+unlockedAchevements: list[str] = []
 
 unlockables = {
     "hydrogenUnlock": {
@@ -651,9 +652,9 @@ unlockables = {
     },
 }
 
-unlockedUnlockables = []
+unlockedUnlockables: list[str] = []
 
-rewriteInternalDefine = {}
+rewriteInternalDefine: dict[str, dict] = {}
 
 rewriteVisualDefine = {
     "protonSpillover": {
@@ -690,7 +691,7 @@ lastAchevementGain = ("nothing", -1) #achevement name, timestamp
 
 saveable = [amounts, clickGainMultiplierList, multiplierList, automationLevels, automationDisabledState, automationDetails, unlockedAchevements, electronDetails, unlockedUnlockables, purchaseToCreate, automationsToCreate]
 saveableStr = ["amounts", "clickGainMultiplierList", "multiplierList", "upgradeLevels", "upgradeDisabledState", "upgradeDetails", "unlockedAchevements", "electronDetails", "unlockedUnlockables", "purchaseToCreate", "automationsToCreate"]
-force = [] # for force loading
+force: list[str] = [] # for force loading
 
 lastAutosaveTime = 0
 autosaveTime = 300000
@@ -754,7 +755,7 @@ def convertFloatsToStr(input: dict | list):
         return convertFloatsToStrFromList(input)    
     
 
-def convertStrToFloats(input: dict):
+def convertStrToFloats(input: (dict | list)):
     def convertStrToFloatsFromList(input_: list):
         workingList = input_
         for i in workingList:
@@ -780,6 +781,7 @@ def convertStrToFloats(input: dict):
     
     if type(input) == dict:
         return convertStrToFloatFromDict(input)
+    
     if type(input) == list:
         return convertStrToFloatsFromList(input)   
     

@@ -306,7 +306,7 @@ def preStartUp():
 
 if __name__ == "__main__":
 
-    quickLaunch = True
+    quickLaunch = devmode # enabled during development
     
     #change icon in taskbar
     myappid = u'opensource.createthesun.main.pre-release'
