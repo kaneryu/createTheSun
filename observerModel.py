@@ -44,8 +44,11 @@ call the function on, the third string is what type of event to call on, and the
 
 Observables and their documentation are defined in the class above.
 '''
-
-observers: dict = {} #type: ignore
+observers: dict = {}
+for event in Observable:
+    observers[str(event)] = {"gained": [], "time": [], "all": [], "other": []}
+    
+print(observers)
 
 class observer:
     def __init__(self, function_, event: Observable, callType: ObservableCallType, checkType: ObservableCheckType | None = None, check: str | None = None) -> None:

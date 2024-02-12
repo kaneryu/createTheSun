@@ -1,6 +1,8 @@
 from observerModel import registerObserver, Observable, ObservableCallType
 from gamedefine import unlockables, unlockedUnlockables
 import gamedefine
+from tabs import achevementsTab
+
 import time
 
 def checkUnlocks(event):
@@ -49,6 +51,7 @@ def checkAchevements(event):
             if ongoingCheck == True:
                 gamedefine.unlockedAchevements.append(i)
                 gamedefine.lastAchevementGain = (i, time.time() * 1000)
+                achevementsTab.achevementPopup(i, True)
 
 def reciever(event):
     checkUnlocks(event)
