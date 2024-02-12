@@ -31,7 +31,7 @@ logging.logLevel = 1
 logging.specialLogs = []
 basedir = os.path.join(os.path.abspath(__file__), os.path.pardir)
 
-devmode = False if os.path.exists(f"{basedir}\\otherStuff\\build.py") else True
+devmode = True if os.path.exists(f"{basedir}\\otherStuff\\build.py") else False
 if devmode:
     print("Devmode is On")
 
@@ -66,13 +66,17 @@ class Worker(QRunnable):
 class MainWindow(QMainWindow):
     updateSignal = pyqtSignal()
     sUpdateThread1 = pyqtSignal()
+    errorDialogSignal = pyqtSignal(str, str)
     errored = False
     
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
         self.threadpool = QThreadPool()
+        
         self.updateSignal.connect(self.updateDisplay)
         self.sUpdateThread1.connect(self.sUpdateThread1)
+        self.errorDialogSignal.connect(self.errorDialog)
+        
         logging.log("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount(), 1)
         self.lastUpdateTime = time.time() * 1000
         
@@ -127,8 +131,7 @@ class MainWindow(QMainWindow):
         or else there will be general instability in the application.        
         """
         while True:
-            if not self.errored:
-                self.updateSignal.emit()
+            self.updateSignal.emit()
                 
             time.sleep(0.001)
             if not threading.main_thread().is_alive():
@@ -140,6 +143,7 @@ class MainWindow(QMainWindow):
         """
         Updates the display by calling the updateDisplay method whatever needs to be updated.
         """
+        
         def inner():
             for i in self.tabs:
                     logging.log(f"now updating tab {i["name"]}", specialType="updateLoopInfo")
@@ -156,18 +160,22 @@ class MainWindow(QMainWindow):
             if not threading.main_thread().is_alive():
                 return
             
-            #raise Exception("This is a test")
-                
-            
+        
         if not devmode:
             try:
                 inner()
             except Exception as e:
-                dialogs.errorDialog("Error", str(e)).exec()
-                self.close()
+                #self.errored = True
+                print(f"{str(e)} in updateDisplay")
+                self.errorDialogSignal.emit("Error", str(e))
+                return
         else:
             inner() 
-        
+            
+    def errorDialog(self, title, message):
+        dialog = dialogs.errorDialog(title, f"{message}\n The error above has just occured.\n The game will now exit.")
+        dialog.exec()
+        self.close()
     
     def updateThread1(self):
         """
@@ -204,18 +212,20 @@ class MainWindow(QMainWindow):
             if gamedefine.force == 1:
                 gamedefine.force = 0
                 forceUpdate()
-                
+
         if devmode:
             while True:
                 inner()
         else:
             while True:
                 try:
-                    if not self.errored:
-                        inner()
+
+                    inner()
+                    
                 except Exception as e:
-                    self.errored = True
-                    dialogs.errorDialog("Error", str(e)).exec()
+                    print(f"{str(e)} in updateInternal")
+                    self.errorDialogSignal.emit("Error", str(e))
+                    return
             
     def forceUpdate(self):
         """
