@@ -7,6 +7,7 @@ import os
 import json
 import requests
 import subprocess
+
 #third party imports
 # from PyQt6 import QtCore
 # from PyQt6.QtGui import QIcon
@@ -32,6 +33,7 @@ logging.specialLogs = []
 basedir = os.path.join(os.path.abspath(__file__), os.path.pardir)
 
 devmode = True if os.path.exists(f"{basedir}\\otherStuff\\build.py") else False
+devmode = False
 if devmode:
     print("Devmode is On")
 
@@ -68,6 +70,8 @@ class MainWindow(QMainWindow):
     sUpdateThread1 = pyqtSignal()
     errorDialogSignal = pyqtSignal(str, str)
     errored = False
+    
+    displayThreadWait = False
     
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
@@ -133,14 +137,26 @@ class MainWindow(QMainWindow):
         or else there will be general instability in the application.        
         """
         while True:
-            self.updateSignal.emit()
-                
-            time.sleep(0.001)
-            if not threading.main_thread().is_alive():
-                return
             
-            if self.killThreads:
-                return
+            self.updateSignal.emit()
+            time.sleep(0.001)
+            
+            while self.displayThreadWait:
+                
+                if not threading.main_thread().is_alive():
+                    return
+            
+                if self.killThreads:
+                    return
+            
+                if self.errored:
+                    print("errored!")
+                    del self.displayUpdate
+                    return
+            
+
+            
+
             
 
             
@@ -149,7 +165,7 @@ class MainWindow(QMainWindow):
         """
         Updates the display by calling the updateDisplay method whatever needs to be updated.
         """
-        
+        self.displayThreadWait = True
         def inner():
             for i in self.tabs:
                     logging.log(f"now updating tab {i["name"]}", specialType="updateLoopInfo")
@@ -171,12 +187,14 @@ class MainWindow(QMainWindow):
             try:
                 inner()
             except Exception as e:
-                #self.errored = True
+                self.errored = True
                 print(f"{str(e)} in updateDisplay")
                 self.errorDialogSignal.emit("Error", str(e))
-                return
+                return -100
         else:
             inner() 
+        
+        self.displayThreadWait = False
             
     def errorDialog(self, title, message):
         dialog = dialogs.errorDialog(title, f"{message}\n The error above has just occured.\n The game will now exit.")
@@ -256,6 +274,8 @@ class MainWindow(QMainWindow):
         if saveDialogResults == QDialog.DialogCode.Accepted:
             tabs.saveModule.save(notify = False)
         
+        sys.exit(app.exit())
+        
     # def createSaveDir(self):
     #     LOCALAPPDATA = os.getenv('LOCALAPPDATA')
     #     if not LOCALAPPDATA:
@@ -296,7 +316,9 @@ def preStartUp():
     if not updateCheck(): # if not on the latest version
         command = f"{os.getenv('LOCALAPPDATA')}\\createTheSunUpdater\\installer.exe"  
         if not os.path.exists(command):
-            error_dialog = dialogs.errorDialog("Error", r'You are not on the latest version and the launcher is missing. Please download the latest version from https:\\github.com\KaneryU\createTheSun ')
+            
+            error_dialog = dialogs.errorDialog("Error", r'You are not on the latest version and the launcher is missing. Please download the latest version from [https:\\github.com\KaneryU\createTheSun](https:\\github.com\KaneryU\createTheSun)')
+            error_dialog.setTextInteractionFlags(Qt.TextInteractionFlag.TextBrowserInteraction)
             error_dialog.exec()
             return
         

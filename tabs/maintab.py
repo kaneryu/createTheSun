@@ -111,10 +111,15 @@ class header(QWidget):
         
     def updateBuyMultiple(self):
         try:
-            gamedefine.mainTabBuyMultiple = int(self.textEdit.text())
+            if not int(self.textEdit.text()) == 0:
+                if not int(self.textEdit.text()) < 0:
+                    gamedefine.mainTabBuyMultiple = int(self.textEdit.text())
+                else:
+                    gamedefine.mainTabBuyMultiple = 1
+            else:
+                gamedefine.mainTabBuyMultiple = 1
         except:
             gamedefine.mainTabBuyMultiple = 1
-            self.textEdit.setText("1")
             
         
 class content(QWidget):

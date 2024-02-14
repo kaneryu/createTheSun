@@ -31,7 +31,7 @@ class mainTab(QWidget):
         return "Main Tab"
     
     def tooltip(): #type: ignore
-        return "The main tab of the game, where you can purchase quarks, protons, etc."
+        return "Purchase items like Quarks, Protons, Hydrogen, etc."
     
 class upgradeTab(QWidget):
     def __init__(self):
@@ -71,7 +71,7 @@ class automationTab(QWidget):
         return "Automation"
     
     def tooltip(): #type: ignore
-        return "The tab where you purchase automations, which do things for you."
+        return "Keep your fingers off the mouse."
     
     
 class settingsTab(QWidget):
@@ -92,7 +92,7 @@ class settingsTab(QWidget):
     
         
     def tooltip(): #type: ignore
-        return "The tab that contains all game settings, including saving and loading"
+        return "Settings..."
     
     
 class achievementsTab(QWidget):
@@ -110,13 +110,13 @@ class achievementsTab(QWidget):
         return "Achevements"
     
     def tooltip(): #type: ignore
-        return "The tab that contains of the achevements you have"
+        return "A ledger of your accomplishments."
     
 class rewriteTab(QWidget):
     def __init__(self):
         super().__init__()
         self.layout_ = QVBoxLayout()
-        self.layout_.addWidget(QLabel("Upgrade Tab"))
+        self.layout_.addWidget(QLabel("Rewrites Tab"))
         self.setLayout(self.layout_)
         
     def updateDisplay(self):
@@ -130,7 +130,7 @@ class rewriteTab(QWidget):
 
         
     def tooltip(): #type: ignore
-        return "The tab where rewrites can be purchased"
+        return "The laws of the universe are in yout hands."
 
 tabs = [mainTab, automationTab, achievementsTab, settingsTab]
 internalUpdateList = [automationTab.updateInternal, settingsTab.updateInternal]

@@ -1,4 +1,5 @@
-from PyQt6.QtWidgets import QDialog, QVBoxLayout, QLabel, QDialogButtonBox, QVBoxLayout, QMessageBox
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QDialogButtonBox, QVBoxLayout, QMessageBox
 
 class CustomDialog(QDialog):
     def __init__(self, text, windowTitle = "Dialog", cancelable = True, customQBtn = None, preventClose = False):
@@ -19,6 +20,7 @@ class CustomDialog(QDialog):
         self.buttonBox.rejected.connect(self.reject)
         self.layout_ = QVBoxLayout()
         message = QLabel(text)
+        message.setTextFormat(Qt.TextFormat.MarkdownText)
         self.layout_.addWidget(message)
         self.layout_.addWidget(self.buttonBox)   
         self.setLayout(self.layout_)
@@ -49,7 +51,10 @@ class badDialog(QMessageBox):
             self.setIcon(QMessageBox.Icon.Critical)
         elif type_ == "warn":
             self.setIcon(QMessageBox.Icon.Warning)
+            
         self.setWindowTitle(windowTitle_)
+        self.setTextFormat(Qt.TextFormat.MarkdownText)
+        
         self.setText(text_)
 
 
