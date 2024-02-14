@@ -1,12 +1,11 @@
 from PySide6 import QtGui
 from PySide6.QtGui import QPixmap
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGraphicsBlurEffect, QGridLayout
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGraphicsBlurEffect, QGridLayout, QApplication
 from PySide6.QtCore import QPropertyAnimation, Qt, QTimer, QEasingCurve
 import os
 from time import time
 import pathlib
 import gamedefine
-
 
 basedir = os.path.dirname(os.path.realpath(__file__))
 
@@ -27,14 +26,20 @@ class achevementPopup(QWidget):
         self.fadein.setDuration(200)
         self.fadein.setStartValue(0)
         self.fadein.setEndValue(1)
-
         
-        self.content = achevementWidget(achevement)
+        self.image = QLabel()
+        self.image.setPixmap(QPixmap(os.path.join(mediadir, f"images\\achevements\\{achevement}")))
+        self.image.setContentsMargins(0,0,0,0)
+        self.image.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        
         self.achevementGet = QLabel("You got an achevement!")
         self.achevementGet.setAlignment(Qt.AlignmentFlag.AlignCenter)
         
         layout = QVBoxLayout()
-        layout.addWidget(self.content)
+        layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        
+        layout.addWidget(self.image)
+        layout.addWidget(self.achevementGet)
         self.setLayout(layout)
         
         self.fadeout = QPropertyAnimation(self, b"windowOpacity")
@@ -45,19 +50,20 @@ class achevementPopup(QWidget):
         
         if open:
             self.popup()
-        
         else:
             achevementPopupQueue.append(self)
         
     def popup(self):
         self.show()
+        self.timer = QTimer()
+        self.timer.setSingleShot(True)
+        self.timer.timeout.connect(self.fadeout.start)
+
+
+        self.fadein.finished.connect(lambda: self.timer.start(5000))
         self.fadein.start()
         
-        self.timer = QTimer()
-        self.timer.timeout.connect(self.close)
-        self.timer.start(5000)
-        
-        self.fadeout.start()
+
             
 
        
@@ -65,7 +71,7 @@ class achevementPopup(QWidget):
 class achevementWidget(QWidget):
     def __init__(self, achevement : str):
         super().__init__()
-        
+        self.setAutoFillBackground(False)
         self.alreadyBlurredIn = False
         
         self.name = achevement
@@ -149,3 +155,4 @@ class content(QWidget):
             j: achevementPopup
             j.popup()
             achevementPopupQueue.remove(j)
+

@@ -18,7 +18,7 @@ import logging_ as logging
 import assets.fonts.urbanist.urbanistFont as urbanistFont
 import observerModel
 import gameLogic.numberLogic as numberLogic
-
+from tabs import achevementsTab
 class purchaseStrip(QWidget):
     def __init__(self, name):
         super().__init__()
@@ -55,6 +55,7 @@ class purchaseStrip(QWidget):
         observerModel.callEvent(observerModel.Observable.ITEM_OBSERVABLE, observerModel.ObservableCallType.GAINED, self.name)
         if self.name == "quarks":
             itemGameLogic.purchase("quarks")
+            achevementsTab.achevementPopup(list(gamedefine.achevementInternalDefine.keys())[1])
             return 0
         
         if itemGameLogic.canAfford(self.name):

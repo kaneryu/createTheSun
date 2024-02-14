@@ -684,7 +684,7 @@ rewriteVisualDefine = {
     }
 }
 
-unlockedRewrites = []
+unlockedRewrites: list[str] = []
 
 lastAchevementGain = ("nothing", -1) #achevement name, timestamp
 

@@ -33,7 +33,7 @@ logging.specialLogs = []
 basedir = os.path.join(os.path.abspath(__file__), os.path.pardir)
 
 devmode = True if os.path.exists(f"{basedir}\\otherStuff\\build.py") else False
-devmode = False
+
 if devmode:
     print("Devmode is On")
 
@@ -174,10 +174,6 @@ class MainWindow(QMainWindow):
             logging.log("now updating electrons", specialType="updateLoopInfo")
             self.electrons.updateDisplay()
             
-            if time.time() * 1000 - gamedefine.lastAchevementGain[1] > 10000 and not gamedefine.lastAchevementGain[0] == "nothing": #if achevement gained in the last 10 seconds
-                self.label.setText(f"You just got an achevement - {gamedefine.achevementVisualDefine[gamedefine.lastAchevementGain[0]]["visualName"]}")
-            else:
-                self.label.setText("Create The Sun...")
             
             if not threading.main_thread().is_alive():
                 return
