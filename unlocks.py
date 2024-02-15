@@ -49,6 +49,7 @@ def checkAchevements(event):
                         ongoingCheck = False
             
             if ongoingCheck == True:
+                print(f"Achevement Get! {i}")
                 gamedefine.unlockedAchevements.append(i)
                 gamedefine.lastAchevementGain = (i, time.time() * 1000)
                 achevementsTab.achevementPopup(i)

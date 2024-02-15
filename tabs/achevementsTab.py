@@ -1,8 +1,9 @@
 from PySide6 import QtGui
-from PySide6.QtGui import QPixmap
+from PySide6.QtGui import QPixmap, QRegion
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGraphicsBlurEffect, QGridLayout, QApplication
-from PySide6.QtCore import QPropertyAnimation, Qt, QTimer, QEasingCurve
+from PySide6.QtCore import QPropertyAnimation, Qt, QTimer, QEasingCurve, QRect
 import os
+
 from time import time
 import pathlib
 import gamedefine
@@ -11,17 +12,23 @@ basedir = os.path.dirname(os.path.realpath(__file__))
 
 mediadir = os.path.join(str(pathlib.Path(basedir).parent) + "\\assets\\")
 
-achevementPopupQueue = []
+
 class achevementPopup(QWidget):
     def __init__(self, achevement : str, open : bool = False):
         super().__init__()
+        self.setObjectName("achevementPopupBackgroundWidget")
         self.setWindowTitle("Test")
-        self.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.FramelessWindowHint)
+        self.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.FramelessWindowHint | Qt.WindowType.Popup | Qt.WindowType.WindowTransparentForInput | Qt.WindowType.WindowDoesNotAcceptFocus)
+        self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
+        
+        self.setContentsMargins(0,0,0,0)
+        
+
+        
         
         globalMousePos = QtGui.QCursor.pos()
         
-        self.setGeometry(globalMousePos.x(), globalMousePos.y(), 200, 200)
-        self.adjustSize()  # Ensure size hint is updated
+        # Ensure size hint is updated
         self.fadein = QPropertyAnimation(self, b"windowOpacity")
         self.fadein.setDuration(200)
         self.fadein.setStartValue(0)
@@ -32,15 +39,20 @@ class achevementPopup(QWidget):
         self.image.setContentsMargins(0,0,0,0)
         self.image.setAlignment(Qt.AlignmentFlag.AlignCenter)
         
-        self.achevementGet = QLabel("You got an achevement!")
+        self.achevementGet = QLabel(f"You got an achevement:\n{gamedefine.achevementVisualDefine[achevement]["visualName"]}")
         self.achevementGet.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        
+        self.achevementGet.setObjectName("achevementPopupText")
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         
         layout.addWidget(self.image)
         layout.addWidget(self.achevementGet)
         self.setLayout(layout)
+        
+        self.setGeometry(globalMousePos.x() + 100, globalMousePos.y() + 100, 200, 200)
+                #rounded corners
+        #self.setMask(QRegion(QRect(globalMousePos.x() - 100, globalMousePos.y() - 100, 200, 200), QRegion.RegionType.Ellipse))
+        self.adjustSize()
         
         self.fadeout = QPropertyAnimation(self, b"windowOpacity")
         self.fadeout.setDuration(200)
@@ -65,7 +77,7 @@ class achevementPopup(QWidget):
         
 
             
-
+achevementPopupQueue: list[achevementPopup] = []
        
     
 class achevementWidget(QWidget):
@@ -80,7 +92,7 @@ class achevementWidget(QWidget):
         self.setMaximumSize(100,100)
         self.image = QLabel()
         self.image.setPixmap(QPixmap(os.path.join(mediadir, "images\\", "achevements\\", achevement + ".png")))
-        
+        self.image.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.layout_.addWidget(self.image)
 
         
@@ -155,4 +167,3 @@ class content(QWidget):
             j: achevementPopup
             j.popup()
             achevementPopupQueue.remove(j)
-

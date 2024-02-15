@@ -270,7 +270,7 @@ class MainWindow(QMainWindow):
         if saveDialogResults == QDialog.DialogCode.Accepted:
             tabs.saveModule.save(notify = False)
         
-        sys.exit(app.exit())
+        sys.exit(app.exit())            
         
     # def createSaveDir(self):
     #     LOCALAPPDATA = os.getenv('LOCALAPPDATA')
@@ -320,7 +320,7 @@ def preStartUp():
         
         print(command)
         subprocess.Popen([command])
-        app.exit()
+        sys.exit(app.exit())
 
 if __name__ == "__main__":
 
@@ -374,4 +374,4 @@ if __name__ == "__main__":
     window.show()
     splashScreen.hide()
 
-    sys.exit(app.exec())
+    app.exec()

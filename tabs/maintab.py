@@ -55,7 +55,6 @@ class purchaseStrip(QWidget):
         observerModel.callEvent(observerModel.Observable.ITEM_OBSERVABLE, observerModel.ObservableCallType.GAINED, self.name)
         if self.name == "quarks":
             itemGameLogic.purchase("quarks")
-            achevementsTab.achevementPopup(list(gamedefine.achevementInternalDefine.keys())[1])
             return 0
         
         if itemGameLogic.canAfford(self.name):

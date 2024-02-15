@@ -4,10 +4,25 @@ QWidget{
     font-family: "Urbanist Medium";
     font-size: 15px;
 }
+
+QWidget#achevementPopupBackgroundWidget{
+    background: transparent;
+    border: 2px solid #ffffff;
+    border-radius: 7px;
+    color: white;
+    padding: 5px;
+}
+
+ QLabel#achevementPopupText{
+    background: #2e2e2e;
+    color: white;
+}
+
 QMainWindow{
     background: #1e1e1e;
     border-radius: 10px;
 }
+
 QLabel {
     color: white;
     background: transparent;

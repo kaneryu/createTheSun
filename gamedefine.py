@@ -196,7 +196,8 @@ automationInternalDefine = {
                     },
                     {
                         "what": "electrons",
-                        "amount": 25
+                        "amount": "1.1^((-1 * %1) + 34.5) + 10",
+                        "variables": ["level"]
                     }      
                 ],
                 "withRequirement": False,
@@ -221,11 +222,13 @@ automationInternalDefine = {
                 "upgradeCost" : [            
                     {
                         "what": "quarks",
-                        "amount": 370    
+                        "amount": "(x - 1) * 30 - 500",
+                        "variables": ["level"] 
                     },
                     {
                         "what": "electrons",
-                        "amount": 50
+                        "amount": "1.04^((-1 * %1) + 82) + 4",
+                        "variables": ["level"]
                     }      
                 ],
                 "withRequirement": False,
