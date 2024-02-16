@@ -331,6 +331,7 @@ if __name__ == "__main__":
     ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
     
     app = QApplication([])
+    tabs.saveModule.save(noProgSaveCreation = True, notify = False)
     
     file = open(os.path.join(basedir, 'assets', 'stylesheet.qss'), 'r')
     stylesheet = file.read()
@@ -353,7 +354,7 @@ if __name__ == "__main__":
             splashScreen.showMessage("Respond to the dialog", Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignCenter, Qt.GlobalColor.white)
             dialogResults = dialog.exec()
             if dialogResults == QDialog.DialogCode.Accepted:
-                tabs.saveModule.load(noSpeak = True)
+                tabs.saveModule.load(noSpeak = True, slot = tabs.saveModule.getLastUsedSaveSlot())
 
     splashScreen.showMessage("Loading...", Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignCenter, Qt.GlobalColor.white)
     
@@ -373,5 +374,6 @@ if __name__ == "__main__":
     splashScreen.showMessage("Done!", Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignCenter, Qt.GlobalColor.white)
     window.show()
     splashScreen.hide()
-
+    gamedefine.sessionStartTime = time.time() * 1000
+    
     app.exec()

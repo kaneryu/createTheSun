@@ -57,7 +57,6 @@ def checkAchevements(event):
 def reciever(event):
     checkUnlocks(event)
     checkAchevements(event)
-    print("Unlocks and achevements checked hh")
 
 itemObserver = registerObserver(reciever, Observable.ITEM_OBSERVABLE, ObservableCallType.ALL)
 automationObserver = registerObserver(reciever, Observable.AUTOMATION_OBSERVABLE, ObservableCallType.ALL)

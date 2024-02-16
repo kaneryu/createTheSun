@@ -1,3 +1,4 @@
+import time
 
 itemVisualDefine = {
     "quarks": {
@@ -692,19 +693,24 @@ unlockedRewrites: list[str] = []
 lastAchevementGain = ("nothing", -1) #achevement name, timestamp
 
 
-saveable = [amounts, clickGainMultiplierList, multiplierList, automationLevels, automationDisabledState, automationDetails, unlockedAchevements, electronDetails, unlockedUnlockables, purchaseToCreate, automationsToCreate]
-saveableStr = ["amounts", "clickGainMultiplierList", "multiplierList", "upgradeLevels", "upgradeDisabledState", "upgradeDetails", "unlockedAchevements", "electronDetails", "unlockedUnlockables", "purchaseToCreate", "automationsToCreate"]
+sessionStartTime = 0
+playTime = 0
+
+
+saveable = [amounts, clickGainMultiplierList, multiplierList, automationLevels, automationDisabledState, automationDetails, unlockedAchevements, electronDetails, unlockedUnlockables, purchaseToCreate, automationsToCreate, playTime]
+saveableStr = ["amounts", "clickGainMultiplierList", "multiplierList", "upgradeLevels", "upgradeDisabledState", "upgradeDetails", "unlockedAchevements", "electronDetails", "unlockedUnlockables", "purchaseToCreate", "automationsToCreate", "playTime"]
 force: list[str] = [] # for force loading
 
 lastAutosaveTime = 0
 autosaveTime = 300000
 
+
 def loadSave(saveDict: dict):
-    global amounts, clickGainMultiplierList, multiplierList, automationLevels, automationDisabledState, automationDetails, unlockedAchevements, electronDetails, unlockedUnlockables, purchaseToCreate, automationsToCreate
+    global amounts, clickGainMultiplierList, multiplierList, automationLevels, automationDisabledState, automationDetails, unlockedAchevements, electronDetails, unlockedUnlockables, purchaseToCreate, automationsToCreate, playTime
     saveDict = saveDict # type: ignore
     for i in saveableStr:
         if not i in saveDict:
-            saveDict[i] = ""
+            saveDict[i] = None
             
     amounts = saveDict["amounts"]
     clickGainMultiplierList = saveDict["clickGainMultiplierList"]
@@ -717,12 +723,37 @@ def loadSave(saveDict: dict):
     unlockedUnlockables = saveDict["unlockedUnlockables"]
     purchaseToCreate = saveDict["purchaseToCreate"]
     automationsToCreate = saveDict["automationsToCreate"]
+    playTime = saveDict["playTime"]
+    
+    meta = getSaveMetadata()
+    playTime = meta["playTime"]
     
 def getSaveData():
     saveDict = {}
     for i in range(len(saveable)):
-        saveDict[saveableStr[i]] = saveable[i]
+        if saveableStr[i] == "playTime":
+            saveDict["playTime"] = playTime
+        else:
+            saveDict[saveableStr[i]] = saveable[i]
+            
     return saveDict    
+
+def getSaveMetadata() -> dict:
+    metadata: dict = {"amounts": {}, "achevements": {}}
+
+    
+    for i in amounts:
+        metadata["amounts"][i] = amounts[i]
+    
+    metadata["playTime"] = playTime
+    
+    
+    metadata["achevements"]["have"] = len(unlockedAchevements)
+    metadata["achevements"]["notUnlocked"] = len(achevementInternalDefine)
+    metadata["lastUsedOn"] = time.time() * 1000
+    
+    return metadata
+    
 
 def convertFloatsToStr(input: dict | list):
     def convertFloatsToStrFromList(input_: list):
