@@ -11,6 +11,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushBu
 
 #local imports
 import save
+from customWidgets import dialogs
 import gamedefine
 
 
@@ -27,9 +28,11 @@ class saveLoadWidget(QWidget):
             self.metadata = metadata
             self.layout_ = QVBoxLayout()
             
-            self.slotLabel = QLabel(f"Slot {self.slotNum}, Quarks: {self.metadata["amounts"]['quarks']},\nLast used: {time.strftime(
-                                                                                                                                    "%a, %d %b %Y %H:%M:%S",
-                                                                                                                                    time.gmtime(self.metadata["lastUsedOn"] / 1000))}")
+            self.timeZone = time.timezone
+            self.rawLastUsed = self.metadata["lastUsedOn"]
+            self.humanReadableLastUsed = time.strftime("%a, %d %b %Y %I:%M:%S %p", time.localtime(self.rawLastUsed))
+            
+            self.slotLabel = QLabel(f"Slot {self.slotNum}, Quarks: {self.metadata["amounts"]['quarks']},\nLast used: {self.humanReadableLastUsed}")
             self.layout_.addWidget(self.slotLabel)
             
             self.buttonLayout = QHBoxLayout()
@@ -38,17 +41,23 @@ class saveLoadWidget(QWidget):
             self.layout_.addWidget(self.buttonContainer)
             
             self.saveButton = QPushButton("Save")
-            self.saveButton.clicked.connect(lambda: save.save(slot = self.slotNum))
+            self.saveButton.clicked.connect(lambda: saveLoad(True))
             self.buttonLayout.addWidget(self.saveButton)
             
             self.loadButton = QPushButton("Load")
-            self.loadButton.clicked.connect(lambda: save.load(slot = self.slotNum))
+            self.loadButton.clicked.connect(lambda: saveLoad(False))
             self.buttonLayout.addWidget(self.loadButton)
             
             self.setLayout(self.layout_)
+
+            def saveLoad(save_: bool = True):
+                if save_:
+                    save.save(slot = self.slotNum)
+                else:
+                    save.load(slot = self.slotNum)
+                
+                self.parent().parent().updateDisplayWithLists() # type: ignore
             
-        def load(self):
-            save.load(self.slotNum)
     
     class newSlotWidget(QWidget):
         def __init__(self):
@@ -122,8 +131,7 @@ class saveLoadWidget(QWidget):
 
             for i in self.metadataList:
                 
-                self.metadata[i] = save.getSaveMetadataFromFile(i)
-               
+                self.metadata[i] = save.getSaveMetadataFromFile(i)     
         else:
             pass
     
@@ -134,10 +142,11 @@ class saveLoadWidget(QWidget):
             widget.deleteLater()
         
         self.updateLists()
-        print(self.metadata)
         for i in self.metadata:
-            print(i)
-            self.containerLayout.addWidget(self.individualSaveLoadWidget(i, self.metadata[i]))
+            try:
+                self.containerLayout.addWidget(self.individualSaveLoadWidget(i, self.metadata[i]))
+            except Exception as e:
+                dialogs.errorDialog("Failed loading save slot", f"Failed loading save slot {i} with error: {e}").exec()
 
     def updateDisplay(self):
         self.autoSaver.updateDisplay()
@@ -188,7 +197,6 @@ class autosaveWidget(QWidget):
             
     def chooseOptionChanged(self):
         gamedefine.autosaveTime = self.chooseOptionMs[self.chooseOption.currentIndex()]
-        print(gamedefine.autosaveTime)
         save.save(notify = False)
 
     

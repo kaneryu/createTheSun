@@ -18,7 +18,7 @@ class achevementPopup(QWidget):
         super().__init__()
         self.setObjectName("achevementPopupBackgroundWidget")
         self.setWindowTitle("Test")
-        self.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.FramelessWindowHint | Qt.WindowType.Popup | Qt.WindowType.WindowTransparentForInput | Qt.WindowType.WindowDoesNotAcceptFocus)
+        self.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowTransparentForInput)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
         
         self.setContentsMargins(0,0,0,0)

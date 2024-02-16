@@ -268,7 +268,7 @@ class MainWindow(QMainWindow):
         saveDialog = dialogs.yesNoDialog("Save game", "Would you like to save your game?", True)
         saveDialogResults = saveDialog.exec()
         if saveDialogResults == QDialog.DialogCode.Accepted:
-            tabs.saveModule.save(notify = False)
+            tabs.saveModule.save(notify = False, slot = tabs.saveModule.selectedSlot)
         
         sys.exit(app.exit())            
         
@@ -374,6 +374,6 @@ if __name__ == "__main__":
     splashScreen.showMessage("Done!", Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignCenter, Qt.GlobalColor.white)
     window.show()
     splashScreen.hide()
-    gamedefine.sessionStartTime = time.time() * 1000
+    gamedefine.sessionStartTime = time.time()
     
     app.exec()

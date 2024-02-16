@@ -750,7 +750,7 @@ def getSaveMetadata() -> dict:
     
     metadata["achevements"]["have"] = len(unlockedAchevements)
     metadata["achevements"]["notUnlocked"] = len(achevementInternalDefine)
-    metadata["lastUsedOn"] = time.time() * 1000
+    metadata["lastUsedOn"] = time.time()
     
     return metadata
     

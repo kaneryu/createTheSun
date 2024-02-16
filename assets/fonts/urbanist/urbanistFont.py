@@ -18,7 +18,4 @@ def createFonts():
     lightId = QFontDatabase.addApplicationFont(os.path.join(fontDir, "Light.ttf"))
     light = QFontDatabase.applicationFontFamilies(lightId)
     
-    print(regular)
-    print(black)
-    print(medium)
 

@@ -41,9 +41,15 @@ def lookForSave():
     return False
 
 def save(export: bool = False, exportEncoded: bool = False, notify: bool = True, slot: int = 0, noProgSaveCreation: bool = False, blank: bool = False): # type: ignore
+    def removeExtraLastUsedFiles(slot: int):
+        previousLastUsed = [i for i in os.listdir(savedir) if f"lastused{slot}" in i.split(".")[1]]
+        for i in previousLastUsed:
+            os.remove(os.path.join(savedir, i))
+            
     operationSucsess = dialogs.popupNotification("Saved", "Saving Complete")
     areYouSureDialog = dialogs.yesNoDialog( "Save", "Are you sure you want to save? This will overwrite the current save in that slot.", preventClose_ = True)
     global selectedSlot
+    
     if slot != selectedSlot:
         areYouSureDialog.exec()
         if areYouSureDialog.result() == QDialog.DialogCode.Rejected:
@@ -62,18 +68,22 @@ def save(export: bool = False, exportEncoded: bool = False, notify: bool = True,
             dialogs.errorDialog("Error", f"There was an error saving your game. Please report this to the developer:\n{e}").exec()
             gamedefine.autosaveTime = -1
             return
+        
         if export:
             if exportEncoded:
                 return encodedSave
             else:
                 return save_
-            
+        
+        print(f"saving to slot {slot} with save {save_}")
+        
         if not os.path.exists(savedir):
             os.makedirs(savedir)
             
+            
         savefile = os.path.join(savedir, f"save.save{slot}")
         saveMetadataFile = os.path.join(savedir, f"metadata.metadata{slot}")
-        lastUsedFile = os.path.join(savedir, f"{int(time.time()) * 1000}.lastused{slot}")
+        lastUsedFile = os.path.join(savedir, f"{time.time()}.lastused{slot}")
         saveMetadata = json.dumps(gamedefine.getSaveMetadata())
 
         
@@ -83,16 +93,14 @@ def save(export: bool = False, exportEncoded: bool = False, notify: bool = True,
         with open(saveMetadataFile, "w") as f:
             f.write(saveMetadata)
         
-        previousLastUsed = [i for i in os.listdir(savedir) if f"lastused{slot}" in i.split(".")[1]]
-        print(previousLastUsed)
-        for i in previousLastUsed:
-            os.remove(os.path.join(savedir, i))
+        removeExtraLastUsedFiles(slot)
             
         with open(lastUsedFile, "w") as f:
             f.write("why u here...")
             
         if notify:
             operationSucsess.exec()
+            
     else:
         blankSave = os.path.join(savedir, f"save.save-1")
         blankmetadata = os.path.join(savedir, f"metadata.metadata-1")
@@ -112,7 +120,7 @@ def save(export: bool = False, exportEncoded: bool = False, notify: bool = True,
         blankSaveFile.close()
         blankmetadataFile.close()
         
-    gamedefine.sessionStartTime = time.time() * 1000
+    gamedefine.sessionStartTime = time.time()
     
 
 def getSaveMetadataFromFile(slot: int = 0 ) -> dict:
@@ -126,7 +134,7 @@ def getSaveMetadataFromFile(slot: int = 0 ) -> dict:
         return {None:None}
         
 
-def load(slot: int, noSpeak = False, loadWarn = True, save = None):
+def load(slot: int = 0, noSpeak = False, loadWarn = True, save = None):
     
     dialog = dialogs.yesNoDialog( "Load", "Are you sure you want to load? This will overwrite your current save.", preventClose_ = True)
     saveNotFoundDialog = dialogs.warningDialog("No save found", "There was no save found.")
