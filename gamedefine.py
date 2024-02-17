@@ -485,8 +485,8 @@ defualtGameDefine = {
     },
     
     "automationDisabledState": {
-        "particleAccelerator" : (False, "0"),
-        "protonicForge": (False, "0")
+        "particleAccelerator" : [False, "0"],
+        "protonicForge": [False, "0"]
     },
 
     "automationDetails": {
@@ -695,7 +695,7 @@ defualtGameDefine = {
 
     "unlockedRewrites": [],
 
-    "lastAchevementGain": ("nothing", -1), #achevement name, timestamp
+    "lastAchevementGain": ["nothing", -1], #achevement name, timestamp
 
 
     "sessionStartTime": 0,
@@ -729,7 +729,7 @@ class GameDefine:
     electronDetails: dict[str, int]
     automationLevels: dict[str, int]
     
-    automationDisabledState: dict[str, tuple[bool, str]]
+    automationDisabledState: dict[str, list]
 
     automationDetails: dict
 
@@ -750,7 +750,7 @@ class GameDefine:
     
     unlockedRewrites: list[str]
 
-    lastAchevementGain: tuple[str, int | float]
+    lastAchevementGain: list
 
 
     sessionStartTime: int | float
