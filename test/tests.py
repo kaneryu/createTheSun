@@ -1,6 +1,9 @@
 import unittest
 from gameLogic import numberLogic
 import observerModel
+import gamedefine
+import random
+import dacite
 
 class numberLogicTests(unittest.TestCase):
     def test_magnitude(self):
@@ -72,9 +75,43 @@ class observerModelTests(unittest.TestCase):
         # observer3 NOT called
 
         
+class saveLoadTests(unittest.TestCase):
+    def test_saveLoad(self):
+        seeds = [1923, 2000, 2023, 8231]
+        
+        possibleAmountsToChage = ["quarks", "protons", "hydrogen"]
+        possibleAutomationsToLevel = ["particleAccelerator", "protonicForge"]
+        
+        for seed in seeds:
+            random.seed(seed)
+            amountToChange = random.choice(possibleAmountsToChage)
+            amountToChangeValue = random.randint(1, 100)
+            
+            upgradeToLevel = random.choice(possibleAutomationsToLevel)
+            upgradeToLevelValue = random.randint(1, 100)
+            
+            testData = dacite.from_dict(data_class=gamedefine.GameDefine, data= gamedefine.defualtGameDefine)
+            
+            testData.amounts[amountToChange] = amountToChangeValue
+            testData.automationLevels[upgradeToLevel] = upgradeToLevelValue
+            
+            save = gamedefine.getSaveData(testData)
+            saveMeta = gamedefine.getSaveMetadata(testData)
+        
+            self.assertEqual(save["amounts"][amountToChange], amountToChangeValue)
+            self.assertEqual(save["automationLevels"][upgradeToLevel], upgradeToLevelValue)
+            self.assertEqual(saveMeta["amounts"][amountToChange], amountToChangeValue)
+            
+            
+            loadedSave = gamedefine.loadSave(save)
+            
+            self.assertEqual(loadedSave.amounts[amountToChange], amountToChangeValue)
+            self.assertEqual(loadedSave.automationLevels[upgradeToLevel], upgradeToLevelValue)
+            
+            
+            
         
 
-    
     
 if __name__ == '__main__':
     unittest.main()
