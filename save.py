@@ -42,7 +42,7 @@ def lookForSave():
 
 def save(export: bool = False, exportEncoded: bool = False, notify: bool = True, slot: int = 0, noProgSaveCreation: bool = False, blank: bool = False): # type: ignore
     def removeExtraLastUsedFiles(slot: int):
-        previousLastUsed = [i for i in os.listdir(savedir) if f"lastused{slot}" in i.split(".")[1]]
+        previousLastUsed = [i for i in os.listdir(savedir) if f"lastused{slot}" in i]
         for i in previousLastUsed:
             os.remove(os.path.join(savedir, i))
             
@@ -62,6 +62,7 @@ def save(export: bool = False, exportEncoded: bool = False, notify: bool = True,
         
     if not blank:
         save_ = gamedefine.getSaveData()
+        
         try:
             encodedSave = b64Encode(json.dumps(save_))
         except Exception as e:

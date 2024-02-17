@@ -735,7 +735,8 @@ def getSaveData():
             saveDict["playTime"] = playTime
         else:
             saveDict[saveableStr[i]] = saveable[i]
-            
+        
+    # print(f"made save {saveDict}")
     return saveDict    
 
 def getSaveMetadata() -> dict:

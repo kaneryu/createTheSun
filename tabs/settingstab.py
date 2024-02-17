@@ -5,7 +5,7 @@ import os
 #third party imports
 
 from PySide6.QtCore import Qt, QSize, Signal as pyqtSignal
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QFrame, QGridLayout, QProgressBar, QComboBox, QScrollArea, QScrollBar
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QFrame, QGridLayout, QProgressBar, QComboBox, QStackedWidget
 # from PySide6.QtGui import
 
 
@@ -32,7 +32,7 @@ class saveLoadWidget(QWidget):
             self.rawLastUsed = self.metadata["lastUsedOn"]
             self.humanReadableLastUsed = time.strftime("%a, %d %b %Y %I:%M:%S %p", time.localtime(self.rawLastUsed))
             
-            self.slotLabel = QLabel(f"Slot {self.slotNum}, Quarks: {self.metadata["amounts"]['quarks']},\nLast used: {self.humanReadableLastUsed}")
+            self.slotLabel = QLabel(f"Slot {self.slotNum}, Quarks: {self.metadata["amounts"]['quarks']}, Achevement Completion: {round((self.metadata["achevements"]["have"] / len(gamedefine.achevementInternalDefine)) * 100, 2)}%,\nLast used: {self.humanReadableLastUsed}")
             self.layout_.addWidget(self.slotLabel)
             
             self.buttonLayout = QHBoxLayout()
@@ -58,7 +58,26 @@ class saveLoadWidget(QWidget):
                 
                 self.parent().parent().updateDisplayWithLists() # type: ignore
             
-    
+    class slotSwitcher(QWidget):
+        def __init__(self):
+            super().__init__()
+            
+            self.layout_ = QHBoxLayout()
+            self.setLayout(self.layout_)
+            
+            self.slotSwitcher = QComboBox()
+            self.slotSwitcher.currentIndexChanged.connect(self.switched)
+            self.layout_.addWidget(self.slotSwitcher)
+            
+        def updateSlotSwitcher(self, num: int):
+            self.slotSwitcher.clear()
+            self.slotSwitcher.addItems([f"Slot {i}" for i in range(num)])
+            
+        def switched(self):
+            parent = self.parent()
+            parent.stackWidget.setCurrentIndex(self.slotSwitcher.currentIndex()) # type: ignore
+            
+            
     class newSlotWidget(QWidget):
         def __init__(self):
             super().__init__()
@@ -86,12 +105,11 @@ class saveLoadWidget(QWidget):
     def __init__(self):
         super().__init__()
         self.topLevelLayout = QVBoxLayout()
-        self.containerLayout = QVBoxLayout()
+        self.stackWidget = QStackedWidget()
         
-        self.containerWidget = QWidget()
+
         
-        self.containerWidget.setLayout(self.containerLayout)
-        self.updateDisplayWithLists()
+
         
         self.autoSaver = autosaveWidget()
         
@@ -99,13 +117,16 @@ class saveLoadWidget(QWidget):
         self.topLevelLayout.addWidget(self.currentSlotText)
         
         self.newSlotWidget_ = self.newSlotWidget()
+        self.slotSwitcher_ = self.slotSwitcher()
         
         self.topLevelLayout.addWidget(self.autoSaver)
-        self.topLevelLayout.addWidget(self.containerWidget)
+        self.topLevelLayout.addWidget(self.slotSwitcher_)
+        self.topLevelLayout.addWidget(self.stackWidget)
         self.topLevelLayout.addWidget(self.newSlotWidget_)
         
         self.setLayout(self.topLevelLayout)
-
+        self.updateDisplayWithLists()
+                
     def updateLists(self):
         self.saveDir: str = save.savedir
         
@@ -135,18 +156,24 @@ class saveLoadWidget(QWidget):
         else:
             pass
     
-    def updateDisplayWithLists(self): 
-        for i in reversed(range(self.containerLayout.count())):
-            widget = self.containerLayout.itemAt(i).widget()
+    def updateDisplayWithLists(self):
+        self.stackWidget.setCurrentIndex(0)
+        
+        for i in reversed(range(self.stackWidget.count())):
+            widget = self.stackWidget.widget(i)
             widget.setParent(None)
             widget.deleteLater()
         
         self.updateLists()
         for i in self.metadata:
             try:
-                self.containerLayout.addWidget(self.individualSaveLoadWidget(i, self.metadata[i]))
+                self.stackWidget.addWidget(self.individualSaveLoadWidget(i, self.metadata[i]))
             except Exception as e:
                 dialogs.errorDialog("Failed loading save slot", f"Failed loading save slot {i} with error: {e}").exec()
+        
+        self.slotSwitcher_.updateSlotSwitcher(len(self.metadata))
+        self.slotSwitcher_.slotSwitcher.setCurrentIndex(save.selectedSlot)
+        self.stackWidget.setCurrentIndex(save.selectedSlot)
 
     def updateDisplay(self):
         self.autoSaver.updateDisplay()
