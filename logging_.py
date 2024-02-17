@@ -8,7 +8,7 @@ logLevels = ["debug", "info", "warning", "error"]
 specialLogs = []
 # updateLoopInfo
 
-def log(message: str, level: int = 0, specialType: str = "") -> None:
+def log(message: str, level: int = 0, specialType: str = "") -> int:
     """
     Logs a message to the console.
 
@@ -25,6 +25,7 @@ def log(message: str, level: int = 0, specialType: str = "") -> None:
     
     if level >= logLevel:
         print(f"{logLevels[level]}: {message}")
+        return 1
     else:
         return -1
         

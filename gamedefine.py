@@ -469,7 +469,7 @@ multiplierList = {
 mainTabBuyMultiple = 1
 
 electronDetails = {
-    "waitTime": 1000,
+    "waitTime": 500,
     "amount": 1,
     "maxAmount": 100,
     "minAmount": 0, 
@@ -638,7 +638,7 @@ unlockables = {
                 {
                     "type": "automation",
                     "what": "particleAccelerator",
-                    "amount": 100
+                    "amount": 3
                 }
             ]
         },

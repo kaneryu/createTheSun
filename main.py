@@ -174,7 +174,7 @@ class MainWindow(QMainWindow):
             logging.log("now updating electrons", specialType="updateLoopInfo")
             self.electrons.updateDisplay()
             
-            
+                        
             if not threading.main_thread().is_alive():
                 return
             
@@ -328,7 +328,7 @@ if __name__ == "__main__":
     
     #change icon in taskbar
     myappid = u'opensource.createthesun.main.pre-release'
-    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid) 
     
     app = QApplication([])
     tabs.saveModule.save(noProgSaveCreation = True, notify = False)
