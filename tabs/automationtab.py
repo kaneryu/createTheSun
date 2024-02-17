@@ -15,7 +15,7 @@ from PySide6.QtGui import Qt
 
 
 #local imports
-import gamedefine
+from gamedefine import gamedefine
 import gameLogic.automationGameLogic as automationGameLogic
 
 class automationBlock(QFrame):

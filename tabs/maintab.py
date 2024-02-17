@@ -12,7 +12,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushBu
 from PySide6.QtGui import QIntValidator
 
 #local imports
-import gamedefine
+from gamedefine import gamedefine
 import gameLogic.itemGameLogic as itemGameLogic
 import logging_ as logging
 import assets.fonts.urbanist.urbanistFont as urbanistFont

@@ -32,7 +32,7 @@ class saveLoadWidget(QWidget):
             self.rawLastUsed = self.metadata["lastUsedOn"]
             self.humanReadableLastUsed = time.strftime("%a, %d %b %Y %I:%M:%S %p", time.localtime(self.rawLastUsed))
             
-            self.slotLabel = QLabel(f"Slot {self.slotNum}, Quarks: {self.metadata["amounts"]['quarks']}, Achevement Completion: {round((self.metadata["achevements"]["have"] / len(gamedefine.achevementInternalDefine)) * 100, 2)}%,\nLast used: {self.humanReadableLastUsed}")
+            self.slotLabel = QLabel(f"Slot {self.slotNum}, Quarks: {self.metadata["amounts"]['quarks']}, Achevement Completion: {round((self.metadata["achevements"]["have"] / len(gamedefine.gamedefine.achevementInternalDefine)) * 100, 2)}%,\nLast used: {self.humanReadableLastUsed}")
             self.layout_.addWidget(self.slotLabel)
             
             self.buttonLayout = QHBoxLayout()

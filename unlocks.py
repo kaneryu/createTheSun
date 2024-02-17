@@ -1,9 +1,12 @@
 from observerModel import registerObserver, Observable, ObservableCallType
-from gamedefine import unlockables, unlockedUnlockables
-import gamedefine
+
+from gamedefine import gamedefine
 from tabs import achevementsTab
 
 import time
+
+unlockables = gamedefine.unlockables
+unlockedUnlockables = gamedefine.unlockedUnlockables
 
 def checkUnlocks(event):
     for key in unlockables:

@@ -55,7 +55,7 @@ def save(export: bool = False, exportEncoded: bool = False, notify: bool = True,
         if areYouSureDialog.result() == QDialog.DialogCode.Rejected:
             return
     
-    gamedefine.playTime += time.time() - gamedefine.sessionStartTime
+    gamedefine.gamedefine.playTime += time.time() - gamedefine.gamedefine.sessionStartTime
     
     if noProgSaveCreation:
         slot = -1
@@ -121,7 +121,7 @@ def save(export: bool = False, exportEncoded: bool = False, notify: bool = True,
         blankSaveFile.close()
         blankmetadataFile.close()
         
-    gamedefine.sessionStartTime = time.time()
+    gamedefine.gamedefine.sessionStartTime = time.time()
     
 
 def getSaveMetadataFromFile(slot: int = 0 ) -> dict:
@@ -163,13 +163,13 @@ def load(slot: int = 0, noSpeak = False, loadWarn = True, save = None):
     gamedefine.loadSave(save_)
     gamedefine.force = 1
     
-    for i in gamedefine.unlockedUnlockables:
+    for i in gamedefine.gamedefine.unlockedUnlockables:
         unlocks.unlock(i)
         
     global selectedSlot
     selectedSlot = slot
     
-    gamedefine.sessionStartTime = time.time() * 1000
+    gamedefine.gamedefine.sessionStartTime = time.time() * 1000
     if not noSpeak:
         operationSucsess.exec()
     

@@ -1,7 +1,7 @@
 import sympy as sp
 import time
 from math import floor, ceil, log
-import gamedefine
+from gamedefine import gamedefine
 import gameLogic.numberLogic as numberLogic
 
 def getCurrentInternalMultiLevelUpgrade(upgrade: str, level: int | None = None) -> dict:

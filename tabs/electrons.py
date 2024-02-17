@@ -9,7 +9,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QProgressBar
 from PySide6.QtGui import Qt
 from PySide6 import QtCore
 
-import gamedefine
+from gamedefine import gamedefine
 
 class electrons(QWidget):
     def updateDisplay(self):               

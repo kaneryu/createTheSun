@@ -1,7 +1,7 @@
 import sympy as sp
 import regex as re
 from math import floor, ceil, log
-import gamedefine
+from gamedefine import gamedefine
 import gameLogic.numberLogic as numberLogic
 
 

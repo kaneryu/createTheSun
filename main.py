@@ -19,8 +19,10 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, Q
 from PySide6.QtCore import QPropertyAnimation, Qt, QTimer, QRunnable, Slot as pyqtSlot, Signal as pyqtSignal, QThreadPool
 
 #local imports
-import observerModel
 import gamedefine
+
+import observerModel
+
 import tabs_ as tabs
 import tabs.electrons as electrons
 import logging_ as logging
@@ -374,6 +376,6 @@ if __name__ == "__main__":
     splashScreen.showMessage("Done!", Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignCenter, Qt.GlobalColor.white)
     window.show()
     splashScreen.hide()
-    gamedefine.sessionStartTime = time.time()
+    gamedefine.gamedefine.sessionStartTime = time.time()
     
     app.exec()

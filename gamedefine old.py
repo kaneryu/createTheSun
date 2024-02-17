@@ -1,7 +1,6 @@
 import time
 from dataclasses import dataclass, asdict
 from dacite import from_dict
-initalized = False
 
 defualtGameDefine = {
     "itemVisualDefine": {
@@ -704,57 +703,57 @@ defualtGameDefine = {
 }
 @dataclass
 class GameDefine:
-    # def __init__(self):
-    itemVisualDefine: dict
+    def __init__(self):
+        self.itemVisualDefine: dict
 
-    itemInternalDefine: dict
-    
-    automationInternalDefine: dict
+        self.itemInternalDefine: dict
         
+        self.automationInternalDefine: dict
+            
+            
+        self.automationVisualDefine: dict
+
+        self.purchaseToCreate: list[str]
+        self.automationsToCreate: list[str]
+
+        self.amounts: dict[str, int]
+
+        self.clickGainMultiplierList: dict[str, list[int | float]]
+
+        self.multiplierList: dict[str, list[int | float]]
+
+
+        self.mainTabBuyMultiple: int
+
+        self.electronDetails: dict[str, int]
+        self.automationLevels: dict[str, int]
         
-    automationVisualDefine: dict
+        self.automationDisabledState: dict[str, tuple[bool, str]]
 
-    purchaseToCreate: list[str]
-    automationsToCreate: list[str]
+        self.automationDetails: dict
 
-    amounts: dict[str, int]
-
-    clickGainMultiplierList: dict[str, list[int | float]]
-
-    multiplierList: dict[str, list[int | float]]
-
-
-    mainTabBuyMultiple: int
-
-    electronDetails: dict[str, int]
-    automationLevels: dict[str, int]
-    
-    automationDisabledState: dict[str, tuple[bool, str]]
-
-    automationDetails: dict
-
-    achevementInternalDefine: dict
-    
-
-    achevementVisualDefine: dict
+        self.achevementInternalDefine: dict
         
-    unlockedAchevements: list[str]
 
-    unlockables: dict
+        self.achevementVisualDefine: dict
+            
+        self.unlockedAchevements: list[str]
+
+        self.unlockables: dict
+           
+        self.unlockedUnlockables: list[str]
+
+        self.rewriteInternalDefine: dict
+
+        self.rewriteVisualDefine: dict
         
-    unlockedUnlockables: list[str]
+        self.unlockedRewrites: list[str]
 
-    rewriteInternalDefine: dict
-
-    rewriteVisualDefine: dict
-    
-    unlockedRewrites: list[str]
-
-    lastAchevementGain: tuple[str, int | float]
+        self.lastAchevementGain: tuple[str, int | float]
 
 
-    sessionStartTime: int | float
-    playTime: int | float
+        self.sessionStartTime: int
+        self.playTime:int
 
 
     
@@ -812,7 +811,7 @@ def convertFloatsToStr(input: dict | list):
                 workingList[workingList.index(i)] = convertFloatsToStrFromList(i)
             if type(i) == float:
                 print(f"fixing {i}")
-                workingList[workingList.index(i)] = str(i) + "f" 
+                workingList[workingList.index(i)] = str(i) + "f" #bruhhhh why doesnt i = str(i) + "f" work
         return workingList
                 
     def convertFloatsToStrFromDict(input: dict):
@@ -870,4 +869,3 @@ def convertStrToFloats(input: (dict | list)):
 # print(convertFloatsToStr(testdict_))
 
 gamedefine = from_dict(data_class=GameDefine, data=defualtGameDefine)
-initalized = True
