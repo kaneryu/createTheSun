@@ -1,7 +1,7 @@
 import sympy as sp
 import regex as re
 from math import floor, ceil, log
-from gamedefine import gamedefine
+import gamedefine
 import gameLogic.numberLogic as numberLogic
 
 
@@ -16,17 +16,17 @@ def canAfford(item: str, doBuyMultiply = True) -> bool:
         bool: Whether you can afford the item or not.
     """
     
-    buyMultiplier = gamedefine.mainTabBuyMultiple if doBuyMultiply else 1
+    buyMultiplier = gamedefine.gamedefine.mainTabBuyMultiple if doBuyMultiply else 1
 
-    if gamedefine.itemInternalDefine[item]["costEquation"] == "":
+    if gamedefine.gamedefine.itemInternalDefine[item]["costEquation"] == "":
         return True
 
-    whatItCosts = gamedefine.itemInternalDefine[item]["whatItCosts"]
+    whatItCosts = gamedefine.gamedefine.itemInternalDefine[item]["whatItCosts"]
     
     ongoing = True
     
     for i in whatItCosts:
-        if gamedefine.amounts[i["what"]] < i["amount"] * buyMultiplier:
+        if gamedefine.gamedefine.amounts[i["what"]] < i["amount"] * buyMultiplier:
             ongoing = False
     
     return ongoing
@@ -40,21 +40,21 @@ def purchase(item: str, doBuyMultiply = False) -> None:
         cost (int): The cost of the item.
     """
 
-    buyMultiplier = gamedefine.mainTabBuyMultiple if doBuyMultiply else 1
+    buyMultiplier = gamedefine.gamedefine.mainTabBuyMultiple if doBuyMultiply else 1
     
-    if gamedefine.itemInternalDefine[item]["costEquation"] == "":
-        gamedefine.amounts[item] += 1
-        print(f"purchased {item}, now have {gamedefine.amounts[item]}")
+    if gamedefine.gamedefine.itemInternalDefine[item]["costEquation"] == "":
+        gamedefine.gamedefine.amounts[item] += 1
+        print(f"purchased {item}, now have {gamedefine.gamedefine.amounts[item]}")
         return
 
-    whatItCosts = gamedefine.itemInternalDefine[item]["whatItCosts"]
-    whatItGives = gamedefine.itemInternalDefine[item]["whatItGives"]
+    whatItCosts = gamedefine.gamedefine.itemInternalDefine[item]["whatItCosts"]
+    whatItGives = gamedefine.gamedefine.itemInternalDefine[item]["whatItGives"]
     
     for i in whatItCosts:
-        gamedefine.amounts[i["what"]] -= i["amount"] * buyMultiplier
+        gamedefine.gamedefine.amounts[i["what"]] -= i["amount"] * buyMultiplier
     for i in whatItGives:
-        gamedefine.amounts[i["what"]] += i["amount"] * buyMultiplier
-    print(f"purchased {item}, now have {gamedefine.amounts[item]}, with buy multiplier {buyMultiplier}")
+        gamedefine.gamedefine.amounts[i["what"]] += i["amount"] * buyMultiplier
+    print(f"purchased {item}, now have {gamedefine.gamedefine.amounts[item]}, with buy multiplier {buyMultiplier}")
     
     return
 
@@ -70,13 +70,13 @@ def getCurrentCost(item: str, _round : bool | None = False, eNotation : bool | N
         dict: The current cost of the item.    
     """
     
-    buyMultiplier = gamedefine.mainTabBuyMultiple
+    buyMultiplier = gamedefine.gamedefine.mainTabBuyMultiple
     
-    equation = gamedefine.itemInternalDefine[item]["costEquation"]
+    equation = gamedefine.gamedefine.itemInternalDefine[item]["costEquation"]
     if equation == "":
         return {"failed": True}
 
-    whatItCosts = gamedefine.itemInternalDefine[item]["whatItCosts"][0]
+    whatItCosts = gamedefine.gamedefine.itemInternalDefine[item]["whatItCosts"][0]
 
     currentCost = int(numberLogic.evaluateCostEquation(equation, 1)) 
 
@@ -89,11 +89,11 @@ def getCurrentCost(item: str, _round : bool | None = False, eNotation : bool | N
 
 def parseCost(name):
     
-    buyMultiplier = gamedefine.mainTabBuyMultiple
+    buyMultiplier = gamedefine.gamedefine.mainTabBuyMultiple
     
     if not name == "quarks":
-        what = gamedefine.itemInternalDefine[name]["whatItCosts"]
-        get = gamedefine.itemInternalDefine[name]["whatItGives"]
+        what = gamedefine.gamedefine.itemInternalDefine[name]["whatItCosts"]
+        get = gamedefine.gamedefine.itemInternalDefine[name]["whatItGives"]
         string = ["Purchase "]                    
     else:
         return "Free"
@@ -135,28 +135,28 @@ def parseCost(name):
 def maxAll():
     
     def maxAllPurchase(item):
-        whatItCosts = gamedefine.itemInternalDefine[item]["whatItCosts"]
-        whatItGives = gamedefine.itemInternalDefine[item]["whatItGives"]
+        whatItCosts = gamedefine.gamedefine.itemInternalDefine[item]["whatItCosts"]
+        whatItGives = gamedefine.gamedefine.itemInternalDefine[item]["whatItGives"]
         
         maxAmountPossible = 1
         
         for i in whatItCosts:
-            maxAmountPossible = gamedefine.amounts[i["what"]] // i["amount"]
+            maxAmountPossible = gamedefine.gamedefine.amounts[i["what"]] // i["amount"]
             
         for i in whatItCosts:
-            gamedefine.amounts[i["what"]] -= int(i["amount"] * maxAmountPossible)
+            gamedefine.gamedefine.amounts[i["what"]] -= int(i["amount"] * maxAmountPossible)
         for i in whatItGives:
-            gamedefine.amounts[i["what"]] += int(i["amount"] * maxAmountPossible)
+            gamedefine.gamedefine.amounts[i["what"]] += int(i["amount"] * maxAmountPossible)
 
         
-        print(f"max all purchased {maxAmountPossible} of {item}, now have {gamedefine.amounts[item]}")
+        print(f"max all purchased {maxAmountPossible} of {item}, now have {gamedefine.gamedefine.amounts[item]}")
         
         return
     
     affordList = []
-    for i in gamedefine.itemInternalDefine:
-        if not gamedefine.itemInternalDefine[i]["whatItCosts"][0]["what"] == "nothing":
-            if i in gamedefine.purchaseToCreate:
+    for i in gamedefine.gamedefine.itemInternalDefine:
+        if not gamedefine.gamedefine.itemInternalDefine[i]["whatItCosts"][0]["what"] == "nothing":
+            if i in gamedefine.gamedefine.purchaseToCreate:
                 if canAfford(i, doBuyMultiply = False):
                     affordList.append(i)
     

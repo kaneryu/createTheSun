@@ -6,7 +6,7 @@ import os
 
 from time import time
 import pathlib
-from gamedefine import gamedefine
+import gamedefine
 
 basedir = os.path.dirname(os.path.realpath(__file__))
 
@@ -39,7 +39,7 @@ class achevementPopup(QWidget):
         self.image.setContentsMargins(0,0,0,0)
         self.image.setAlignment(Qt.AlignmentFlag.AlignCenter)
         
-        self.achevementGet = QLabel(f"You got an achevement:\n{gamedefine.achevementVisualDefine[achevement]["visualName"]}")
+        self.achevementGet = QLabel(f"You got an achevement:\n{gamedefine.gamedefine.achevementVisualDefine[achevement]["visualName"]}")
         self.achevementGet.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.achevementGet.setObjectName("achevementPopupText")
         layout = QVBoxLayout()
@@ -96,7 +96,7 @@ class achevementWidget(QWidget):
         self.layout_.addWidget(self.image)
 
         
-        self.setToolTip(f"{gamedefine.achevementVisualDefine[achevement]["visualName"]} \n {gamedefine.achevementVisualDefine[achevement]["hoverDescription"]} \n {gamedefine.achevementVisualDefine[achevement]["rewardDescription"]}")
+        self.setToolTip(f"{gamedefine.gamedefine.achevementVisualDefine[achevement]["visualName"]} \n {gamedefine.gamedefine.achevementVisualDefine[achevement]["hoverDescription"]} \n {gamedefine.gamedefine.achevementVisualDefine[achevement]["rewardDescription"]}")
         
 
         self.effectsSetup()
@@ -119,7 +119,7 @@ class achevementWidget(QWidget):
         self.blurOut.setEasingCurve(QEasingCurve.Type.OutSine)
         
     def displayUpdate(self):
-        if not self.name in gamedefine.unlockedAchevements:
+        if not self.name in gamedefine.gamedefine.unlockedAchevements:
             if not self.blurIn.state() == QPropertyAnimation.State.Running and not self.alreadyBlurredIn:
                 self.effectsSetup()
                 self.blurIn.start()
@@ -147,7 +147,7 @@ class content(QWidget):
         columnCounter = 0
         
         
-        for i in gamedefine.achevementInternalDefine:
+        for i in gamedefine.gamedefine.achevementInternalDefine:
             if rowCounter == achevementsPerRow - 1:
                 columnCounter += 1
                 rowCounter = 0

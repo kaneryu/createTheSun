@@ -12,7 +12,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushBu
 from PySide6.QtGui import QIntValidator
 
 #local imports
-from gamedefine import gamedefine
+import gamedefine
 import gameLogic.itemGameLogic as itemGameLogic
 import logging_ as logging
 import assets.fonts.urbanist.urbanistFont as urbanistFont
@@ -27,19 +27,19 @@ class purchaseStrip(QWidget):
         
         self.name = name
         
-        if not gamedefine.itemVisualDefine[name] == None:
-            self.internalItem = gamedefine.itemInternalDefine[name]
-            self.visualItem = gamedefine.itemVisualDefine[name]
+        if not gamedefine.gamedefine.itemVisualDefine[name] == None:
+            self.internalItem = gamedefine.gamedefine.itemInternalDefine[name]
+            self.visualItem = gamedefine.gamedefine.itemVisualDefine[name]
         else:
-            self.item = gamedefine.itemInternalDefine["proton"]
-            self.visualItem = gamedefine.itemVisualDefine["proton"]
+            self.item = gamedefine.gamedefine.itemInternalDefine["proton"]
+            self.visualItem = gamedefine.gamedefine.itemVisualDefine["proton"]
             name = "proton"
-            logging.log(f"error importing item '{name}' from gamedefine", 3)
+            logging.log(f"error importing item '{name}' from gamedefine.gamedefine", 3)
             
-        self.setToolTip(gamedefine.itemVisualDefine[name]["description"])
+        self.setToolTip(gamedefine.gamedefine.itemVisualDefine[name]["description"])
         self.setToolTipDuration(5000)
         
-        self.label = QLabel(f"You have {numberLogic.humanReadableNumber(gamedefine.amounts[name])} {self.visualItem['visualName'].lower()}")
+        self.label = QLabel(f"You have {numberLogic.humanReadableNumber(gamedefine.gamedefine.amounts[name])} {self.visualItem['visualName'].lower()}")
         
         self.layout_.addWidget(self.label)
         if not name == "quarks":
@@ -69,7 +69,7 @@ class purchaseStrip(QWidget):
         It also updates the purchase button text to display the cost of the item.
         If the item is "quarks", the purchase button text is set to "Free".
         """
-        self.label.setText(f"You have {numberLogic.humanReadableNumber(gamedefine.amounts[self.name])} {self.visualItem['visualName'].lower()}")
+        self.label.setText(f"You have {numberLogic.humanReadableNumber(gamedefine.gamedefine.amounts[self.name])} {self.visualItem['visualName'].lower()}")
         
         if not self.internalItem["whatItCosts"][0]["amount"] == -1:
 
@@ -113,13 +113,13 @@ class header(QWidget):
         try:
             if not int(self.textEdit.text()) == 0:
                 if not int(self.textEdit.text()) < 0:
-                    gamedefine.mainTabBuyMultiple = int(self.textEdit.text())
+                    gamedefine.gamedefine.mainTabBuyMultiple = int(self.textEdit.text())
                 else:
-                    gamedefine.mainTabBuyMultiple = 1
+                    gamedefine.gamedefine.mainTabBuyMultiple = 1
             else:
-                gamedefine.mainTabBuyMultiple = 1
+                gamedefine.gamedefine.mainTabBuyMultiple = 1
         except:
-            gamedefine.mainTabBuyMultiple = 1
+            gamedefine.gamedefine.mainTabBuyMultiple = 1
             
         
 class content(QWidget):
@@ -132,7 +132,7 @@ class content(QWidget):
         self.layout_.addWidget(self.header_)
         
         self.purchaseStrips: list[purchaseStrip] = []
-        for i in gamedefine.purchaseToCreate:
+        for i in gamedefine.gamedefine.purchaseToCreate:
             if not i == "electrons":
                 print("Creating " + str(i))
                 self.purchaseStrips.append(purchaseStrip(i))
@@ -144,18 +144,20 @@ class content(QWidget):
         for i in self.purchaseStrips:
             i.updateTab()
         
-        if not len(self.purchaseStrips) == len(gamedefine.purchaseToCreate):
+        if not len(self.purchaseStrips) == len(gamedefine.gamedefine.purchaseToCreate):
+            for i in reversed(range(len(self.purchaseStrips))):
+                widget = self.purchaseStrips[i]
+                self.layout_.removeWidget(widget)
+                widget.setParent(None)
+                widget.deleteLater()
+                self.purchaseStrips.pop(i)
             
-            whatToAdd: list = deepcopy(gamedefine.purchaseToCreate)
-            for i in self.purchaseStrips:
-                if i.name in whatToAdd:
-                    whatToAdd.remove(i.name)
             
-            for i in whatToAdd:
-                self.purchaseStrips.insert(gamedefine.purchaseToCreate.index(i), purchaseStrip(i))
-                self.layout_.insertWidget(gamedefine.purchaseToCreate.index(i) + 1, self.purchaseStrips[gamedefine.purchaseToCreate.index(i)])
-
-
-    
+            for i in gamedefine.gamedefine.purchaseToCreate:
+                print("Creating " + str(i))
+                self.purchaseStrips.append(purchaseStrip(i))
+                self.layout_.addWidget(self.purchaseStrips[-1])
+            
+               
         
         self.setLayout(self.layout_)

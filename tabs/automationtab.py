@@ -15,7 +15,7 @@ from PySide6.QtGui import Qt
 
 
 #local imports
-from gamedefine import gamedefine
+import gamedefine
 import gameLogic.automationGameLogic as automationGameLogic
 
 class automationBlock(QFrame):
@@ -46,7 +46,7 @@ class automationBlock(QFrame):
         
     
     def purchase(self):
-        observerModel.callEvent(observerModel.Observable.AUTOMATION_OBSERVABLE, observerModel.ObservableCallType.GAINED, (self.name, gamedefine.automationLevels[self.name])) 
+        observerModel.callEvent(observerModel.Observable.AUTOMATION_OBSERVABLE, observerModel.ObservableCallType.GAINED, (self.name, gamedefine.gamedefine.automationLevels[self.name])) 
         if automationGameLogic.canAffordUpgrade(self.name):
             automationGameLogic.purchaseUpgrade(self.name)
             automationGameLogic.updateUpgradeStatus(self.name)
@@ -63,14 +63,14 @@ class automationBlock(QFrame):
         else:
             self.upgradeButton.setEnabled(False)
             
-        if gamedefine.automationDisabledState[self.name][0]:
-            self.upgradeLabel.setText(f"Disabled with {gamedefine.automationDisabledState[self.name][1]} seconds left | {automationGameLogic.parseUpgradeName(self.name)}")
+        if gamedefine.gamedefine.automationDisabledState[self.name][0]:
+            self.upgradeLabel.setText(f"Disabled with {gamedefine.gamedefine.automationDisabledState[self.name][1]} seconds left | {automationGameLogic.parseUpgradeName(self.name)}")
         else:
             self.upgradeLabel.setText(automationGameLogic.parseUpgradeName(self.name))
         
         
     def updateInternal(self):
-        if not gamedefine.automationLevels[self.name] == 0:
+        if not gamedefine.gamedefine.automationLevels[self.name] == 0:
             if automationGameLogic.getCurrentInternalMultiLevelUpgrade(self.name)["type"] == "idleGenerator":
                 self.lastTickTime = automationGameLogic.doUpgradeTask(self.name, self.lastTickTime)
             
@@ -90,7 +90,7 @@ class content(QWidget):
         self.layout_ = QVBoxLayout()
         self.layout_.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.automationBlocks = []
-        for i in gamedefine.automationsToCreate:
+        for i in gamedefine.gamedefine.automationsToCreate:
             print("creating automation " + i)
             self.automationBlocks.append(automationBlock(i))
             self.layout_.addWidget(self.automationBlocks[-1])

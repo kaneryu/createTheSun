@@ -36,7 +36,7 @@ class yesNoDialog(CustomDialog):
     def __init__(self, windowTitle, text, preventClose_ = False):
         super().__init__(text, windowTitle, True, preventClose = preventClose_, customQBtn = QDialogButtonBox.StandardButton.Yes | QDialogButtonBox.StandardButton.No)
 
-class popupNotification(CustomDialog):
+class popupNotificationOld(CustomDialog):
     def __init__(self, windowTitle, text):
         super().__init__(text, windowTitle, cancelable = False, preventClose = False)
     
@@ -51,6 +51,8 @@ class badDialog(QMessageBox):
             self.setIcon(QMessageBox.Icon.Critical)
         elif type_ == "warn":
             self.setIcon(QMessageBox.Icon.Warning)
+        elif type_ == "info":
+            self.setIcon(QMessageBox.Icon.Information)
             
         self.setWindowTitle(windowTitle_)
         self.setTextFormat(Qt.TextFormat.MarkdownText)
@@ -62,6 +64,9 @@ class errorDialog(badDialog):
     def __init__(self, windowTitle, text):
         super().__init__(text_ = text, windowTitle_ = windowTitle, type_ = "error")
 
+class popupNotification(CustomDialog):
+    def __init__(self, windowTitle, text):
+        super().__init__(text, windowTitle, cancelable = False, preventClose = False)
 class warningDialog(badDialog):
     def __init__(self, windowTitle, text):
         super().__init__(text, windowTitle, "warn")

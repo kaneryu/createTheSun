@@ -66,7 +66,7 @@ class Worker(QRunnable):
         Initialise the runner function with passed args, kwargs.
         '''
         self.fn(*self.args, **self.kwargs)
-
+    
 class MainWindow(QMainWindow):
     updateSignal = pyqtSignal()
     sUpdateThread1 = pyqtSignal()
@@ -144,7 +144,6 @@ class MainWindow(QMainWindow):
             time.sleep(0.001)
             
             while self.displayThreadWait:
-                
                 if not threading.main_thread().is_alive():
                     return
             
@@ -220,7 +219,7 @@ class MainWindow(QMainWindow):
             self.electrons.updateInternal()
             self.tabs[1]["class"].updateInternal()
             self.tabs[3]["class"].updateInternal()
-            if time.time() * 1000 - self.lastUpdateTime > 5000: # every 5 seconds
+            if time.time() * 1000 - self.lastUpdateTime > 2500: # every 2.5 seconds
                 self.lastUpdateTime = time.time() * 1000
                 observerModel.callEvent(observerModel.Observable.ITEM_OBSERVABLE, observerModel.ObservableCallType.TIME, "")
                 observerModel.callEvent(observerModel.Observable.AUTOMATION_OBSERVABLE, observerModel.ObservableCallType.TIME, "")
@@ -263,15 +262,20 @@ class MainWindow(QMainWindow):
         self.electrons.updateDisplay()
     
     def closeEvent(self, *args, **kwargs):
+        print("close button pressed")
         super().closeEvent(*args, **kwargs)
-
+        print("ran the super")
         self.killThreads = True
         
+        print("killthreads set")
+        
         saveDialog = dialogs.yesNoDialog("Save game", "Would you like to save your game?", True)
+        print("new savedialog")
         saveDialogResults = saveDialog.exec()
+
         if saveDialogResults == QDialog.DialogCode.Accepted:
             tabs.saveModule.save(notify = False, slot = tabs.saveModule.selectedSlot)
-        
+        print("finnaly done")
         sys.exit(app.exit())            
         
     # def createSaveDir(self):

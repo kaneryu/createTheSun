@@ -1,6 +1,7 @@
 import time
 from dataclasses import dataclass, asdict
 from dacite import from_dict
+from copy import deepcopy
 initalized = False
 
 defualtGameDefine = {
@@ -218,7 +219,7 @@ defualtGameDefine = {
                         "time": 1000,
                         # in this case, %1 is upgrade level
                         "equationType": "timeEquation",
-                        "timeEquation": "abs(tan(-((%1+34)/600)-10.93791))"
+                        "timeEquation": "10.5^(-1 * %1 + 100) + 10"
                     }
                         
                 },
@@ -227,7 +228,7 @@ defualtGameDefine = {
                     "upgradeCost" : [            
                         {
                             "what": "quarks",
-                            "amount": "(x - 1) * 30 - 500",
+                            "amount": "(%1 - 1) * 30 - 500",
                             "variables": ["level"] 
                         },
                         {
@@ -265,7 +266,7 @@ defualtGameDefine = {
             "firstCost": [
                 {
                     "what": "quarks",
-                    "amount": 1500
+                    "amount": 500
                                 
                 },
                 {
@@ -274,7 +275,7 @@ defualtGameDefine = {
                 },
                 {
                     "what": "protons",
-                    "amount": 400
+                    "amount": 200
                 }
             ],
             
@@ -287,11 +288,13 @@ defualtGameDefine = {
                     "upgradeCost" : [            
                         {
                             "what": "protons",
-                            "amount": 200     
+                            "amount": "((%1-1)*30+200)",
+                            "variables": ["level"]   
                         },
                         {
                             "what": "electrons",
-                            "amount": 25
+                            "amount": "1.1^(-1*%1+34.5)+14",
+                            "variables": ["level"]
                         }
                     ],
                     
@@ -316,7 +319,7 @@ defualtGameDefine = {
                             "time": 1000,
                             "equationType": "timeEquation",
                             # in this case, %1 is upgrade level
-                            "timeEquation": "abs(tan(-((%1+34)/600)-10.93791))",
+                            "timeEquation": "10.5^(-1 * %1 + 100) + 50",
                     },
             
                 },
@@ -329,11 +332,13 @@ defualtGameDefine = {
                     "upgradeCost" : [            
                         {
                             "what": "protons",
-                            "amount": 350     
+                            "amount": "(%1-1)*60 - 500",
+                            "variables": ["level"] 
                         },
                         {
                             "what": "electrons",
-                            "amount": 50
+                            "amount": "1.1^(-1*%1+34.5)+14",
+                            "variables": ["level"]
                         },
                     ],
                     "type" : "idleGenerator",
@@ -382,8 +387,8 @@ defualtGameDefine = {
                 "upgradeDescription": "Increase the size of the particle accelerator loop for more quarks per second.",
                 "firstupgradeUsefulDescription": "Creates 1 Quark per second",
                 
-                "currentUpgradeUsefulDescription": "You are currently gaining 1 Quarks every %%% seconds",
-                "upgradeUsefulDescription": "Upgrade to gain 1 Quarks every %%% seconds",
+                "currentUpgradeUsefulDescription": "You are currently gaining 1 Quark every %%% seconds",
+                "upgradeUsefulDescription": "Upgrade to gain 1 Quark every %%% seconds",
                 "usefulDescriptionBlank": "tickTime",
                 
                 "id": ["particleAccelerator", 0]
@@ -642,7 +647,7 @@ defualtGameDefine = {
                 "needs": [
                     {
                         "type": "automation",
-                        "what": "particleAccelerator",
+                        "what": "protonicForge",
                         "amount": 3
                     }
                 ]
@@ -655,7 +660,7 @@ defualtGameDefine = {
                 {
                     "type": "item",
                     "what": "hydrogen",
-                    "amount": 10
+                    "amount": 20
                 }
             ]
         },
@@ -700,6 +705,7 @@ defualtGameDefine = {
 
     "sessionStartTime": 0,
     "playTime": 0,
+    "tutorialPopupDone": False
 
 }
 @dataclass
@@ -755,6 +761,7 @@ class GameDefine:
 
     sessionStartTime: int | float
     playTime: int | float
+    tutorialPopupDone: bool
 
 
     
@@ -765,36 +772,53 @@ lastAutosaveTime = 0
 autosaveTime = 300000
 
 def loadSave(saveDict: dict):
-
-    new = from_dict(data_class=GameDefine, data=saveDict)
-
-    return new
+    global gamedefine, force
     
-def getSaveData(dataclass: GameDefine | None = None ) -> dict:
-    global gamedefine
+    newDict = deepcopy(defualtGameDefine)
+    newDict.update(saveDict)
     
-    if dataclass != None:
-        saveDict = asdict(dataclass)
-    else:
-        saveDict = asdict(gamedefine)
-        
+    gamedefine = from_dict(data_class=GameDefine, data=newDict)
+    gamedefine.mainTabBuyMultiple = 1
+    
+    return gamedefine
+    
+def getSaveData(savedata: GameDefine | None = None) -> dict:
+    global gamedefine, defualtGameDefine
+    
+    saveable = ["amounts", "clickGainMultiplierList", "multiplierList", "upgradeLevels", "upgradeDisabledState", "upgradeDetails", "unlockedAchevements", "electronDetails", "unlockedUnlockables", "purchaseToCreate", "automationsToCreate", "playTime"]
+    toRemove = []
+    for i in defualtGameDefine:
+        if i not in saveable:
+            toRemove.append(i)
+    
+    
+    if savedata == None:
+        savedata = gamedefine
+
+    
+    saveDict = asdict(savedata)
+    
+    for i in toRemove:
+        saveDict.pop(i)
+    
     # print(f"made save {saveDict}")
     return saveDict    
 
-def getSaveMetadata(dataclass: GameDefine | None = None) -> dict:
+def getSaveMetadata(savedata: GameDefine | None = None) -> dict:
     global gamedefine
     metadata: dict = {"amounts": {}, "achevements": {}}
     
-    gamedefine_ = dataclass if dataclass != None else gamedefine
+    if savedata == None:
+        savedata = gamedefine
     
-    for i in gamedefine_.amounts:
-        metadata["amounts"][i] = gamedefine_.amounts[i]
+    for i in savedata.amounts: # type: ignore
+        metadata["amounts"][i] = savedata.amounts[i] # type: ignore 
+     
+    metadata["playTime"] = savedata.playTime # type: ignore
+     
     
-    metadata["playTime"] = gamedefine_.playTime
-    
-    
-    metadata["achevements"]["have"] = len(gamedefine_.unlockedAchevements)
-    metadata["achevements"]["notUnlocked"] = len(gamedefine_.achevementInternalDefine)
+    metadata["achevements"]["have"] = len(savedata.unlockedAchevements) # type: ignore
+    metadata["achevements"]["notUnlocked"] = len(savedata.achevementInternalDefine) # type: ignore
     metadata["lastUsedOn"] = time.time()
     
     return metadata

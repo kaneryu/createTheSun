@@ -9,22 +9,22 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QProgressBar
 from PySide6.QtGui import Qt
 from PySide6 import QtCore
 
-from gamedefine import gamedefine
+import gamedefine
 
 class electrons(QWidget):
     def updateDisplay(self):               
-        self.amountBar.setValue(gamedefine.amounts["electrons"])
-        self.label.setText(f"{gamedefine.amounts["electrons"]}")
+        self.amountBar.setValue(gamedefine.gamedefine.amounts["electrons"])
+        self.label.setText(f"{gamedefine.gamedefine.amounts["electrons"]}")
     def updateInternal(self):
-        if time.time() * 1000 - self.lastTickTime > gamedefine.electronDetails["waitTime"]:
+        if time.time() * 1000 - self.lastTickTime > gamedefine.gamedefine.electronDetails["waitTime"]:
             self.lastTickTime = time.time() * 1000
-            gamedefine.amounts["electrons"] += gamedefine.electronDetails["amount"]
+            gamedefine.gamedefine.amounts["electrons"] += gamedefine.gamedefine.electronDetails["amount"]
             
-            if gamedefine.amounts["electrons"] > gamedefine.electronDetails["maxAmount"]:
-                gamedefine.amounts["electrons"] = gamedefine.electronDetails["maxAmount"]
+            if gamedefine.gamedefine.amounts["electrons"] > gamedefine.gamedefine.electronDetails["maxAmount"]:
+                gamedefine.gamedefine.amounts["electrons"] = gamedefine.gamedefine.electronDetails["maxAmount"]
                 
-            if gamedefine.amounts["electrons"] < gamedefine.electronDetails["minAmount"]:
-                gamedefine.amounts["electrons"] = gamedefine.electronDetails["minAmount"]
+            if gamedefine.gamedefine.amounts["electrons"] < gamedefine.gamedefine.electronDetails["minAmount"]:
+                gamedefine.gamedefine.amounts["electrons"] = gamedefine.gamedefine.electronDetails["minAmount"]
                 
     def __init__(self):
         super().__init__()

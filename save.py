@@ -50,10 +50,10 @@ def save(export: bool = False, exportEncoded: bool = False, notify: bool = True,
     areYouSureDialog = dialogs.yesNoDialog( "Save", "Are you sure you want to save? This will overwrite the current save in that slot.", preventClose_ = True)
     global selectedSlot
     
-    if slot != selectedSlot:
-        areYouSureDialog.exec()
-        if areYouSureDialog.result() == QDialog.DialogCode.Rejected:
-            return
+    
+    areYouSureDialog.exec()
+    if areYouSureDialog.result() == QDialog.DialogCode.Rejected:
+        return
     
     gamedefine.gamedefine.playTime += time.time() - gamedefine.gamedefine.sessionStartTime
     

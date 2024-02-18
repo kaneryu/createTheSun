@@ -1,12 +1,12 @@
 from observerModel import registerObserver, Observable, ObservableCallType
-
-from gamedefine import gamedefine
+from customWidgets import dialogs
+import gamedefine
 from tabs import achevementsTab
 
 import time
 
-unlockables = gamedefine.unlockables
-unlockedUnlockables = gamedefine.unlockedUnlockables
+unlockables = gamedefine.gamedefine.unlockables
+unlockedUnlockables = gamedefine.gamedefine.unlockedUnlockables
 
 def checkUnlocks(event):
     for key in unlockables:
@@ -15,51 +15,64 @@ def checkUnlocks(event):
         if not key in unlockedUnlockables:
             for item in currentDict["needs"]: #type: ignore
                 if item["type"] == "item": #type: ignore
-                    if not gamedefine.amounts[item["what"]] >= item["amount"]: #type: ignore
+                    if not gamedefine.gamedefine.amounts[item["what"]] >= item["amount"]: #type: ignore
                         ongoingCheck = False
                 
                 if item["type"] == "automation": #type: ignore
-                    if not gamedefine.automationLevels[item["what"]] >= item["amount"]: #type: ignore
+                    if not gamedefine.gamedefine.automationLevels[item["what"]] >= item["amount"]: #type: ignore
                         ongoingCheck = False
             
-            if ongoingCheck == True and not key in gamedefine.unlockedUnlockables:
-                gamedefine.unlockedUnlockables.append(key)
+            if ongoingCheck == True and not key in gamedefine.gamedefine.unlockedUnlockables:
+                gamedefine.gamedefine.unlockedUnlockables.append(key)
                 unlock(key)         
                 
 def unlock(key):
     currentDict = unlockables[key]
+    if key in gamedefine.gamedefine.unlockedUnlockables:
+        return
+    
     if currentDict["unlockType"] == "item":
-        gamedefine.purchaseToCreate.append(currentDict["whatUnlocks"]) #type: ignore
+        gamedefine.gamedefine.unlockedUnlockables.append(key)
+        if not currentDict["whatUnlocks"] in gamedefine.gamedefine.purchaseToCreate:
+            gamedefine.gamedefine.purchaseToCreate.append(currentDict["whatUnlocks"]) #type: ignore
     
     
 def checkAchevements(event):
-    for i in gamedefine.achevementInternalDefine:
-        if not i in gamedefine.unlockedAchevements:
+    for i in gamedefine.gamedefine.achevementInternalDefine:
+        if not i in gamedefine.gamedefine.unlockedAchevements:
             
             ongoingCheck = True
-            currentDict = gamedefine.achevementInternalDefine[i]
+            currentDict = gamedefine.gamedefine.achevementInternalDefine[i]
             for item in currentDict["whatItRequires"]: #type: ignore
                 if item["type"] == "item": #type: ignore
-                    if not gamedefine.amounts[item["what"]] >= item["amount"]: #type: ignore
+                    if not gamedefine.gamedefine.amounts[item["what"]] >= item["amount"]: #type: ignore
                         ongoingCheck = False
                 
                 if item["type"] == "automation": #type: ignore
-                    if not gamedefine.automationLevels[item["what"]] >= item["amount"]: #type: ignore
+                    if not gamedefine.gamedefine.automationLevels[item["what"]] >= item["amount"]: #type: ignore
                         ongoingCheck = False
                         
                 if item["type"] == "rewrite":
-                    if not item["what"] in gamedefine.unlockedRewrites:
+                    if not item["what"] in gamedefine.gamedefine.unlockedRewrites:
                         ongoingCheck = False
             
             if ongoingCheck == True:
                 print(f"Achevement Get! {i}")
-                gamedefine.unlockedAchevements.append(i)
-                gamedefine.lastAchevementGain = (i, time.time() * 1000)
+                gamedefine.gamedefine.unlockedAchevements.append(i)
+                gamedefine.gamedefine.lastAchevementGain = [i, time.time() * 1000]
                 achevementsTab.achevementPopup(i)
 
 def reciever(event):
     checkUnlocks(event)
     checkAchevements(event)
 
+def firstQuarkPopup(event):
+    if gamedefine.gamedefine.amounts["quarks"] >= 1 and gamedefine.gamedefine.tutorialPopupDone == False:
+        gamedefine.gamedefine.tutorialPopupDone = True
+        print("First Quark Popup")
+        dialogs.CustomDialog(f"## Welcome to Create The Sun! <br />The goal of the game is to create the sun, and to do that you need to gather resources and build automations. <br />Check out the tabs at the top of the screen to see what you currently have at your disposal. <br />**Hydrogen will be unlocked once you have enough Protonic Forges.**", "Tutorial", cancelable = False).exec()
+        firstQuarkPopupObserver.deregister()
+        
 itemObserver = registerObserver(reciever, Observable.ITEM_OBSERVABLE, ObservableCallType.ALL)
 automationObserver = registerObserver(reciever, Observable.AUTOMATION_OBSERVABLE, ObservableCallType.ALL)
+firstQuarkPopupObserver = registerObserver(firstQuarkPopup, Observable.ITEM_OBSERVABLE, ObservableCallType.GAINED)
