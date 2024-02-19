@@ -47,6 +47,42 @@ def getCurrentVisualMultiLevelUpgrade(upgrade: str, level: int | None = None) ->
         return gamedefine.gamedefine.automationVisualDefine[upgrade][0]
     else:    
         return gamedefine.gamedefine.automationVisualDefine[upgrade][target]
+    
+def checkIfUpgradeIsAffordable(automation : str) -> bool:
+    """
+    Checks if you can afford an upgrade, according to how many of the required item is being produced.
+    
+    Args:
+        upgrade (str): The upgrade to check
+    
+    Returns:
+        bool: Whether you can afford the upgrade or not.
+    """
+    if gamedefine.gamedefine.automationLevels[automation] == 0:
+        costs = getCurrentInternalMultiLevelUpgrade(automation)[1]
+    else:
+        costs = getCurrentInternalMultiLevelUpgrade(automation)["idleGenerator"]["whatItCosts"]
+    
+    waittime = gamedefine.gamedefine.automationDetails[automation]["timeToWait"]
+    
+    ongoing = True
+    index = 0
+    
+    for i in costs:
+        if i["what"] in list(resourceGain.data.gainPerSecond.keys()):
+            if i["amount"] == "atMarketPrice":
+                price = int(gamedefine.gamedefine.itemInternalDefine[i["what"]]["whatItCosts"][0]["amount"])
+            else:
+                price = int(i["amount"])
+                
+            if price / (waittime / 1000) > resourceGain.data.gainPerSecond[i["what"]]:
+                ongoing = False
+        else:
+            print(f"Error: {i} is not in resourceGain.data.gainPerSecond, so cannot be calculated for automation {automation}.")
+            
+        index += 1 
+    
+    return ongoing
 
 def canAffordUpgradeTask(upgrade : str) -> bool:
     """
@@ -142,8 +178,7 @@ def updateUpgradeStatus(upgrade : str) -> None:
 
 
 
-         
-                
+    
                 
 def canAffordUpgrade(upgrade : str) -> bool:
     """
@@ -170,39 +205,7 @@ def canAffordUpgrade(upgrade : str) -> bool:
     
     return ongoing
 
-def checkIfUpgradeIsAffordable(automation : str) -> bool:
-    """
-    Checks if you can afford an upgrade, according to how many of the required item is being produced.
-    
-    Args:
-        upgrade (str): The upgrade to check
-    
-    Returns:
-        bool: Whether you can afford the upgrade or not.
-    """
-    if gamedefine.gamedefine.automationLevels[automation] == 0:
-        costs = gamedefine.gamedefine.automationInternalDefine[automation]["firstCost"]
-    else:
-        costs = getCurrentInternalMultiLevelUpgrade(automation)["upgradeCost"]
-    
-    waittime = gamedefine.gamedefine.automationDetails[automation]["timeToWait"]
-    
-    costsPerSecond = {}
-    ongoing = True
-    index = 0
-    
-    
-    
-    for i in costs:
-        if costs[i]["what"] in list(resourceGain.data.gainPerSecond.keys()):
-            if getCostWithIndex(index, automation) / (waittime / 1000) > resourceGain.data.gainPerSecond[i]:
-                ongoing = False
-        else:
-            print(f"Error: {i} is not in resourceGain.data.gainPerSecond, so cannot be calculated for automation {automation}.")
-            
-        index += 1 
-    
-    return ongoing
+
 
 def doUpgradeTask(upgrade, lastTickTime):
     if gamedefine.gamedefine.automationLevels[upgrade] == 0:
@@ -225,7 +228,7 @@ def doUpgradeTask(upgrade, lastTickTime):
                 
                 if not checkIfUpgradeIsAffordable(upgrade):
                     gamedefine.gamedefine.automationDisabledState[upgrade] = [True]
-                    return
+                    return lastTickTime
                 
                 if canAffordUpgradeTask(upgrade):
                     for i in gamedefine.gamedefine.automationDetails[upgrade]["whatItGives"]:

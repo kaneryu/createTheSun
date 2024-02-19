@@ -219,7 +219,7 @@ defualtGameDefine = {
                         "time": 1000,
                         # in this case, %1 is upgrade level
                         "equationType": "timeEquation",
-                        "timeEquation": "10.5^(-1 * %1 + 100) + 10"
+                        "timeEquation": "abs(tan(-((%1+34)/600)-10.93791))"
                     }
                         
                 },
@@ -319,7 +319,7 @@ defualtGameDefine = {
                             "time": 1000,
                             "equationType": "timeEquation",
                             # in this case, %1 is upgrade level
-                            "timeEquation": "10.5^(-1 * %1 + 100) + 50",
+                            "timeEquation": "abs(tan(-((%1+34)/600)-10.93791))",
                     },
             
                 },
@@ -446,9 +446,9 @@ defualtGameDefine = {
     "automationsToCreate": ["particleAccelerator", "protonicForge"],
 
     "amounts": {
-        "quarks": 0,
+        "quarks": 1000000,
         "electrons": 100,
-        "protons": 0,
+        "protons": 1000000,
         "hydrogen": 0,
         "stars": 0,
         "galaxies": 0,
@@ -478,7 +478,7 @@ defualtGameDefine = {
     "mainTabBuyMultiple": 1,
 
     "electronDetails": {
-        "waitTime": 500,
+        "waitTime": 2,
         "amount": 1,
         "maxAmount": 100,
         "minAmount": 0, 
@@ -668,23 +668,116 @@ defualtGameDefine = {
 
     "unlockedUnlockables": [],
 
-    "rewriteInternalDefine": {},
+    "rewriteInternalDefine": {
+        "protonSpillover": {
+            "cost": [
+                {
+                    "what": "quarks",
+                    "amount": 10000
+                },
+                {
+                    "what": "protons",
+                    "amount": 2000
+                },
+                {
+                    "what": "hydrogen",
+                    "amount": 100
+                },
+                {
+                    "what": "electrons",
+                    "amount": 100
+                }
+            ],
+            "type": "spillover",
+            "spillover": {
+                "time": 100,
+                "takes": {
+                        "what": "protons",
+                        "amount": 1
+                    },
+                
+                "gives": [
+                    {
+                        "what": "quarks",
+                        "amount": 4
+                    }
+                ],
+                
+                "cap": "%1 / 2",
+                "capvar": ["gainPerSecond"],
+                # 1/2 of the proton gain per second
+                "hardcap": 1000000
+                # maximum amount of protons that can be consumed per time
+            }            
+        },
+        
+        "hydrogenSpillover": {
+             "cost": [
+                {
+                    "what": "quarks",
+                    "amount": 50_000_000
+                },
+                {
+                    "what": "protons",
+                    "amount": 10_000
+                },
+                {
+                    "what": "hydrogen",
+                    "amount": 10_000
+                },
+                {
+                    "what": "electrons",
+                    "amount": 100
+                }
+            ],
+            "type": "spillover",
+            "spillover": {
+                "time": 100,
+                "takes": {
+                        "what": "hydrogen",
+                        "amount": 1
+                    },
+                
+                "gives": [
+                    {
+                        "what": "protons",
+                        "amount": 2
+                    },
+                    {
+                        "what": "electrons",
+                        "amount": 2
+                    }
+                ],
+                
+                "cap": "%1 / 2",
+                "capvar": ["gainPerSecond"],
+                # 1/2 of the proton gain per second
+                "hardcap": 1_000_000
+                # maximum amount of protons that can be consumed per time
+            }            
+        },
+        
+        
+        
+    },
 
     "rewriteVisualDefine": {
         "protonSpillover": {
             "name": "Proton Spillover",
-            "description": "A small amount of protons will decompose into 4 quarks.",
-            "technicalDescription": "There will be a 5% chance every second that a proton will decompose into 4 quarks."
+            "description": "Protons will decompose into quarks. The more protons you have, the more quarks you will gain.",
+            "technicalDescription": "A random amount of protons, capped to 1/2 of your proton gain per second will be turned into quarks\nThe hard cap of protons that can be consumed per second is 1M.",
+            "resultDescription": "You are currently gaining %1 quarks per second."
         },
         "hydrogenSpillover": {
             "name": "Hydrogen Spillover",
-            "description": "A small amount of hydrogen will decompose into 2 protons.",
-            "technicalDescription": "There will be a 5% chance every second that a hydrogen will decompose into 2 protons."
+            "description": "A random amount of hydrogen will decompose into 2 protons, and 2 electrons.",
+            "technicalDescription": "A random amount of hydrogen, capped to 1/2 of your hydrogen gain per second will be turned into protons and electrons.\nThe hard cap of hydrogen that can be consumed per second is 1M. ",
+            "resultDescription": "You are currently gaining %1 protons and %2 electrons per second."
         },
         "quarkEfficency": {
             "name": "Quark Efficency",
             "description": "Protons now cost 2 quarks instead of 3.",
-            "technicalDescription": ""
+            "technicalDescription": "This will affect everything in the game, for example your Protonic Forges."
         },
         "folding": {
             "name": "Folding",
@@ -785,7 +878,7 @@ def loadSave(saveDict: dict):
 def getSaveData(savedata: GameDefine | None = None) -> dict:
     global gamedefine, defualtGameDefine
     
-    saveable = ["amounts", "clickGainMultiplierList", "multiplierList", "upgradeLevels", "upgradeDisabledState", "upgradeDetails", "unlockedAchevements", "electronDetails", "unlockedUnlockables", "purchaseToCreate", "automationsToCreate", "playTime"]
+    saveable = ["amounts", "clickGainMultiplierList", "multiplierList", "automationLevels", "automationDisabledState", "automationDetails", "unlockedAchevements", "electronDetails", "unlockedUnlockables", "purchaseToCreate", "automationsToCreate", "playTime"]
     toRemove = []
     for i in defualtGameDefine:
         if i not in saveable:

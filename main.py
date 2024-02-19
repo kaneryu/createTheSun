@@ -383,3 +383,9 @@ if __name__ == "__main__":
     gamedefine.gamedefine.sessionStartTime = time.time()
     
     app.exec()
+# FIXED: fix equations for automations - reverted to the old one
+# TODO: fix the huge bug with automations, it doesn't work and works and also doesnt work at the same time????????
+# TODO: check if I fixed the issue with the automation thing where if you would buy the protonic forge it would crash the internal thread
+# TODO: playtest game completley
+# TODO: fix the bug where achevement poups never close
+# IDEA FOR SPILLOVER: there should be a window that shows you information about the spillover, and you can click on the spillover to show it

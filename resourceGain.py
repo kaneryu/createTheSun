@@ -2,11 +2,12 @@ import observerModel
 from copy import deepcopy
 import gamedefine
 import time
-
+import dataclasses
+@dataclasses.dataclass
 class data_:
-    amounts: dict = {}
-    gainPerSecond: dict = {}
-    lastCheckedTime: float | int = 0
+    amounts: dict
+    gainPerSecond: dict
+    lastCheckedTime: float | int
 
 
 
@@ -22,11 +23,16 @@ def receive(event):
         if not i in data.gainPerSecond:
             data.gainPerSecond[i] = 0
         else:
-            data.gainPerSecond[i] = (data.amounts[i] - previous[i]) / ((time.time() * 1000) - data.lastCheckedTime)
+            try:
+                data.gainPerSecond[i] = round((data.amounts[i] - previous[i]) / ((time.time()) - data.lastCheckedTime), 3)
+            except ZeroDivisionError:
+                data.gainPerSecond[i] = round((data.amounts[i] - previous[i]) / ((time.time()) - data.lastCheckedTime - 1), 3)
+        if data.gainPerSecond[i] < 0:
+            data.gainPerSecond[i] = 0
         
-    
-    data.lastCheckedTime = time.time() * 1000
+    print("Received" + str(event) + " " + str(data.amounts) + " " + str(data.gainPerSecond) + " " + str(data.lastCheckedTime) + " " + str(time.time() * 1000))
+    data.lastCheckedTime = time.time()
 
 
-data = data_() 
+data = data_({}, {}, time.time())
 itemObserver = observerModel.registerObserver(receive, observerModel.Observable.ITEM_OBSERVABLE, observerModel.ObservableCallType.TIME)

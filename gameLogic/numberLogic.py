@@ -105,6 +105,8 @@ def humanReadableNumber(number):
     else:
         if number < 1000:
             return str(number)
+        elif number < 100_000:
+            return '{:,}'.format(number)
         else:
             return nonilize(number)
 

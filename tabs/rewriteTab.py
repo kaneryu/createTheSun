@@ -64,7 +64,7 @@ class automationBlock(QFrame):
             self.upgradeButton.setEnabled(False)
             
         if gamedefine.gamedefine.automationDisabledState[self.name][0]:
-            self.upgradeLabel.setText(f"Disabled | {automationGameLogic.parseUpgradeName(self.name)}")
+            self.upgradeLabel.setText(f"Disabled with {gamedefine.gamedefine.automationDisabledState[self.name][1]} seconds left | {automationGameLogic.parseUpgradeName(self.name)}")
         else:
             self.upgradeLabel.setText(automationGameLogic.parseUpgradeName(self.name))
         

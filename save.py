@@ -51,9 +51,11 @@ def save(export: bool = False, exportEncoded: bool = False, notify: bool = True,
     global selectedSlot
     
     
-    areYouSureDialog.exec()
-    if areYouSureDialog.result() == QDialog.DialogCode.Rejected:
-        return
+    if slot != selectedSlot:
+        areYouSureDialog.exec()
+        if areYouSureDialog.result() == QDialog.DialogCode.Rejected:
+            return
+
     
     gamedefine.gamedefine.playTime += time.time() - gamedefine.gamedefine.sessionStartTime
     
