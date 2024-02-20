@@ -390,6 +390,7 @@ defualtGameDefine = {
                 "currentUpgradeUsefulDescription": "You are currently gaining 1 Quark every %%% seconds",
                 "upgradeUsefulDescription": "Upgrade to gain 1 Quark every %%% seconds",
                 "usefulDescriptionBlank": "tickTime",
+                "disabledText": "How are you seeing this?",
                 
                 "id": ["particleAccelerator", 0]
                 
@@ -406,6 +407,7 @@ defualtGameDefine = {
                 "currentUpgradeUsefulDescription": "You are currently gaining %%% Quarks every 0.011 seconds",
                 "upgradeUsefulDescription": "Upgrade to gain %%% Quarks every 0.011 seconds",
                 "usefulDescriptionBlank": "amount",
+                "disabledText": "How are you seing this?",
                 
                 "id": ["particleAccelerator", 0]
 
@@ -422,9 +424,11 @@ defualtGameDefine = {
                     
                     "currentUpgradeUsefulDescription": "You are currently gaining 1 Proton every %%% seconds",
                     "upgradeUsefulDescription": "Upgrade to gain 1 Proton every %%% seconds",
+                    "disabledText": "Disabled: Not enough Quark production",
+                    
                     
                     "usefulDescriptionBlank": "tickTime",
-                    "upgradeId": ["protonicForgeTickUpgrade", 0]        
+                    "upgradeId": ["protonicForgeTickUpgrade", 0]       
                 },
                 {
                     "visualName": "Blast Protonic Forge",
@@ -437,6 +441,8 @@ defualtGameDefine = {
                     "currentUpgradeUsefulDescription": "You are currently gaining %%% Protons every 0.011 seconds",
                     "upgradeUsefulDescription": "Upgrade to gain %%% Protons every 0.011 seconds",
                     "usefulDescriptionBlank": "amount",
+                    "disabledText": "Disabled: Not enough Quark production",
+                    
                     "upgradeId": ["protonicForgeAmountUpgrade", 0]    
                 }
             ]
@@ -446,9 +452,9 @@ defualtGameDefine = {
     "automationsToCreate": ["particleAccelerator", "protonicForge"],
 
     "amounts": {
-        "quarks": 1000000,
+        "quarks": 0,
         "electrons": 100,
-        "protons": 1000000,
+        "protons": 0,
         "hydrogen": 0,
         "stars": 0,
         "galaxies": 0,
@@ -478,7 +484,7 @@ defualtGameDefine = {
     "mainTabBuyMultiple": 1,
 
     "electronDetails": {
-        "waitTime": 2,
+        "waitTime": 500,
         "amount": 1,
         "maxAmount": 100,
         "minAmount": 0, 

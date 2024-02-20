@@ -6,7 +6,6 @@ import gameLogic.numberLogic as numberLogic
 import resourceGain
 
 def getCurrentInternalMultiLevelUpgrade(upgrade: str, level: int | None = None) -> dict:
-    
     if level == None:
         target = getCurrentMultiLevelUpgradeIndex(upgrade)
     else:
@@ -71,17 +70,20 @@ def checkIfAutomationIsAffordable(automation : str) -> bool:
     for i in costs:
         if i["what"] in list(resourceGain.data.gainPerSecond.keys()):
             if i["amount"] == "atMarketPrice":
-                price = int(gamedefine.gamedefine.itemInternalDefine[i["what"]]["whatItCosts"][0]["amount"])
+                itemToCheckFor = getCurrentInternalMultiLevelUpgrade(automation)["idleGenerator"]["whatItGives"][0]["what"]
+                price = int(gamedefine.gamedefine.itemInternalDefine[itemToCheckFor]["whatItCosts"][0]["amount"])
+                # print(gamedefine.gamedefine.itemInternalDefine[itemToCheckFor]["whatItCosts"][0]["amount"])
             else:
                 price = int(i["amount"])
                 
             if price / (waittime / 1000) > resourceGain.data.gainPerSecond[i["what"]]:
                 ongoing = False
         else:
-            print(f"Error: {i} is not in resourceGain.data.gainPerSecond, so cannot be calculated for automation {automation}.")
+            print(f"{i} is not in resourceGain.data.gainPerSecond, so cannot be calculated for automation {automation}.")
             
         index += 1 
-    
+    # print(f"{price}price {waittime}waittime {price / (waittime / 1000)}eq {resourceGain.data.gainPerSecond[i["what"]]}resgainpersec")
+    # print(f"can {automation} be afforded? {"yes" if ongoing else "no"}")
     return ongoing
 
 def canAffordAutomationTask(automation : str) -> bool:
@@ -108,7 +110,8 @@ def canAffordAutomationTask(automation : str) -> bool:
             if gamedefine.gamedefine.amounts[i["what"]] < gamedefine.gamedefine.itemInternalDefine[i["what"]]["whatItCosts"][0]["amount"]:
                 ongoing = False
         elif gamedefine.gamedefine.amounts[i["what"]] < i["amount"]:
-            ongoing = False   
+            ongoing = False
+            
     return ongoing
 
 def purchaseAutomation(automation : str) -> None:
@@ -227,7 +230,7 @@ def doAutomationTask(automation, lastTickTime):
                 
                 if not checkIfAutomationIsAffordable(automation):
                     gamedefine.gamedefine.automationDisabledState[automation] = [True]
-                    return lastTickTime
+                    return lastTickTime + 5000 # add 5 seconds
                 
                 if canAffordAutomationTask(automation):
                     for i in gamedefine.gamedefine.automationDetails[automation]["whatItGives"]:
@@ -235,7 +238,9 @@ def doAutomationTask(automation, lastTickTime):
                         
                     for i in gamedefine.gamedefine.automationDetails[automation]["whatItCosts"]:
                         if i["amount"] == "atMarketPrice":
-                            gamedefine.gamedefine.amounts[i["what"]] -= int(gamedefine.gamedefine.itemInternalDefine[i["what"]]["whatItCosts"][0]["amount"])
+                            itemToCheckFor = getCurrentInternalMultiLevelUpgrade(automation)["idleGenerator"]["whatItGives"][0]["what"]
+                            price = int(gamedefine.gamedefine.itemInternalDefine[itemToCheckFor]["whatItCosts"][0]["amount"])
+                            gamedefine.gamedefine.amounts[i["what"]] -= price
                         else:
                             gamedefine.gamedefine.amounts[i["what"]] -= int(i["amount"])
                 else:

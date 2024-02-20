@@ -12,6 +12,8 @@ import tabs.maintab as maintab
 import tabs.automationtab as automationtab
 import tabs.settingstab as settingstab
 import tabs.achevementsTab as achevementsTab_
+import resourceGain
+
 saveModule = save # I don't know if importing save from main.py will cause a circular import, but this feels safer for now.
 
 class mainTab(QWidget):
@@ -112,7 +114,7 @@ class achievementsTab(QWidget):
     def tooltip(): #type: ignore
         return "A ledger of your accomplishments."
     
-class rewriteTab(QWidget):
+class rewritesTab(QWidget):
     def __init__(self):
         super().__init__()
         self.layout_ = QVBoxLayout()
@@ -132,6 +134,36 @@ class rewriteTab(QWidget):
     def tooltip(): #type: ignore
         return "The laws of the universe are in yout hands."
 
-tabs = [mainTab, automationTab, achievementsTab, settingsTab]
+class statsTab(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.layout_ = QVBoxLayout()
+        self.tracker = QLabel()
+        self.layout_.addWidget(self.tracker)
+        self.setLayout(self.layout_)
+        
+    def updateDisplay(self):
+        tracked = ["You are gaining"]
+        for i in resourceGain.data.gainPerSecond:
+            tracked.append(f"{resourceGain.data.gainPerSecond[i]} {i}")
+        tracked.append("Per second")
+        final = ""
+        for i in tracked:
+            final += i + '\n'
+            
+            
+        self.tracker.setText(final)
+    
+    def updateInternal(self):
+        return 0
+    
+    def name(): #type: ignore
+        return "Stats"
+
+        
+    def tooltip(): #type: ignore
+        return "Information about production"
+
+tabs = [mainTab, automationTab, achievementsTab, settingsTab, statsTab]
 internalUpdateList = [automationTab.updateInternal, settingsTab.updateInternal]
-internalUpdateable = [automationTab.updateInternal, settingsTab.updateInternal, rewriteTab.updateInternal]
+internalUpdateable = [automationTab.updateInternal, settingsTab.updateInternal, statsTab.updateInternal]
