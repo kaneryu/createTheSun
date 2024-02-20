@@ -48,12 +48,12 @@ def getCurrentVisualMultiLevelUpgrade(upgrade: str, level: int | None = None) ->
     else:    
         return gamedefine.gamedefine.automationVisualDefine[upgrade][target]
     
-def checkIfUpgradeIsAffordable(automation : str) -> bool:
+def checkIfAutomationIsAffordable(automation : str) -> bool:
     """
-    Checks if you can afford an upgrade, according to how many of the required item is being produced.
+    Checks if you can afford an automation, according to how many of the required item is being produced.
     
     Args:
-        upgrade (str): The upgrade to check
+        automation (str): The automation to check
     
     Returns:
         bool: Whether you can afford the upgrade or not.
@@ -84,21 +84,21 @@ def checkIfUpgradeIsAffordable(automation : str) -> bool:
     
     return ongoing
 
-def canAffordUpgradeTask(upgrade : str) -> bool:
+def canAffordAutomationTask(automation : str) -> bool:
     """
-    Checks if you can afford an upgrade's task.
+    Checks if you can afford an automation's task.
     
     Args:
-        upgrade (str): The upgrade to check
+        automation (str): The automation to check
     
     Returns:
-        bool: Whether you can afford the upgrade's task or not.
+        bool: Whether you can afford the automation's task or not.
     """
     
-    if gamedefine.gamedefine.automationLevels[upgrade] == 0:
-        costs = getCurrentInternalMultiLevelUpgrade(upgrade)[1]
+    if gamedefine.gamedefine.automationLevels[automation] == 0:
+        costs = getCurrentInternalMultiLevelUpgrade(automation)[1]
     else:
-        costs = getCurrentInternalMultiLevelUpgrade(upgrade)["idleGenerator"]["whatItCosts"]
+        costs = getCurrentInternalMultiLevelUpgrade(automation)["idleGenerator"]["whatItCosts"]
     
         
     ongoing = True
@@ -108,40 +108,39 @@ def canAffordUpgradeTask(upgrade : str) -> bool:
             if gamedefine.gamedefine.amounts[i["what"]] < gamedefine.gamedefine.itemInternalDefine[i["what"]]["whatItCosts"][0]["amount"]:
                 ongoing = False
         elif gamedefine.gamedefine.amounts[i["what"]] < i["amount"]:
-            ongoing = False
-    
+            ongoing = False   
     return ongoing
 
-def purchaseUpgrade(upgrade : str) -> None:
+def purchaseAutomation(automation : str) -> None:
     """
-    Purchases an upgrade.
+    Purchases an automation.
     
     Args:
-        upgrade (str): The upgrade to purchase.
+        automation (str): The automation to purchase.
     """
-    if gamedefine.gamedefine.automationLevels[upgrade] == 0:
-        costs = gamedefine.gamedefine.automationInternalDefine[upgrade]["firstCost"]
+    if gamedefine.gamedefine.automationLevels[automation] == 0:
+        costs = gamedefine.gamedefine.automationInternalDefine[automation]["firstCost"]
     else:
-        costs = getCurrentInternalMultiLevelUpgrade(upgrade)["upgradeCost"]
+        costs = getCurrentInternalMultiLevelUpgrade(automation)["upgradeCost"]
         
     index = 0
     for i in costs:
-        gamedefine.gamedefine.amounts[i["what"]] -= getCostWithIndex(index, upgrade)
+        gamedefine.gamedefine.amounts[i["what"]] -= getCostWithIndex(index, automation)
         index += 1 
-    gamedefine.gamedefine.automationLevels[upgrade] += 1
+    gamedefine.gamedefine.automationLevels[automation] += 1
     
-    print(f"purchased {upgrade}, now have {gamedefine.gamedefine.automationLevels[upgrade]}")
+    print(f"purchased {automation}, now have {gamedefine.gamedefine.automationLevels[automation]}")
     return
 
-def updateUpgradeStatus(upgrade : str) -> None:
+def updateAutomationStatus(automation : str) -> None:
     """
-    Updates the status of a upgrade.
+    Updates the status of a automation.
     For example, if you just upgraded protonic forge from level 1-2, the time to wait will be updated to 0.5 instead of 1.
     """
-    if gamedefine.gamedefine.automationLevels[upgrade] == 0:
+    if gamedefine.gamedefine.automationLevels[automation] == 0:
         return
     
-    currentUpgradeDict = getCurrentInternalMultiLevelUpgrade(upgrade)
+    currentUpgradeDict = getCurrentInternalMultiLevelUpgrade(automation)
     
     if type(currentUpgradeDict) == tuple:
         return #failed, level 0
@@ -151,21 +150,21 @@ def updateUpgradeStatus(upgrade : str) -> None:
         
         if idleGenDict["equationType"] == "timeEquation":
             
-            gamedefine.gamedefine.automationDetails[upgrade]["timeToWait"] = numberLogic.evaluateCostEquation(idleGenDict["timeEquation"], gamedefine.gamedefine.automationLevels[upgrade]) 
+            gamedefine.gamedefine.automationDetails[automation]["timeToWait"] = numberLogic.evaluateCostEquation(idleGenDict["timeEquation"], gamedefine.gamedefine.automationLevels[automation]) 
             for i in range(len(idleGenDict["whatItGives"])):
-                gamedefine.gamedefine.automationDetails[upgrade]["whatItGives"][i]["amount"] = idleGenDict["whatItGives"][i]["amount"]
+                gamedefine.gamedefine.automationDetails[automation]["whatItGives"][i]["amount"] = idleGenDict["whatItGives"][i]["amount"]
             
             if idleGenDict["withRequirement"]:
                 
                 for i in range(len(idleGenDict["whatItCosts"])):
-                    gamedefine.gamedefine.automationDetails[upgrade]["whatItCosts"][i]["amount"] = idleGenDict["whatItCosts"][i]["amount"]
+                    gamedefine.gamedefine.automationDetails[automation]["whatItCosts"][i]["amount"] = idleGenDict["whatItCosts"][i]["amount"]
             
         elif idleGenDict["equationType"] == "amountEquation":
             
-            gamedefine.gamedefine.automationDetails[upgrade]["timeToWait"] = idleGenDict["time"]
+            gamedefine.gamedefine.automationDetails[automation]["timeToWait"] = idleGenDict["time"]
             for i in range(len(idleGenDict["whatItGives"])):
-                amount = numberLogic.evaluateCostEquation(idleGenDict["amountEquation"][i]["equation"], gamedefine.gamedefine.automationLevels[upgrade])
-                gamedefine.gamedefine.automationDetails[upgrade]["whatItGives"][i]["amount"] = amount
+                amount = numberLogic.evaluateCostEquation(idleGenDict["amountEquation"][i]["equation"], gamedefine.gamedefine.automationLevels[automation])
+                gamedefine.gamedefine.automationDetails[automation]["whatItGives"][i]["amount"] = amount
                 
             if idleGenDict["withRequirement"]:
                 for i in idleGenDict["whatItCosts"]:
@@ -173,32 +172,32 @@ def updateUpgradeStatus(upgrade : str) -> None:
                         i["equation"]
                     except KeyError:
                         continue
-                    amount = numberLogic.evaluateCostEquation(i["equation"], gamedefine.gamedefine.automationLevels[upgrade])
+                    amount = numberLogic.evaluateCostEquation(i["equation"], gamedefine.gamedefine.automationLevels[automation])
                     i["amount"] = amount
 
 
 
     
                 
-def canAffordUpgrade(upgrade : str) -> bool:
+def canAffordAutomation(automation : str) -> bool:
     """
-    Checks if you can afford an upgrade.
+    Checks if you can afford an automation.
     
     Args:
-        upgrade (str): The upgrade to check
+        automation (str): The automation to check
     
     Returns:
-        bool: Whether you can afford the upgrade or not.
+        bool: Whether you can afford the automation or not.
     """
-    if gamedefine.gamedefine.automationLevels[upgrade] == 0:
-        costs = gamedefine.gamedefine.automationInternalDefine[upgrade]["firstCost"]
+    if gamedefine.gamedefine.automationLevels[automation] == 0:
+        costs = gamedefine.gamedefine.automationInternalDefine[automation]["firstCost"]
     else:
-        costs = getCurrentInternalMultiLevelUpgrade(upgrade)["upgradeCost"]
+        costs = getCurrentInternalMultiLevelUpgrade(automation)["upgradeCost"]
     
     ongoing = True
     index = 0
     for i in costs:
-        if gamedefine.gamedefine.amounts[i["what"]] < getCostWithIndex(index, upgrade):
+        if gamedefine.gamedefine.amounts[i["what"]] < getCostWithIndex(index, automation):
             ongoing = False
             
         index += 1 
@@ -207,41 +206,41 @@ def canAffordUpgrade(upgrade : str) -> bool:
 
 
 
-def doUpgradeTask(upgrade, lastTickTime):
-    if gamedefine.gamedefine.automationLevels[upgrade] == 0:
+def doAutomationTask(automation, lastTickTime):
+    if gamedefine.gamedefine.automationLevels[automation] == 0:
         return lastTickTime
     else:
-        internalDefine = getCurrentInternalMultiLevelUpgrade(upgrade)["idleGenerator"]
+        internalDefine = getCurrentInternalMultiLevelUpgrade(automation)["idleGenerator"]
         
-    if gamedefine.gamedefine.automationLevels[upgrade] > 0:
+    if gamedefine.gamedefine.automationLevels[automation] > 0:
         
-        if time.time() * 1000 - lastTickTime > gamedefine.gamedefine.automationDetails[upgrade]["timeToWait"]:
-            gamedefine.gamedefine.automationDisabledState[upgrade] = [False, "0"]
+        if time.time() * 1000 - lastTickTime > gamedefine.gamedefine.automationDetails[automation]["timeToWait"]:
+            gamedefine.gamedefine.automationDisabledState[automation] = [False, "0"]
             lastTickTime = time.time() * 1000
             
             if not internalDefine["withRequirement"]:     
-                for i in gamedefine.gamedefine.automationDetails[upgrade]["whatItGives"]:
+                for i in gamedefine.gamedefine.automationDetails[automation]["whatItGives"]:
                     gamedefine.gamedefine.amounts[i["what"]] += int(i["amount"])
                 return lastTickTime
         
             if internalDefine["withRequirement"]:
                 
-                if not checkIfUpgradeIsAffordable(upgrade):
-                    gamedefine.gamedefine.automationDisabledState[upgrade] = [True]
+                if not checkIfAutomationIsAffordable(automation):
+                    gamedefine.gamedefine.automationDisabledState[automation] = [True]
                     return lastTickTime
                 
-                if canAffordUpgradeTask(upgrade):
-                    for i in gamedefine.gamedefine.automationDetails[upgrade]["whatItGives"]:
+                if canAffordAutomationTask(automation):
+                    for i in gamedefine.gamedefine.automationDetails[automation]["whatItGives"]:
                         gamedefine.gamedefine.amounts[i["what"]] += int(i["amount"])
                         
-                    for i in gamedefine.gamedefine.automationDetails[upgrade]["whatItCosts"]:
+                    for i in gamedefine.gamedefine.automationDetails[automation]["whatItCosts"]:
                         if i["amount"] == "atMarketPrice":
                             gamedefine.gamedefine.amounts[i["what"]] -= int(gamedefine.gamedefine.itemInternalDefine[i["what"]]["whatItCosts"][0]["amount"])
                         else:
                             gamedefine.gamedefine.amounts[i["what"]] -= int(i["amount"])
                 else:
                     lastTickTime += 10000 # softlock prevention; add 10 seconds
-                    gamedefine.gamedefine.automationDisabledState[upgrade] = [True]
+                    gamedefine.gamedefine.automationDisabledState[automation] = [True]
                 
     return lastTickTime
         
@@ -309,67 +308,67 @@ def parseCost(name):
     return "".join(string)
 
 
-def parseUsefulDescription(upgrade) -> str:
-        if gamedefine.gamedefine.automationLevels[upgrade] == 0:
-            index = getCurrentMultiLevelUpgradeIndex(upgrade)
-            return gamedefine.gamedefine.automationVisualDefine[upgrade][index]["firstupgradeUsefulDescription"]
+def parseUsefulDescription(automation) -> str:
+        if gamedefine.gamedefine.automationLevels[automation] == 0:
+            index = getCurrentMultiLevelUpgradeIndex(automation)
+            return gamedefine.gamedefine.automationVisualDefine[automation][index]["firstupgradeUsefulDescription"]
         else:
-            currentVisualDict =  getCurrentVisualMultiLevelUpgrade(upgrade)
+            currentVisualDict =  getCurrentVisualMultiLevelUpgrade(automation)
             
-            currentInternalDict = getCurrentInternalMultiLevelUpgrade(upgrade)
+            currentInternalDict = getCurrentInternalMultiLevelUpgrade(automation)
 
         if currentInternalDict["type"] == "idleGenerator":
             currentDec = currentVisualDict["currentUpgradeUsefulDescription"]
             futureDec = ""
             
             if currentVisualDict["usefulDescriptionBlank"] == "tickTime":
-                currentDec = currentDec.replace("%%%", str(round( gamedefine.gamedefine.automationDetails[upgrade]["timeToWait"]/1000, 3)))
+                currentDec = currentDec.replace("%%%", str(round( gamedefine.gamedefine.automationDetails[automation]["timeToWait"]/1000, 3)))
                 
-                futureDec = getFutureDescription(upgrade)
+                futureDec = getFutureDescription(automation)
                 
             elif currentVisualDict["usefulDescriptionBlank"] == "amount":
-                currentDec = currentDec.replace("%%%", str(round(gamedefine.gamedefine.automationDetails[upgrade]["whatItGives"][0]["amount"])))
+                currentDec = currentDec.replace("%%%", str(round(gamedefine.gamedefine.automationDetails[automation]["whatItGives"][0]["amount"])))
                 
-                futureDec = getFutureDescription(upgrade)
+                futureDec = getFutureDescription(automation)
             
             
             return currentDec + " \n " + futureDec
         
         return ""
 
-def getFutureDescription(upgrade):
+def getFutureDescription(automation):
     
-    futureInternalDict = getCurrentInternalMultiLevelUpgrade(upgrade, gamedefine.gamedefine.automationLevels[upgrade] + 1)
-    futureVisualDict = getCurrentVisualMultiLevelUpgrade(upgrade, gamedefine.gamedefine.automationLevels[upgrade] + 1)
+    futureInternalDict = getCurrentInternalMultiLevelUpgrade(automation, gamedefine.gamedefine.automationLevels[automation] + 1)
+    futureVisualDict = getCurrentVisualMultiLevelUpgrade(automation, gamedefine.gamedefine.automationLevels[automation] + 1)
     
     if futureInternalDict["type"] == "idleGenerator":
         futureDec = str(futureVisualDict["upgradeUsefulDescription"])
         
         if futureVisualDict["usefulDescriptionBlank"] == "tickTime":
-            futureNum = numberLogic.evaluateCostEquation(futureInternalDict["idleGenerator"]["timeEquation"], gamedefine.gamedefine.automationLevels[upgrade] + 1)
+            futureNum = numberLogic.evaluateCostEquation(futureInternalDict["idleGenerator"]["timeEquation"], gamedefine.gamedefine.automationLevels[automation] + 1)
 
             futureDec = futureDec.replace("%%%", str(round(futureNum/1000, 3)))
         elif futureVisualDict["usefulDescriptionBlank"] == "amount":
-            futureNum = numberLogic.evaluateCostEquation(futureInternalDict["idleGenerator"]["amountEquation"][0]["equation"], gamedefine.gamedefine.automationLevels[upgrade] + 1)
+            futureNum = numberLogic.evaluateCostEquation(futureInternalDict["idleGenerator"]["amountEquation"][0]["equation"], gamedefine.gamedefine.automationLevels[automation] + 1)
 
             futureDec = futureDec.replace("%%%", str(round(futureNum)))
         
         return futureDec
 
 
-def parseUpgradeName(upgrade):
+def parseAutomationName(automation):
             
-    currentDict = getCurrentVisualMultiLevelUpgrade(upgrade)
-    if gamedefine.gamedefine.automationLevels[upgrade] == 0:
+    currentDict = getCurrentVisualMultiLevelUpgrade(automation)
+    if gamedefine.gamedefine.automationLevels[automation] == 0:
         return f"{currentDict["visualName"]} \n {currentDict["description"]} \n"
     else:
-        return f"Level {gamedefine.gamedefine.automationLevels[upgrade]} {currentDict["visualName"]} \n {currentDict["description"]} \n"
+        return f"Level {gamedefine.gamedefine.automationLevels[automation]} {currentDict["visualName"]} \n {currentDict["description"]} \n"
 
-def getDescription(upgrade):
-    index = getCurrentMultiLevelUpgradeIndex(upgrade)
+def getDescription(automation):
+    index = getCurrentMultiLevelUpgradeIndex(automation)
     
-    if gamedefine.gamedefine.automationLevels[upgrade] == 0:
+    if gamedefine.gamedefine.automationLevels[automation] == 0:
         return f""
     else:
 
-        return f"{gamedefine.gamedefine.automationVisualDefine[upgrade][index]["upgradeVisualName"]} \n {gamedefine.gamedefine.automationVisualDefine[upgrade][index]["upgradeDescription"]}"
+        return f"{gamedefine.gamedefine.automationVisualDefine[automation][index]["upgradeVisualName"]} \n {gamedefine.gamedefine.automationVisualDefine[automation][index]["upgradeDescription"]}"
