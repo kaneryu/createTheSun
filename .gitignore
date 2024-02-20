@@ -3,7 +3,11 @@
 /build
 /dist
 /installer/dist
-/installer/build
+/installer/build]
+build/
+dist/
+/installer/dist/
+/installer/build/
 main.spec
 *.pyc
 /appdata
