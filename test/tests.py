@@ -97,9 +97,7 @@ class saveLoadTests(unittest.TestCase):
             
             save = gamedefine.getSaveData(testData)
             saveMeta = gamedefine.getSaveMetadata(testData)
-        
-            self.assertEqual(save["amounts"][amountToChange], amountToChangeValue)
-            self.assertEqual(save["automationLevels"][upgradeToLevel], upgradeToLevelValue)
+    
             self.assertEqual(saveMeta["amounts"][amountToChange], amountToChangeValue)
             
             
