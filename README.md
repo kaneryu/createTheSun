@@ -6,11 +6,18 @@
 An incremental not-idle-yet game where the goal is to create the sun
 
 ## Images
-![Image of the main tab](https://files.catbox.moe/ex0vip.png)
+**Disclaimer: images are from an upcoming update, 0.3.0
 
-![Image of the Automations tab](https://files.catbox.moe/kzt5pc.png)
+![Image of the main tab](https://files.catbox.moe/dgouxt.png)
 
-![Image of settings tab](https://files.catbox.moe/3v74wh.png)
+![Image of the automations tab](https://files.catbox.moe/2v09vc.png)
+
+![Image of the achevements tab](https://files.catbox.moe/3r6dz8.png)
+
+![Image of settings tab](https://files.catbox.moe/8snhhe.png)
+
+![Image of the stats tab](https://files.catbox.moe/uoghsh.png)
+
 ## Installation
 Using the installed version
 - Go to github releases
