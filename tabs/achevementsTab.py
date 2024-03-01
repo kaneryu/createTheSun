@@ -1,23 +1,28 @@
 from PySide6 import QtGui
-from PySide6.QtGui import QPixmap, QRegion
+from PySide6.QtGui import QPixmap, QRegion, QAction, QKeySequence
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGraphicsBlurEffect, QGridLayout, QApplication
 from PySide6.QtCore import QPropertyAnimation, Qt, QTimer, QEasingCurve, QRect
 import os
 
-from time import time
-import pathlib
-import gamedefine
-
 basedir = os.path.dirname(os.path.realpath(__file__))
 
+from time import time
+import pathlib
+
+import gamedefine
+    
+
+
+
 mediadir = os.path.join(str(pathlib.Path(basedir).parent) + "\\assets\\")
+
 
 
 class achevementPopup(QWidget):
     def __init__(self, achevement : str, open : bool = False):
         super().__init__()
         self.setObjectName("achevementPopupBackgroundWidget")
-        self.setWindowTitle("Test")
+        self.setWindowTitle("Achevement")
         self.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowTransparentForInput)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
         
@@ -27,12 +32,6 @@ class achevementPopup(QWidget):
         
         
         globalMousePos = QtGui.QCursor.pos()
-        
-        # Ensure size hint is updated
-        self.fadein = QPropertyAnimation(self, b"windowOpacity")
-        self.fadein.setDuration(200)
-        self.fadein.setStartValue(0)
-        self.fadein.setEndValue(1)
         
         self.image = QLabel()
         self.image.setPixmap(QPixmap(os.path.join(mediadir, f"images\\achevements\\{achevement}")))
@@ -50,15 +49,21 @@ class achevementPopup(QWidget):
         self.setLayout(layout)
         
         self.setGeometry(globalMousePos.x() + 100, globalMousePos.y() + 100, 200, 200)
-                #rounded corners
-        #self.setMask(QRegion(QRect(globalMousePos.x() - 100, globalMousePos.y() - 100, 200, 200), QRegion.RegionType.Ellipse))
+
         self.adjustSize()
+        
+        self.fadein = QPropertyAnimation(self, b"windowOpacity")
+        self.fadein.setDuration(200)
+        self.fadein.setStartValue(0)
+        self.fadein.setEndValue(1)
         
         self.fadeout = QPropertyAnimation(self, b"windowOpacity")
         self.fadeout.setDuration(200)
         self.fadeout.setStartValue(1)
         self.fadeout.setEndValue(0)
-        self.fadeout.finished.connect(self.close)
+        self.fadeout.finished.connect(self.destroy(True, False))
+        
+        
         
         if open:
             self.popup()
@@ -70,11 +75,12 @@ class achevementPopup(QWidget):
         self.timer = QTimer()
         self.timer.setSingleShot(True)
         self.timer.timeout.connect(self.fadeout.start)
-
-
         self.fadein.finished.connect(lambda: self.timer.start(5000))
         self.fadein.start()
         
+        
+
+
 
             
 achevementPopupQueue: list[achevementPopup] = []
@@ -167,3 +173,4 @@ class content(QWidget):
             j: achevementPopup
             j.popup()
             achevementPopupQueue.remove(j)
+

@@ -336,7 +336,7 @@ if __name__ == "__main__":
     myappid = u'opensource.createthesun.main.pre-release'
     ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid) 
     
-    app = QApplication([])
+    app = QApplication(sys.argv)
     tabs.saveModule.save(noProgSaveCreation = True, notify = False)
     
     file = open(os.path.join(basedir, 'assets', 'stylesheet.qss'), 'r')
@@ -383,6 +383,7 @@ if __name__ == "__main__":
     gamedefine.gamedefine.sessionStartTime = time.time()
     
     app.exec()
+    
 # FIXED: fix equations for automations - reverted to the old one
 # FIXED: fix the huge bug with automations, it doesn't work and works and also doesnt work at the same time????????
 # FIXED: check if I fixed the issue with the automation thing where if you would buy the protonic forge it would crash the internal thread

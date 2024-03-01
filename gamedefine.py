@@ -2,6 +2,9 @@ import time
 from dataclasses import dataclass, asdict
 from dacite import from_dict
 from copy import deepcopy
+import json
+import regex
+import deepdiff
 initalized = False
 
 defualtGameDefine = {
@@ -870,39 +873,91 @@ force: list[str] = [] # for force loading
 lastAutosaveTime = 0
 autosaveTime = 300000
 
-def loadSave(saveDict: dict):
-    global gamedefine, force
+def loadSave(saveDict: list[dict]):
+    global gamedefine    
+    newsave = deepcopy(defualtGameDefine)
     
-    newDict = deepcopy(defualtGameDefine)
-    newDict.update(saveDict)
-    
-    gamedefine = from_dict(data_class=GameDefine, data=newDict)
+    for i in saveDict:
+        changes = i["changes"]
+        location: str
+        location = i["location"]
+
+        try:
+            exec(f"newsave{location} = changes")
+        except IndexError:
+            # example where this path would be triggered:
+            # dict = {"hello": []}
+            # diff = [{"changes": 1, "location": ["hello"][2]}]
+            # so in this case, we need to add 3 items to the list, so we reach the third index
+            # this will allow us to use the index based assignment
+            
+            # make sure all quotes are double
+            location = location.replace("'", '"')
+            
+            # match all keys
+            matches = regex.findall(r'[^[\]]*', location)
+            
+            # remove the last key (which would be the list index)
+            
+            # the regex removes the brackets, we have to add it back
+
+            matches = [i for i in matches if not len(i) == 0]
+            amount = matches.pop()
+            matches = [f'[{i}]' for i in matches]
+            
+            
+            what = "".join(matches)
+            code = f"""
+toAppend = newsave{what}
+for i in range({amount} + 1):
+    toAppend.append(None)
+            """
+            exec(code)
+            exec(f"newsave{location} = changes")
+            
+    gamedefine = from_dict(data_class=GameDefine, data=newsave)
     gamedefine.mainTabBuyMultiple = 1
+    return gamedefine 
     
-    return gamedefine
-    
-def getSaveData(savedata: GameDefine | None = None) -> dict:
-    global gamedefine, defualtGameDefine
-    
-    saveable = ["amounts", "clickGainMultiplierList", "multiplierList", "automationLevels", "automationDisabledState", "automationDetails", "unlockedAchevements", "electronDetails", "unlockedUnlockables", "purchaseToCreate", "automationsToCreate", "playTime"]
-    toRemove = []
-    for i in defualtGameDefine:
-        if i not in saveable:
-            toRemove.append(i)
-    
-    
-    if savedata == None:
-        savedata = gamedefine
+def getSaveData(data: GameDefine | None = None) -> list[dict]:
+
+    if data == None:
+        savedata = asdict(gamedefine)
+    else:
+        savedata = asdict(data)
+        
+    return getDiffedSave(savedata)
+
+def getDiffedSave(workingSave: dict) -> list[dict]:
+    """Will return a save based on only what has changed between the current gamedefine dict and the default one.
+
+    Returns:
+        dict: The diff save.
+    """
+    rawDiff = str(deepdiff.diff.DeepDiff(defualtGameDefine, workingSave))
+    underCookedDiff: list[str]
+    underCookedDiff = regex.findall("root[^\"]*", rawDiff)
+
+    for i in range(len(underCookedDiff)):
+        if not "root" in underCookedDiff[i]:
+            underCookedDiff.pop(i)
+        underCookedDiff[i] = underCookedDiff[i].replace("root","")
+        
+    cookedDiff: list[dict]
+    cookedDiff = []
 
     
-    saveDict = asdict(savedata)
+    for i in underCookedDiff:
+        inProgress = {}
+        inProgress["changes"] = eval(f"workingSave{i}")
+        inProgress["location"] = i
+        cookedDiff.append(inProgress)
     
-    for i in toRemove:
-        saveDict.pop(i)
+    return cookedDiff
     
-    # print(f"made save {saveDict}")
-    return saveDict    
 
+    
+    
 def getSaveMetadata(savedata: GameDefine | None = None) -> dict:
     global gamedefine
     metadata: dict = {"amounts": {}, "achevements": {}}
@@ -994,3 +1049,12 @@ def convertStrToFloats(input: (dict | list)):
 
 gamedefine = from_dict(data_class=GameDefine, data=defualtGameDefine)
 initalized = True
+
+# import base64
+# def b64Decode(what: str) -> str:
+#     return base64.b64decode(what.encode("utf-8")).decode("utf-8")
+
+# f = open("./appdata/local/CreateTheSun/Saves/save.save5", 'r')
+# print(loadSave(json.loads(b64Decode(f.read()))))
+
+# f.close()
