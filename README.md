@@ -6,7 +6,7 @@
 An incremental not-idle-yet game where the goal is to create the sun
 
 ## Images
-**Disclaimer: images are from an upcoming update, 0.3.0
+**Disclaimer: images are from an upcoming update, 0.3.0**
 
 ![Image of the main tab](https://files.catbox.moe/dgouxt.png)
 
