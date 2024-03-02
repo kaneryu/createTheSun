@@ -67,6 +67,7 @@ class Worker(QRunnable):
         '''
         self.fn(*self.args, **self.kwargs)
     
+    
 class MainWindow(QMainWindow):
     updateSignal = pyqtSignal()
     sUpdateThread1 = pyqtSignal()
@@ -79,7 +80,6 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__(*args, **kwargs)
         self.threadpool = QThreadPool()
         
-        self.killThreads = False
         
         self.updateSignal.connect(self.updateDisplay)
         self.sUpdateThread1.connect(self.sUpdateThread1)
@@ -126,11 +126,11 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.container)
 
         
-        self.displayUpdate = Worker(self._updateDisplay)
-        self.interalUpdate1 = Worker(self.updateThread1)
-        self.threadpool.start(self.displayUpdate)
-        self.threadpool.start(self.interalUpdate1)
-
+        self.displayUpdate = threading.Thread(target=self._updateDisplay, daemon=True)
+        self.interalUpdate1 = threading.Thread(target=self._updateDisplay, daemon=True)
+        
+        self.displayUpdate.start()
+        self.interalUpdate1.start()
 
     def _updateDisplay(self):
         """
@@ -138,17 +138,13 @@ class MainWindow(QMainWindow):
         Because this function directly interacts with the Qt Gui, there must be a short pause between updates,
         or else there will be general instability in the application.        
         """
+        
         while True:
-            
-            self.updateSignal.emit()
+            if threading.main_thread().is_alive():
+                self.updateSignal.emit()
             time.sleep(0.001)
             
             while self.displayThreadWait:
-                if not threading.main_thread().is_alive():
-                    return
-            
-                if self.killThreads:
-                    return
             
                 if self.errored:
                     print("errored!")
@@ -227,8 +223,6 @@ class MainWindow(QMainWindow):
                 
             
             
-            if not threading.main_thread().is_alive():
-                return 0
             
             if gamedefine.force == 1:
                 gamedefine.force = 0
@@ -237,12 +231,9 @@ class MainWindow(QMainWindow):
         if devmode:
             while True:
                 inner()
-                if self.killThreads:
-                    return
+
         else:
             while True:
-                if self.killThreads:
-                    return
                 try:
 
                     inner()
@@ -265,7 +256,6 @@ class MainWindow(QMainWindow):
         print("close button pressed")
         super().closeEvent(*args, **kwargs)
         print("ran the super")
-        self.killThreads = True
         
         print("killthreads set")
         
@@ -384,9 +374,8 @@ if __name__ == "__main__":
     
     app.exec()
     
-# FIXED: fix equations for automations - reverted to the old one
-# FIXED: fix the huge bug with automations, it doesn't work and works and also doesnt work at the same time????????
-# FIXED: check if I fixed the issue with the automation thing where if you would buy the protonic forge it would crash the internal thread
+
 # TODO: playtest game completley
 # TODO: fix the bug where achevement poups never close
+# TODO: rewrites
 # IDEA FOR SPILLOVER: there should be a window that shows you information about the spillover, and you can click on the spillover to show it
