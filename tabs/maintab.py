@@ -14,7 +14,6 @@ from PySide6.QtGui import QIntValidator
 #local imports
 import gamedefine
 import gameLogic.itemGameLogic as itemGameLogic
-import logging_ as logging
 import assets.fonts.urbanist.urbanistFont as urbanistFont
 import observerModel
 import gameLogic.numberLogic as numberLogic
@@ -34,7 +33,7 @@ class purchaseStrip(QWidget):
             self.item = gamedefine.gamedefine.itemInternalDefine["proton"]
             self.visualItem = gamedefine.gamedefine.itemVisualDefine["proton"]
             name = "proton"
-            logging.log(f"error importing item '{name}' from gamedefine.gamedefine", 3)
+            print(f"error importing item '{name}' from gamedefine.gamedefine")
             
         self.setToolTip(gamedefine.gamedefine.itemVisualDefine[name]["description"])
         self.setToolTipDuration(5000)
@@ -125,6 +124,8 @@ class header(QWidget):
 class content(QWidget):
     def __init__(self):
         super().__init__()
+        self.resetObserver = observerModel.registerObserver(self.reset, observerModel.Observable.RESET_OBSERVABLE, observerModel.ObservableCallType.ALL, observerModel.ObservableCheckType.TYPE, "mainTab")
+        
         self.layout_ = QVBoxLayout()
         self.layout_.setAlignment(Qt.AlignmentFlag.AlignTop)
         
@@ -145,19 +146,20 @@ class content(QWidget):
             i.updateTab()
         
         if not len(self.purchaseStrips) == len(gamedefine.gamedefine.purchaseToCreate):
-            for i in reversed(range(len(self.purchaseStrips))):
-                widget = self.purchaseStrips[i]
-                self.layout_.removeWidget(widget)
-                widget.setParent(None)
-                widget.deleteLater()
-                self.purchaseStrips.pop(i)
+            self.reset(None)
             
-            
-            for i in gamedefine.gamedefine.purchaseToCreate:
-                print("Creating " + str(i))
-                self.purchaseStrips.append(purchaseStrip(i))
-                self.layout_.addWidget(self.purchaseStrips[-1])
-            
-               
+    def reset(self, event):
+        for i in reversed(range(len(self.purchaseStrips))):
+            widget = self.purchaseStrips[i]
+            self.layout_.removeWidget(widget)
+            widget.setParent(None)
+            widget.deleteLater()
+            self.purchaseStrips.pop(i)
+        
+        
+        for i in gamedefine.gamedefine.purchaseToCreate:
+            print("Creating " + str(i))
+            self.purchaseStrips.append(purchaseStrip(i))
+            self.layout_.addWidget(self.purchaseStrips[-1])
         
         self.setLayout(self.layout_)

@@ -377,3 +377,6 @@ def getDescription(automation):
     else:
 
         return f"{gamedefine.gamedefine.automationVisualDefine[automation][index]["upgradeVisualName"]} \n {gamedefine.gamedefine.automationVisualDefine[automation][index]["upgradeDescription"]}"
+
+def getAutomationName(automation):
+    return gamedefine.gamedefine.automationVisualDefine[automation][getCurrentMultiLevelUpgradeIndex(automation)]["visualName"]

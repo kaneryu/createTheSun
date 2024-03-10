@@ -166,7 +166,7 @@ def load(slot: int = 0, noSpeak = False, loadWarn = True, save = None):
     gamedefine.force = 1
     
     for i in gamedefine.gamedefine.unlockedUnlockables:
-        unlocks.unlock(i)
+        unlocks.unlock(i, force = True)
         
     global selectedSlot
     selectedSlot = slot

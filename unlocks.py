@@ -1,4 +1,4 @@
-from observerModel import registerObserver, Observable, ObservableCallType
+from observerModel import registerObserver, Observable, ObservableCallType, callEvent
 from customWidgets import dialogs
 import gamedefine
 from tabs import achevementsTab
@@ -26,15 +26,22 @@ def checkUnlocks(event):
                 gamedefine.gamedefine.unlockedUnlockables.append(key)
                 unlock(key)         
                 
-def unlock(key):
+def unlock(key, force = False):
     currentDict = unlockables[key]
-    if key in gamedefine.gamedefine.unlockedUnlockables:
-        return
+    if not force:
+        if key in gamedefine.gamedefine.unlockedUnlockables:
+            return
     
     if currentDict["unlockType"] == "item":
         gamedefine.gamedefine.unlockedUnlockables.append(key)
         if not currentDict["whatUnlocks"] in gamedefine.gamedefine.purchaseToCreate:
             gamedefine.gamedefine.purchaseToCreate.append(currentDict["whatUnlocks"]) #type: ignore
+            callEvent(Observable.RESET_OBSERVABLE, ObservableCallType.ALL, f"mainTab")
+    
+    if not currentDict["makeVisible"] == None:
+        for i in currentDict["makeVisible"]:
+            gamedefine.gamedefine.unlockables[i]["visible"] = True
+            callEvent(Observable.RESET_OBSERVABLE, ObservableCallType.ALL, f"unlockTab")
     
     
 def checkAchevements(event):

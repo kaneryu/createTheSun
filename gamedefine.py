@@ -648,9 +648,9 @@ defualtGameDefine = {
 
     "unlockedAchevements": [],
 
-    "unlockables": {
+    "unlockables": { # if visible is set to true, a corresponding visual define must be set. It's not required if it's set to false
         "hydrogenUnlock": {
-                "visual": False,
+                "visible": True,
                 "unlockType": "item",
                 "whatUnlocks": "hydrogen",
                 "needs": [
@@ -659,10 +659,11 @@ defualtGameDefine = {
                         "what": "protonicForge",
                         "amount": 3
                     }
-                ]
+                ],
+                "makeVisible": "rewriteTabUnlock"
             },
         "rewriteTabUnlock": {
-            "visual": False,
+            "visible": False,
             "unlockType": "tab",
             "whatUnlocks": "rewrite",
             "needs": [
@@ -671,8 +672,22 @@ defualtGameDefine = {
                     "what": "hydrogen",
                     "amount": 20
                 }
-            ]
+            ],
+            "makeVisible": None
         },
+    },
+    
+    "unlockablesVisualDefine": {
+        "hydrogenUnlock": {
+            "visualName": "Hydrogen Unlock",
+            "hoverDescription": "Unlock Hydrogen",
+            "scale": "linear"
+        },
+        "rewriteTabUnlock": {
+            "visualName": "Rewrite Tab Unlock",
+            "hoverDescription": "Unlock the rewrite tab",
+            "scale": "log"
+        }
     },
 
     "unlockedUnlockables": [],
@@ -807,7 +822,7 @@ defualtGameDefine = {
 
     "sessionStartTime": 0,
     "playTime": 0,
-    "tutorialPopupDone": False
+    "tutorialPopupDone": False,
 
 }
 @dataclass
@@ -846,17 +861,19 @@ class GameDefine:
 
     achevementVisualDefine: dict
         
-    unlockedAchevements: list[str]
+    unlockedAchevements: list[str | None]
 
     unlockables: dict
-        
-    unlockedUnlockables: list[str]
+    
+    unlockablesVisualDefine: dict
+    
+    unlockedUnlockables: list[str | None]
 
     rewriteInternalDefine: dict
 
     rewriteVisualDefine: dict
     
-    unlockedRewrites: list[str]
+    unlockedRewrites: list[str | None]
 
     lastAchevementGain: list
 

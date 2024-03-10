@@ -7,16 +7,13 @@ import os
 import json
 import requests
 import subprocess
+from math import floor
 
-#third party imports
-# from PyQt6 import QtCore
-# from PyQt6.QtGui import QIcon
-# from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, QSizePolicy, QMessageBox, QDialog
-# from PyQt6.QtCore import QPropertyAnimation, Qt, QTimer, QRunnable, pyqtSlot, pyqtSignal, QThreadPool
+
 from PySide6 import QtCore
 from PySide6.QtGui import QIcon, QPixmap, QAction
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, QSizePolicy, QDialog, QSplashScreen
-from PySide6.QtCore import QPropertyAnimation, Qt, QTimer, QRunnable, Slot as pyqtSlot, Signal as pyqtSignal, QThreadPool
+from PySide6.QtCore import QPropertyAnimation, Qt, QTimer, QRunnable, Slot, Signal, QThreadPool
 
 #local imports
 import gamedefine
@@ -25,13 +22,11 @@ import observerModel
 
 import tabs_ as tabs
 import tabs.electrons as electrons
-import logging_ as logging
 import assets.fonts.urbanist.urbanistFont as urbanistFont
 from customWidgets import dialogs
 import unlocks # this is the only interaction needed to start the unlocks service
 
-logging.logLevel = 1
-logging.specialLogs = []
+
 basedir = os.path.join(os.path.abspath(__file__), os.path.pardir)
 
 devmode = True if os.path.exists(f"{basedir}\\otherStuff\\build.py") else False
@@ -60,7 +55,7 @@ class Worker(QRunnable):
         self.args = args
         self.kwargs = kwargs
 
-    @pyqtSlot()
+    @Slot()
     def run(self):
         '''
         Initialise the runner function with passed args, kwargs.
@@ -69,12 +64,12 @@ class Worker(QRunnable):
     
     
 class MainWindow(QMainWindow):
-    updateSignal = pyqtSignal()
-    sUpdateThread1 = pyqtSignal()
-    errorDialogSignal = pyqtSignal(str, str)
+    updateSignal = Signal()
+    sUpdateThread1 = Signal()
+    errorDialogSignal = Signal(str, str)
     errored = False
-    
     displayThreadWait = False
+    threadsRunning = True
     
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
@@ -85,7 +80,7 @@ class MainWindow(QMainWindow):
         self.sUpdateThread1.connect(self.sUpdateThread1)
         self.errorDialogSignal.connect(self.errorDialog)
         
-        logging.log("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount(), 1)
+        print("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
         self.lastUpdateTime = time.time() * 1000
         
         self.setWindowTitle("Create The Sun")
@@ -96,6 +91,10 @@ class MainWindow(QMainWindow):
 
         for i in tabs.tabs:
             self.tabs.append({"class" : i(), "name": i.name()})
+            
+            if i in tabs.internalUpdateable:
+                tabs.internalUpdateList.append(self.tabs[-1]["class"].updateInternal)
+                
             self.tabWidget.addTab(self.tabs[-1]["class"], i.name())
             self.tabWidget.setTabToolTip(len(self.tabs) - 1, i.tooltip())
 
@@ -126,11 +125,12 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.container)
 
         
-        self.displayUpdate = threading.Thread(target=self._updateDisplay, daemon=True)
-        self.interalUpdate1 = threading.Thread(target=self._updateDisplay, daemon=True)
+        self.displayUpdateThread = threading.Thread(target=self._updateDisplay, daemon=False)
+        self.interalUpdateThread = threading.Thread(target=self.updateInternal, daemon=False)
         
-        self.displayUpdate.start()
-        self.interalUpdate1.start()
+        self.displayUpdateThread.start()
+        
+        self.interalUpdateThread.start()
 
     def _updateDisplay(self):
         """
@@ -139,36 +139,31 @@ class MainWindow(QMainWindow):
         or else there will be general instability in the application.        
         """
         
-        while True:
+        while self.threadsRunning:
             if threading.main_thread().is_alive():
                 self.updateSignal.emit()
-            time.sleep(0.001)
+            time.sleep(0.01)
             
             while self.displayThreadWait:
             
                 if self.errored:
                     print("errored!")
-                    del self.displayUpdate
+                    del self.displayUpdateThread
                     return
-            
 
-            
 
-            
 
-            
-            
     def updateDisplay(self):
         """
         Updates the display by calling the updateDisplay method whatever needs to be updated.
         """
         self.displayThreadWait = True
         def inner():
-            for i in self.tabs:
-                    logging.log(f"now updating tab {i["name"]}", specialType="updateLoopInfo")
-                    i["class"].updateDisplay()
+            self.tabWidget.currentWidget().updateDisplay() # type: ignore
 
-            logging.log("now updating electrons", specialType="updateLoopInfo")
+            if floor(time.time() % 4) == 0: # every 4 seconds
+                for i in self.tabs:
+                    i["class"].updateDisplay()
             self.electrons.updateDisplay()
             
                         
@@ -194,7 +189,7 @@ class MainWindow(QMainWindow):
         dialog.exec()
         self.close()
     
-    def updateThread1(self):
+    def updateInternal(self):
         """
         A seperate thread for updating electrons and tabs, so it can run as fast as possible without waiting for display referesh
         """
@@ -211,10 +206,13 @@ class MainWindow(QMainWindow):
                     self.tabWidget.setTabToolTip(len(self.tabs) - 1, current.tooltip())
                     
         def inner():
+
             checkForNewTabs()
+            
+            for function in tabs.internalUpdateList:
+                function()
             self.electrons.updateInternal()
-            self.tabs[1]["class"].updateInternal()
-            self.tabs[3]["class"].updateInternal()
+                
             if time.time() * 1000 - self.lastUpdateTime > 500: # every 1/2 second
                 self.lastUpdateTime = time.time() * 1000
                 observerModel.callEvent(observerModel.Observable.ITEM_OBSERVABLE, observerModel.ObservableCallType.TIME, "")
@@ -229,11 +227,11 @@ class MainWindow(QMainWindow):
                 forceUpdate()
 
         if devmode:
-            while True:
+            while self.threadsRunning:
                 inner()
 
         else:
-            while True:
+            while self.threadsRunning:
                 try:
 
                     inner()
@@ -265,6 +263,15 @@ class MainWindow(QMainWindow):
 
         if saveDialogResults == QDialog.DialogCode.Accepted:
             tabs.saveModule.save(notify = False, slot = tabs.saveModule.selectedSlot)
+            
+            
+        self.threadsRunning = False
+        print("waiting for threads")
+        if self.displayUpdateThread.is_alive():
+            self.displayUpdateThread.join()
+        if self.interalUpdateThread.is_alive():
+            self.interalUpdateThread.join()
+        
         print("finnaly done")
         sys.exit(app.exit())            
         
@@ -325,19 +332,20 @@ if __name__ == "__main__":
     #change icon in taskbar
     myappid = u'opensource.createthesun.main.pre-release'
     ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid) 
-    
+
     app = QApplication(sys.argv)
-    tabs.saveModule.save(noProgSaveCreation = True, notify = False)
+    splashScreen = QSplashScreen(QPixmap(basedir + r"\assets\images\icon.ico"))
+    splashScreen.setStyleSheet("color: white; font: 16pt;")
+    splashScreen.show()
+    splashScreen.showMessage("Loading...", Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignCenter, Qt.GlobalColor.white)
+    #tabs.saveModule.save(noProgSaveCreation = True, notify = False)
     
     file = open(os.path.join(basedir, 'assets', 'stylesheet.qss'), 'r')
     stylesheet = file.read()
     file.close()
     app.setStyleSheet(stylesheet)
     
-    splashScreen = QSplashScreen(QPixmap(basedir + r"\assets\images\icon.ico"))
-    splashScreen.setStyleSheet("color: white; font: 16pt;")
-    splashScreen.show()
-    splashScreen.showMessage("Loading...", Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignCenter, Qt.GlobalColor.white)
+
     
      
     

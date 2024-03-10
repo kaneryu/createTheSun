@@ -3,6 +3,7 @@ from copy import deepcopy
 import gamedefine
 import time
 import dataclasses
+
 @dataclasses.dataclass
 class data_:
     amounts: dict
@@ -37,4 +38,4 @@ def receive(event):
 
 
 data = data_({}, {}, time.time())
-itemObserver = observerModel.registerObserver(receive, observerModel.Observable.ITEM_OBSERVABLE, observerModel.ObservableCallType.TIME)
+itemObserver = observerModel.registerObserver(receive, observerModel.Observable.ITEM_OBSERVABLE, observerModel.ObservableCallType.ALL)

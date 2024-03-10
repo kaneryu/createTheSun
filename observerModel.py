@@ -25,7 +25,8 @@ class Observable(StrEnum):
     OTHER_OBSERVABLE = "otherObserv"
     #Probably will not be used. For any other observable not specific enough to fit in a single catagory
     #But in that case, it will most likely get it's own observable.
-  
+    RESET_OBSERVABLE = "resetObserv"
+    #This will be called when a tab needs to be reloaded. It will be called with the name of the tab to reset.
 class ObservableCallType(StrEnum):
     #What to call on
     GAINED = "gained"
@@ -34,6 +35,7 @@ class ObservableCallType(StrEnum):
     OTHER = "other"
     
 class ObservableCheckType(StrEnum):
+    warnings.warn("This feature is deprecated and will be removed in a future version.")
     #AMOUNT = "amount"
     TYPE = "type"
 
@@ -78,22 +80,15 @@ class observer:
         
 def registerObserver(function_, event: Observable, callType: ObservableCallType, checkType: ObservableCheckType | None = None, check: str | None = None) -> observer:
     print(f"new observer for {event} when {callType} occurs")
-    allowedCallTypes = ["gained", "time", "all", "other"]
-    allowedEvents = [
-    "itemObserv",
-    "acheObserv",
-    "autoObserv",
-    "timeObserv",
-    "otherObserv"
-    ]
     
-    if not event in allowedEvents:
+    if not event in Observable:
         raise TypeError("Incorrect type for what to call on, it should be a Enum from Observable")
-    if not callType in allowedCallTypes:
+    if not callType in ObservableCallType:
         raise TypeError("Incorrect type for callType. Use the ObservableCallType enum.")
     if not type(checkType) == ObservableCheckType and not checkType == None:
         raise TypeError("Incorrect type for checkType, it should use the ObservableCheckType enum")
-    if not check == str and not check == None:
+    if not type(check) == str and not check == None:
+
         raise TypeError(f"Check should be a str")
     
     if not event in observers:
@@ -113,23 +108,17 @@ def callEvent(event: Observable, callType: ObservableCallType, information: Unio
     if not callType == "time":
         print("Calling event " + event)
     
-    allowedEvents = [
-    "itemObserv",
-    "acheObserv",
-    "autoObserv",
-    "timeObserv",
-    "otherObserv"
-    ]
+
+
     
-    allowedCallTypes = ["gained", "time", "all", "other"]
-    
-    if not callType in allowedCallTypes:
+    if not callType in ObservableCallType:
         raise TypeError("Incorrect type for callType. Use the ObservableCallType enum.")
-    if not event in allowedEvents:
+    if not event in Observable:
         raise TypeError("Incorrect type for what to call, it should be a enum from Observable")
     
     item: observer
     somebodyRecieved = False
+    
     for item in observers[event]["all"]: # for every observer that has the correct event type and all calltypes
         if item.checkType == ObservableCheckType.TYPE:
             if information == item.check:

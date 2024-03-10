@@ -1,7 +1,7 @@
 from PySide6 import QtGui
 from PySide6.QtGui import QPixmap, QRegion, QAction, QKeySequence
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGraphicsBlurEffect, QGridLayout, QApplication
-from PySide6.QtCore import QPropertyAnimation, Qt, QTimer, QEasingCurve, QRect
+from PySide6.QtCore import QPropertyAnimation, Qt, QTimer, QEasingCurve, QRect, Signal, Slot
 import os
 
 basedir = os.path.dirname(os.path.realpath(__file__))
@@ -61,7 +61,7 @@ class achevementPopup(QWidget):
         self.fadeout.setDuration(200)
         self.fadeout.setStartValue(1)
         self.fadeout.setEndValue(0)
-        self.fadeout.finished.connect(self.destroy(True, False))
+        self.fadeout.finished.connect(lambda: self.destroy(True, False))
         
         
         
@@ -141,7 +141,9 @@ class achevementWidget(QWidget):
 
             
 class content(QWidget):
+    popupSignal = Signal()
     def __init__(self):
+        
         super().__init__()
         
         achevementsPerRow = 5
@@ -163,14 +165,20 @@ class content(QWidget):
             rowCounter += 1
         
         self.setLayout(self.layout_)
+        self.popupSignal.connect(self.doPopups)
         
     def displayUpdate(self):
         for i in self.widgets:
             i: achevementWidget
             i.displayUpdate()
         
+    @Slot()    
+    def doPopups(self):
         for j in achevementPopupQueue:
             j: achevementPopup
             j.popup()
             achevementPopupQueue.remove(j)
 
+    def updateInternal(self):
+        if len(achevementPopupQueue) > 0:
+            self.popupSignal.emit()
