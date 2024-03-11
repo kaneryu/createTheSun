@@ -18,8 +18,11 @@ import observerModel
 import gameLogic.numberLogic as numberLogic
 import gameLogic.automationGameLogic as automationGameLogic
 
+    
+
+        
 class unlockStrip(QWidget):
-    def __init__(self, name):
+    def __init__(self, name: str, maintab: bool | None = False):
         super().__init__()
         self.containerLayout = QVBoxLayout()
         self.innerLayout = QHBoxLayout()
@@ -29,7 +32,7 @@ class unlockStrip(QWidget):
         self.innerLayout.setAlignment(Qt.AlignmentFlag.AlignLeft)
         
         self.name = name
-
+        self.maintab = maintab
         self.internalItem = gamedefine.gamedefine.unlockables[name]
         self.visualItem = gamedefine.gamedefine.unlockablesVisualDefine[name]
         
@@ -37,7 +40,9 @@ class unlockStrip(QWidget):
         self.setToolTipDuration(5000)
         
         self.label = QLabel(self.visualItem['visualName'])
-        self.needsLabel = QLabel(self.getYouNeedText())
+        
+
+        
         self.progress = QProgressBar()
         self.progress.setMinimum(0)
         self.progress.setMaximum(100)
@@ -47,8 +52,9 @@ class unlockStrip(QWidget):
         self.innerLayout.addWidget(self.progress)
         
         self.containerLayout.addWidget(self.innerContainer)
-        
-        self.containerLayout.addWidget(self.needsLabel)
+        if not maintab:
+            self.needsLabel = QLabel(self.getYouNeedText())
+            self.containerLayout.addWidget(self.needsLabel)
         
         self.setLayout(self.containerLayout)
     
@@ -84,7 +90,7 @@ class unlockStrip(QWidget):
         for needed in amountNeeded:
             for available in amountCurrentlyAvailable:
                 if needed[1] == available[1]:
-                    percentages.append(math.floor((available[2] / needed[2]) * 100))
+                    percentages.append(min(math.floor((available[2] / needed[2]) * 100), 100))
 
                     
         if self.visualItem["scale"] == "linear":
@@ -101,12 +107,12 @@ class unlockStrip(QWidget):
     
     def getYouNeedText(self) -> str:
         exempt = ["hydrogen"]
-        def addS(amount, what):
-            if what in exempt:
-                return ""
+        def addS(amount, what: str):
+            if what.lower() in exempt:
+                return what
             if amount == 1:
-                return ""
-            return "s"
+                return what[::-1] # remove the s
+            return what
         
         amountNeeded = self.getAmountNeeded()
         amountHave = self.getAmountCurrentlyAvailable()
@@ -116,7 +122,7 @@ class unlockStrip(QWidget):
             visualName: str
             if amountNeededItem[0] == "item":
                 visualName = gamedefine.gamedefine.itemVisualDefine[amountNeededItem[1]]["visualName"]
-                string += f"{amountNeededItem[2]} {visualName + addS(self.getAmountDepedingOnType(amountNeededItem[0], amountNeededItem[1]), amountNeededItem[1])} (Currently have {self.getAmountDepedingOnType(amountHaveItem[0], amountHaveItem[1])})\n\t"
+                string += f"{amountNeededItem[2]} {addS(self.getAmountDepedingOnType(amountNeededItem[0], amountNeededItem[1]), amountNeededItem[1])} (Currently have {self.getAmountDepedingOnType(amountHaveItem[0], amountHaveItem[1])})\n\t"
                    
             elif amountNeededItem[0] == "automation":
                 visualName = automationGameLogic.getAutomationName(amountNeededItem[1])
@@ -137,8 +143,32 @@ class unlockStrip(QWidget):
         """
         Updates the tab with the current information.
         """
-        self.progress.setValue(self.calculatePercentageToUnlock())
-        self.needsLabel.setText(self.getYouNeedText())
+        def mainTabUpdateTab():
+            """
+            Updates the tab with the current information.
+            """
+
+            highestPercentage: tuple[int, str] = (-1, "")
+            for item in gamedefine.gamedefine.unlockables:
+                self.internalItem = gamedefine.gamedefine.unlockables[item]
+                self.visualItem = gamedefine.gamedefine.unlockablesVisualDefine[item]
+                
+                if self.calculatePercentageToUnlock() > highestPercentage[0]:
+                    highestPercentage = (self.calculatePercentageToUnlock(), item)
+            
+            self.name = highestPercentage[1]
+            self.internalItem = gamedefine.gamedefine.unlockables[highestPercentage[1]]
+            self.visualItem = gamedefine.gamedefine.unlockablesVisualDefine[highestPercentage[1]]
+            
+            self.label.setText(self.visualItem['visualName'])
+            self.setToolTip(gamedefine.gamedefine.unlockablesVisualDefine[highestPercentage[1]]["hoverDescription"])
+            self.progress.setValue(self.calculatePercentageToUnlock())
+            
+        if not self.maintab:
+            self.progress.setValue(self.calculatePercentageToUnlock())
+            self.needsLabel.setText(self.getYouNeedText())
+        else:
+            mainTabUpdateTab()
         
             
 

@@ -5,6 +5,7 @@ from copy import deepcopy
 import json
 import regex
 import deepdiff
+from gameLogic import automationGameLogic
 initalized = False
 
 defualtGameDefine = {
@@ -658,6 +659,16 @@ defualtGameDefine = {
                         "type": "automation",
                         "what": "protonicForge",
                         "amount": 3
+                    },
+                    {
+                        "type": "item",
+                        "what": "quarks",
+                        "amount": 1000
+                    },
+                    {
+                        "type": "item",
+                        "what": "protons",
+                        "amount": 50
                     }
                 ],
                 "makeVisible": "rewriteTabUnlock"
@@ -686,7 +697,7 @@ defualtGameDefine = {
         "rewriteTabUnlock": {
             "visualName": "Rewrite Tab Unlock",
             "hoverDescription": "Unlock the rewrite tab",
-            "scale": "log"
+            "scale": "linear"
         }
     },
 
@@ -894,10 +905,10 @@ def loadSave(saveDict: list[dict]):
     global gamedefine    
     newsave = deepcopy(defualtGameDefine)
     
-    for i in saveDict:
-        changes = i["changes"]
+    for item in saveDict:
+        changes = item["changes"]
         location: str
-        location = i["location"]
+        location = item["location"]
 
         try:
             exec(f"newsave{location} = changes")
@@ -934,14 +945,21 @@ for i in range({amount} + 1):
             
     gamedefine = from_dict(data_class=GameDefine, data=newsave)
     gamedefine.mainTabBuyMultiple = 1
+    
+    for item in gamedefine.automationLevels:
+        if gamedefine.automationLevels[item] > 0:
+            automationGameLogic.updateAutomationStatus(item)
+
     return gamedefine 
     
 def getSaveData(data: GameDefine | None = None) -> list[dict]:
 
     if data == None:
         savedata = asdict(gamedefine)
-    else:
+    elif type(data) == GameDefine:
         savedata = asdict(data)
+    else:
+        raise TypeError("Wrong type for data, must be Gamedefine or None")
         
     return getDiffedSave(savedata)
 
@@ -992,6 +1010,10 @@ def getSaveMetadata(savedata: GameDefine | None = None) -> dict:
     metadata["achevements"]["notUnlocked"] = len(savedata.achevementInternalDefine) # type: ignore
     metadata["lastUsedOn"] = time.time()
     
+
+    
+    metadata["version"] = gameVersion
+    
     return metadata
     
 
@@ -1028,7 +1050,6 @@ def convertFloatsToStr(input: dict | list):
     if type(input) == list:
         return convertFloatsToStrFromList(input)    
     
-
 def convertStrToFloats(input: (dict | list)):
     def convertStrToFloatsFromList(input_: list):
         workingList = input_
@@ -1066,7 +1087,9 @@ def convertStrToFloats(input: (dict | list)):
 
 gamedefine = from_dict(data_class=GameDefine, data=defualtGameDefine)
 initalized = True
-
+versionfile = open("version.txt", "r")
+gameVersion = versionfile.read()
+versionfile.close()
 # import base64
 # def b64Decode(what: str) -> str:
 #     return base64.b64decode(what.encode("utf-8")).decode("utf-8")

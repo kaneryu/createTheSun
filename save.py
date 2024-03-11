@@ -188,9 +188,9 @@ def getLastUsedSaveSlot() -> int:
     best = 0
     timeOfBest = 0
     for i in files:
-        if int(i.split(".lastused")[0]) > timeOfBest:
+        if float(i.split(".lastused")[0]) > timeOfBest:
             best = int(i.split(".lastused")[1])
-            timeOfBest = int(i.split(".lastused")[0])
+            timeOfBest = float(i.split(".lastused")[0])
     
     return best
     

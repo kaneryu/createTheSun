@@ -386,4 +386,6 @@ if __name__ == "__main__":
 # TODO: playtest game completley
 # TODO: fix the bug where achevement poups never close
 # TODO: rewrites
+# TODO: fix the bug where saving doesnt work. It's related to list indexes.
+# TODO: fox the bug where the percentage on teh goal on the main tab doesn't show up porperly.
 # IDEA FOR SPILLOVER: there should be a window that shows you information about the spillover, and you can click on the spillover to show it

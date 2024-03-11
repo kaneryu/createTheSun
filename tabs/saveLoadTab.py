@@ -31,8 +31,14 @@ class saveLoadWidget(QWidget):
             self.timeZone = time.timezone
             self.rawLastUsed = self.metadata["lastUsedOn"]
             self.humanReadableLastUsed = time.strftime("%a, %d %b %Y %I:%M:%S %p", time.localtime(self.rawLastUsed))
+
+            if not 'version' in self.metadata:
+                self.metadata['version'] = "not found"
+                
+            self.slotLabel = QLabel(f"{"Outdated/Too New" if gamedefine.gameVersion != self.metadata['version'] else ""} Slot {self.slotNum}, Quarks: {self.metadata["amounts"]['quarks']}, Achevement Completion: {round((self.metadata["achevements"]["have"] / len(gamedefine.gamedefine.achevementInternalDefine)) * 100, 2)}%,\nLast used: {self.humanReadableLastUsed} on version {self.metadata['version']}")
             
-            self.slotLabel = QLabel(f"Slot {self.slotNum}, Quarks: {self.metadata["amounts"]['quarks']}, Achevement Completion: {round((self.metadata["achevements"]["have"] / len(gamedefine.gamedefine.achevementInternalDefine)) * 100, 2)}%,\nLast used: {self.humanReadableLastUsed}")
+            
+            
             self.layout_.addWidget(self.slotLabel)
             
             self.buttonLayout = QHBoxLayout()

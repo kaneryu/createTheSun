@@ -10,7 +10,7 @@ import sys
 import save
 import tabs.maintab as maintab
 import tabs.automationtab as automationtab
-import tabs.settingstab as settingstab
+import tabs.saveLoadTab as saveLoadTab_
 import tabs.achevementsTab as achevementsTab_
 import tabs.unlockTab as unlockTab_
 import resourceGain
@@ -82,11 +82,11 @@ class automationTab(QWidget):
         return "Keep your fingers off the mouse."
     
     
-class settingsTab(QWidget):
+class saveLoadTab(QWidget):
     def __init__(self):
         super().__init__()
         self.layout_ = QVBoxLayout()
-        self.tabContent = settingstab.content()
+        self.tabContent = saveLoadTab_.content()
         self.layout_.addWidget(self.tabContent)
         self.setLayout(self.layout_)
         
@@ -96,11 +96,11 @@ class settingsTab(QWidget):
         self.tabContent.updateInternal()
     
     def name(): #type: ignore
-        return "Settings"
+        return "Save && Load"
     
         
     def tooltip(): #type: ignore
-        return "Settings..."
+        return "Save and load your game."
     
     
 class achievementsTab(QWidget):
@@ -195,6 +195,6 @@ class statsTab(QWidget):
     def tooltip(): #type: ignore
         return "Information about production"
 
-tabs = [mainTab, automationTab, achievementsTab, settingsTab, unlockTab, statsTab]
+tabs = [mainTab, automationTab, achievementsTab, saveLoadTab, unlockTab, statsTab]
 internalUpdateList = []
-internalUpdateable = [automationTab, settingsTab, achievementsTab, statsTab]
+internalUpdateable = [automationTab, saveLoadTab, achievementsTab, statsTab]

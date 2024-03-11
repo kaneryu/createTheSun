@@ -2,10 +2,7 @@
 import json
 from copy import deepcopy
 import sys
-#third party imports
-# from PyQt6.QtCore import Qt
-# from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QLineEdit, QSpacerItem
-# from PyQt6.QtGui import QIntValidator
+import time
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QLineEdit, QSpacerItem
@@ -17,7 +14,8 @@ import gameLogic.itemGameLogic as itemGameLogic
 import assets.fonts.urbanist.urbanistFont as urbanistFont
 import observerModel
 import gameLogic.numberLogic as numberLogic
-from tabs import achevementsTab
+from tabs import unlockTab
+
 class purchaseStrip(QWidget):
     def __init__(self, name):
         super().__init__()
@@ -120,26 +118,56 @@ class header(QWidget):
         except:
             gamedefine.gamedefine.mainTabBuyMultiple = 1
             
+class footer(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.layout_ = QVBoxLayout()
+        self.layout_.setAlignment(Qt.AlignmentFlag.AlignRight)
+        
+        self.content = unlockTab.unlockStrip("hydrogenUnlock", maintab = True)
+        self.content.mouseReleaseEvent = self.mReleaseEvent
+        self.layout_.addWidget(self.content)
+        
+        self.setLayout(self.layout_)
+        
+    def mReleaseEvent(self, event):
+        pass
+        #i'll add in logic to switch tabs to the Unlock tab when the footer is clicked later
+    
+    def updateDisplay(self):
+        self.content.updateTab()
         
 class content(QWidget):
     def __init__(self):
         super().__init__()
         self.resetObserver = observerModel.registerObserver(self.reset, observerModel.Observable.RESET_OBSERVABLE, observerModel.ObservableCallType.ALL, observerModel.ObservableCheckType.TYPE, "mainTab")
         
-        self.layout_ = QVBoxLayout()
-        self.layout_.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.topLevelLayout = QVBoxLayout()
+        self.topLevelLayout.setAlignment(Qt.AlignmentFlag.AlignTop)
         
         self.header_ = header()
-        self.layout_.addWidget(self.header_)
+        self.topLevelLayout.addWidget(self.header_)
+        
+
+        
+        self.purchaseStripsContainer = QWidget()
+        self.purchaseStripsLayout = QVBoxLayout()
+        self.purchaseStripsLayout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.purchaseStripsContainer.setLayout(self.purchaseStripsLayout) 
+        
         
         self.purchaseStrips: list[purchaseStrip] = []
         for i in gamedefine.gamedefine.purchaseToCreate:
             if not i == "electrons":
                 print("Creating " + str(i))
                 self.purchaseStrips.append(purchaseStrip(i))
-                self.layout_.addWidget(self.purchaseStrips[-1])
+                self.purchaseStripsLayout.addWidget(self.purchaseStrips[-1])
         
-        self.setLayout(self.layout_)
+        self.topLevelLayout.addWidget(self.purchaseStripsContainer)
+        
+        self.footer_ = footer()
+        self.topLevelLayout.addWidget(self.footer_)
+        self.setLayout(self.topLevelLayout)
     
     def updateDisplay(self):
         for i in self.purchaseStrips:
@@ -148,10 +176,12 @@ class content(QWidget):
         if not len(self.purchaseStrips) == len(gamedefine.gamedefine.purchaseToCreate):
             self.reset(None)
             
+        self.footer_.updateDisplay()
+            
     def reset(self, event):
         for i in reversed(range(len(self.purchaseStrips))):
             widget = self.purchaseStrips[i]
-            self.layout_.removeWidget(widget)
+            self.purchaseStripsLayout.removeWidget(widget)
             widget.setParent(None)
             widget.deleteLater()
             self.purchaseStrips.pop(i)
@@ -160,6 +190,6 @@ class content(QWidget):
         for i in gamedefine.gamedefine.purchaseToCreate:
             print("Creating " + str(i))
             self.purchaseStrips.append(purchaseStrip(i))
-            self.layout_.addWidget(self.purchaseStrips[-1])
+            self.purchaseStripsLayout.addWidget(self.purchaseStrips[-1])
         
-        self.setLayout(self.layout_)
+        self.setLayout(self.topLevelLayout)
