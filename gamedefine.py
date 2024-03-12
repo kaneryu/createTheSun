@@ -456,9 +456,9 @@ defualtGameDefine = {
     "automationsToCreate": ["particleAccelerator", "protonicForge"],
 
     "amounts": {
-        "quarks": 0,
+        "quarks": 10000,
         "electrons": 100,
-        "protons": 0,
+        "protons": 100000,
         "hydrogen": 0,
         "stars": 0,
         "galaxies": 0,
@@ -500,8 +500,8 @@ defualtGameDefine = {
     },
     
     "automationDisabledState": {
-        "particleAccelerator" : [False, "0"],
-        "protonicForge": [False, "0"]
+        "particleAccelerator" : [False],
+        "protonicForge": [False]
     },
 
     "automationDetails": {
@@ -974,6 +974,7 @@ def getDiffedSave(workingSave: dict) -> list[dict]:
     Returns:
         dict: The diff save.
     """
+    print(workingSave)
     rawDiff = str(deepdiff.diff.DeepDiff(defualtGameDefine, workingSave))
     underCookedDiff: list[str]
     underCookedDiff = regex.findall("root[^\"]*", rawDiff)
@@ -989,8 +990,8 @@ def getDiffedSave(workingSave: dict) -> list[dict]:
     
     for i in underCookedDiff:
         inProgress = {}
-        # print(f"workingSave{i}")
-        print(workingSave)
+        print(f"workingSave{i}")
+
         inProgress["changes"] = eval(f"workingSave{i}")
         inProgress["location"] = i
         cookedDiff.append(inProgress)

@@ -385,6 +385,5 @@ if __name__ == "__main__":
 
 # TODO: playtest game completley
 # TODO: rewrites
-# TODO: fix the bug where saving doesnt work. It's related to list indexes.
 
 # IDEA FOR SPILLOVER: there should be a window that shows you information about the spillover, and you can click on the spillover to show it
