@@ -204,12 +204,12 @@ class content(QWidget):
                 visibleAmount += 1
         
         if not len(self.unlockStrips) == visibleAmount:
-            self.reset()
+            self.reset(None)
             
                
         
     
-    def reset(self):
+    def reset(self, event):
         for i in reversed(range(len(self.unlockStrips))):
             widget = self.unlockStrips[i]
             self.layout_.removeWidget(widget)

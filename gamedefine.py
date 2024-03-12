@@ -671,7 +671,7 @@ defualtGameDefine = {
                         "amount": 50
                     }
                 ],
-                "makeVisible": "rewriteTabUnlock"
+                "makeVisible": ["rewriteTabUnlock"]
             },
         "rewriteTabUnlock": {
             "visible": False,

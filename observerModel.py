@@ -4,9 +4,8 @@ from enum import StrEnum
 import random
 import base64
 import json
+import inspect
 
-#This is a bootleg implementation of the observer model. It is not a real observer model, but it is a way to call functions when certain events happen.
-#It is not a real observer model because it is not a real observer model. It is a bootleg observer model. It is not a real observer model. It is a bootleg observer model.
 
 log: dict[str, list] = {"creationEvents": [], "callEvents": [], "recievedEvents": [], "deregisterEvents": []}
 
@@ -27,6 +26,8 @@ class Observable(StrEnum):
     #But in that case, it will most likely get it's own observable.
     RESET_OBSERVABLE = "resetObserv"
     #This will be called when a tab needs to be reloaded. It will be called with the name of the tab to reset.
+    UNLOCK_OBSERVABLE = "unlockObserv"
+    #This will be called when a new thing is unlocked. It will be called with the name of the thing unlocked.
 class ObservableCallType(StrEnum):
     #What to call on
     GAINED = "gained"
@@ -88,8 +89,11 @@ def registerObserver(function_, event: Observable, callType: ObservableCallType,
     if not type(checkType) == ObservableCheckType and not checkType == None:
         raise TypeError("Incorrect type for checkType, it should use the ObservableCheckType enum")
     if not type(check) == str and not check == None:
-
         raise TypeError(f"Check should be a str")
+    
+    sig = str(inspect.signature(function_)).split(',') # amount of arguments
+    if not len(sig) >= 1:
+        raise TypeError("Function should have at least one argument")
     
     if not event in observers:
         observers[event] = {"gained": [], "time": [], "all": [], "other": []}
