@@ -496,7 +496,7 @@ defualtGameDefine = {
 
     "automationLevels": {
         "particleAccelerator" : 0,
-        "protonicForge": 0
+        "protonicForge": 2
     },
     
     "automationDisabledState": {
@@ -1089,9 +1089,7 @@ def convertStrToFloats(input: (dict | list)):
         return convertStrToFloatsFromList(input)   
     
 
-# testdict_ = {'amounts': {'quarks': 100037, 'electrons': 100, 'protons': 1000000, 'hydrogen': 0, 'stars': 0, 'galaxies': 0, 'superclusters': 0}, 'clickGainMultiplierList': {'quarks': [1], 'electrons': [1], 'protons': [1], 'hydrogen': [1], 'stars': [1], 'galaxies': [1], 'superclusters': [1]}, 'multiplierList': {'quarks': [1], 'electrons': [1], 'protons': [1], 'hydrogen': [1], 'stars': [1], 'galaxies': [1], 'superclusters': [1]}, 'upgradeLevels': {'particleAccelerator': 2, 'protonicForge': 0}, 'upgradeDisabledState': {'particleAccelerator': (False, '0'), 'protonicForge': (False, '0')}, 'upgradeDetails': {'particleAccelerator': {'timeToWait': 428.134117105719, 'whatItGives': [{'what': 'quarks', 'amount': 1}]}, 'protonicForge': {'timeToWait': 1000, 'whatItGives': [{'what': 'protons', 'amount': 1}], 'whatItCosts': [{'what': 'quarks', 'amount': 3}]}}, 'unlockedAchevements': [], 'electronDetails': {'waitTime': '0.2f', 'amount': 1, 'maxAmount': 100, 'minAmount': 0}, 'unlockedUnlockables': ['hydrogenUnlock', 'upgradeTabUnlock', 'protonSpilloverUnlock'], 'purchaseToCreate': ['quarks', 'protons', 'hydrogen'], 'automationsToCreate': ['particleAccelerator', 'protonicForge']}
 
-# print(convertFloatsToStr(testdict_))
 
 gamedefine = from_dict(data_class=GameDefine, data=defualtGameDefine)
 initalized = True

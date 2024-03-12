@@ -23,7 +23,6 @@ def checkUnlocks(event):
                         ongoingCheck = False
             
             if ongoingCheck == True and not key in gamedefine.gamedefine.unlockedUnlockables:
-                gamedefine.gamedefine.unlockedUnlockables.append(key)
                 unlock(key)         
                 
 def unlock(key, force = False):
@@ -34,14 +33,15 @@ def unlock(key, force = False):
     
     if currentDict["unlockType"] == "item":
         gamedefine.gamedefine.unlockedUnlockables.append(key)
+
         if not currentDict["whatUnlocks"] in gamedefine.gamedefine.purchaseToCreate:
             gamedefine.gamedefine.purchaseToCreate.append(currentDict["whatUnlocks"]) #type: ignore
-            callEvent(Observable.RESET_OBSERVABLE, ObservableCallType.ALL, f"mainTab")
+            callEvent(Observable.RESET_OBSERVABLE, ObservableCallType.GAINED, f"mainTab")
     
     if not currentDict["makeVisible"] == None:
         for i in currentDict["makeVisible"]:
             gamedefine.gamedefine.unlockables[i]["visible"] = True
-            callEvent(Observable.RESET_OBSERVABLE, ObservableCallType.ALL, f"unlockTab")
+            callEvent(Observable.RESET_OBSERVABLE, ObservableCallType.GAINED, f"unlockTab")
     
     
 def checkAchevements(event):

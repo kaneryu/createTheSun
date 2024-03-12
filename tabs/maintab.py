@@ -4,7 +4,7 @@ from copy import deepcopy
 import sys
 import time
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QLineEdit, QSpacerItem
 from PySide6.QtGui import QIntValidator
 
@@ -138,10 +138,11 @@ class footer(QWidget):
         self.content.updateTab()
         
 class content(QWidget):
+    resetSignal = Signal()
     def __init__(self):
         super().__init__()
-        self.resetObserver = observerModel.registerObserver(self.reset, observerModel.Observable.RESET_OBSERVABLE, observerModel.ObservableCallType.ALL, observerModel.ObservableCheckType.TYPE, "mainTab")
-        
+        self.resetObserver = observerModel.registerObserver(self.reset_, observerModel.Observable.RESET_OBSERVABLE, observerModel.ObservableCallType.ALL, observerModel.ObservableCheckType.TYPE, "mainTab")
+        self.resetSignal.connect(self.reset)
         self.topLevelLayout = QVBoxLayout()
         self.topLevelLayout.setAlignment(Qt.AlignmentFlag.AlignTop)
         
@@ -174,11 +175,12 @@ class content(QWidget):
             i.updateTab()
         
         if not len(self.purchaseStrips) == len(gamedefine.gamedefine.purchaseToCreate):
-            self.reset(None)
+            self.reset()
             
         self.footer_.updateDisplay()
             
-    def reset(self, event):
+    def reset(self):
+        print("reseting")
         for i in reversed(range(len(self.purchaseStrips))):
             widget = self.purchaseStrips[i]
             self.purchaseStripsLayout.removeWidget(widget)
@@ -193,3 +195,6 @@ class content(QWidget):
             self.purchaseStripsLayout.addWidget(self.purchaseStrips[-1])
         
         self.setLayout(self.topLevelLayout)
+        
+    def reset_(self, event):
+        self.resetSignal.emit()
