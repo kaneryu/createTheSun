@@ -384,7 +384,6 @@ if __name__ == "__main__":
     
 
 # TODO: playtest game completley
-# TODO: fix the bug where achevement poups never close
 # TODO: rewrites
 # TODO: fix the bug where saving doesnt work. It's related to list indexes.
 

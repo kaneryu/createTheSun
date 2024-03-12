@@ -61,7 +61,7 @@ class achevementPopup(QWidget):
         self.fadeout.setDuration(200)
         self.fadeout.setStartValue(1)
         self.fadeout.setEndValue(0)
-        self.fadeout.finished.connect(lambda: self.destroy(True, False))
+        self.fadeout.finished.connect(lambda: self.destroy(True, True))
         
         
         
@@ -74,11 +74,21 @@ class achevementPopup(QWidget):
         self.show()
         self.timer = QTimer()
         self.timer.setSingleShot(True)
-        self.timer.timeout.connect(self.fadeout.start)
-        self.fadein.finished.connect(lambda: self.timer.start(5000))
+        self.timer.timeout.connect(self.tend)
+        self.fadein.finished.connect(self.tstart)
         self.fadein.start()
         
+        self.failsafe = QTimer()
+        self.failsafe.setSingleShot(True)
+        self.failsafe.timeout.connect(lambda: self.destroy(True, True))
+        self.failsafe.start(200 + 5000 + 200) # 200 is the time for fadein, then the wait, then the fadeout
         
+    def tstart(self):
+        print("tstart")
+        self.timer.start(5000)
+    def tend(self):
+        print("tend")
+        self.fadeout.start()
 
 
 
