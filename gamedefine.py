@@ -5,6 +5,7 @@ from copy import deepcopy
 import json
 import regex
 import deepdiff
+from PySide6.QtWidgets import QTabWidget
 from gameLogic import automationGameLogic
 initalized = False
 
@@ -456,9 +457,9 @@ defualtGameDefine = {
     "automationsToCreate": ["particleAccelerator", "protonicForge"],
 
     "amounts": {
-        "quarks": 10000,
+        "quarks": 0,
         "electrons": 100,
-        "protons": 100000,
+        "protons": 0,
         "hydrogen": 0,
         "stars": 0,
         "galaxies": 0,
@@ -496,7 +497,7 @@ defualtGameDefine = {
 
     "automationLevels": {
         "particleAccelerator" : 0,
-        "protonicForge": 2
+        "protonicForge": 0
     },
     
     "automationDisabledState": {
@@ -1096,6 +1097,7 @@ initalized = True
 versionfile = open("version.txt", "r")
 gameVersion = versionfile.read()
 versionfile.close()
+theTabWidget: QTabWidget = None # type:ignore - this will be set to a tabwidget later
 # import base64
 # def b64Decode(what: str) -> str:
 #     return base64.b64decode(what.encode("utf-8")).decode("utf-8")

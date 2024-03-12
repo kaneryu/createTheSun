@@ -130,10 +130,11 @@ class footer(QWidget):
         
         self.setLayout(self.layout_)
         
-    def mReleaseEvent(self, event):
-        pass
-        #i'll add in logic to switch tabs to the Unlock tab when the footer is clicked later
-    
+    def mReleaseEvent(self, event):        
+        for i in range(gamedefine.theTabWidget.count()):
+            if gamedefine.theTabWidget.widget(i).objectName() == "unlockTab":
+                gamedefine.theTabWidget.setCurrentIndex(i)
+                break
     def updateDisplay(self):
         self.content.updateTab()
         

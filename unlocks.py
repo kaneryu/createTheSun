@@ -43,6 +43,7 @@ def unlock(key, force = False):
             gamedefine.gamedefine.unlockables[i]["visible"] = True
             callEvent(Observable.RESET_OBSERVABLE, ObservableCallType.GAINED, f"unlockTab")
     
+    currentDict["visible"] = False # no need to show it anymore, it's unlocked
     
 def checkAchevements(event):
     for i in gamedefine.gamedefine.achevementInternalDefine:
@@ -77,7 +78,7 @@ def firstQuarkPopup(event):
     if gamedefine.gamedefine.amounts["quarks"] >= 1 and gamedefine.gamedefine.tutorialPopupDone == False:
         gamedefine.gamedefine.tutorialPopupDone = True
         print("First Quark Popup")
-        dialogs.CustomDialog(f"## Welcome to Create The Sun! <br />The goal of the game is to create the sun, and to do that you need to gather resources and build automations. <br />Check out the tabs at the top of the screen to see what you currently have at your disposal. <br />**Hydrogen will be unlocked once you have enough Protonic Forges.**", "Tutorial", cancelable = False).exec()
+        dialogs.CustomDialog(f"## Welcome to Create The Sun! Check out the Goals and Automation tabs.", "Tutorial", cancelable = False).exec()
         firstQuarkPopupObserver.deregister()
         
 itemObserver = registerObserver(reciever, Observable.ITEM_OBSERVABLE, ObservableCallType.ALL)

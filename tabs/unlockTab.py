@@ -150,6 +150,9 @@ class unlockStrip(QWidget):
 
             highestPercentage: tuple[int, str] = (-1, "")
             for item in gamedefine.gamedefine.unlockables:
+                if not gamedefine.gamedefine.unlockables[item]["visible"]:
+                    continue # if it's not visible, skip
+                
                 self.internalItem = gamedefine.gamedefine.unlockables[item]
                 self.visualItem = gamedefine.gamedefine.unlockablesVisualDefine[item]
                 

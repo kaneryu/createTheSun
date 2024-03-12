@@ -148,6 +148,7 @@ class unlockTab(QWidget):
     def __init__(self):
         super().__init__()
         self.layout_ = QVBoxLayout()
+        self.setObjectName("unlockTab")
         self.tabContent = unlockTab_.content()
         self.layout_.addWidget(self.tabContent)
         self.setLayout(self.layout_)

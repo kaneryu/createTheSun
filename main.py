@@ -85,6 +85,7 @@ class MainWindow(QMainWindow):
         
         self.setWindowTitle("Create The Sun")
         self.tabWidget = QTabWidget()
+        gamedefine.theTabWidget = self.tabWidget
         self.tabWidget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         
         self.tabs = []
