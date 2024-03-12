@@ -681,7 +681,12 @@ defualtGameDefine = {
                 {
                     "type": "item",
                     "what": "hydrogen",
-                    "amount": 20
+                    "amount": 20000
+                },
+                {
+                    "type": "item",
+                    "what": "protons",
+                    "amount": 100_000
                 }
             ],
             "makeVisible": None
@@ -692,7 +697,7 @@ defualtGameDefine = {
         "hydrogenUnlock": {
             "visualName": "Hydrogen Unlock",
             "hoverDescription": "Unlock Hydrogen",
-            "scale": "linear"
+            "scale": "linear" # for the progress bar, options are linear or log
         },
         "rewriteTabUnlock": {
             "visualName": "Rewrite Tab Unlock",
@@ -741,7 +746,7 @@ defualtGameDefine = {
                 "cap": "%1 / 2",
                 "capvar": ["gainPerSecond"],
                 # 1/2 of the proton gain per second
-                "hardcap": 1000000
+                "hardcap": 1_000_000
                 # maximum amount of protons that can be consumed per time
             }            
         },
@@ -984,6 +989,8 @@ def getDiffedSave(workingSave: dict) -> list[dict]:
     
     for i in underCookedDiff:
         inProgress = {}
+        # print(f"workingSave{i}")
+        print(workingSave)
         inProgress["changes"] = eval(f"workingSave{i}")
         inProgress["location"] = i
         cookedDiff.append(inProgress)
