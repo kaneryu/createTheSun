@@ -925,6 +925,8 @@ def loadSave(saveDict: list[dict]):
             # so in this case, we need to add 3 items to the list, so we reach the third index
             # this will allow us to use the index based assignment
             
+            # Ignore the comments above, i've just made it so the item is appended to the list.
+            
             # make sure all quotes are double
             location = location.replace("'", '"')
             
@@ -941,11 +943,12 @@ def loadSave(saveDict: list[dict]):
             
             
             what = "".join(matches)
-            code = f"""
+            oldCode = f"""
 toAppend = newsave{what}
 for i in range({amount} + 1):
     toAppend.append(None)
             """
+            code = f"newsave{location}.append(changes)"
             exec(code)
             exec(f"newsave{location} = changes")
             
