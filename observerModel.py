@@ -12,22 +12,31 @@ log: dict[str, list] = {"creationEvents": [], "callEvents": [], "recievedEvents"
 
 def b64Encode(what: str) -> str:
     return base64.b64encode(what.encode("utf-8")).decode("utf-8")
+
+class customObservable:
+    def __init__(self, name) -> None:
+        global observers
+        raise NotImplementedError("Not Implemented")
+        self.name = name
+        observers[name] = {"gained": [], "time": [], "all": [], "other": []}
+
 class Observable(StrEnum):
     ITEM_OBSERVABLE = "itemObserv"
-    #Will be called when an item is gained manually, and will be called every 5 seconds with the current item amounts
+    # Will be called when an item is gained manually, and will be called every 5 seconds with the current item amounts
     ACHEVEMENT_OBSERVABLE = "acheObserv"
-    #Will be called when an achevement is earned
+    # Will be called when an achevement is earned
     AUTOMATION_OBSERVABLE = "autoObserv"
-    #Will be called when an Automation is gained manually, and will be called every 5 seconds with the current level counts
+    # Will be called when an Automation is gained manually, and will be called every 5 seconds with the current level counts
     TIME_OBSERVABLE = "timeObserv"
-    #Will be called every 5 seconds
+    # Will be called every 5 seconds
     OTHER_OBSERVABLE = "otherObserv"
-    #Probably will not be used. For any other observable not specific enough to fit in a single catagory
-    #But in that case, it will most likely get it's own observable.
+    # Probably will not be used. For any other observable not specific enough to fit in a single catagory
+    # But in that case, it will most likely get it's own observable.
     RESET_OBSERVABLE = "resetObserv"
-    #This will be called when a tab needs to be reloaded. It will be called with the name of the tab to reset.
+    # This will be called when a tab needs to be reloaded. It will be called with the name of the tab to reset.
     UNLOCK_OBSERVABLE = "unlockObserv"
-    #This will be called when a new thing is unlocked. It will be called with the name of the thing unlocked.
+    # This will be called when a new thing is unlocked. It will be called with the name of the thing unlocked.
+    
 class ObservableCallType(StrEnum):
     #What to call on
     GAINED = "gained"
@@ -36,7 +45,6 @@ class ObservableCallType(StrEnum):
     OTHER = "other"
     
 class ObservableCheckType(StrEnum):
-    warnings.warn("This feature is deprecated and will be removed in a future version.")
     #AMOUNT = "amount"
     TYPE = "type"
 

@@ -11,9 +11,10 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushBu
 
 #local imports
 import save
+import versions
 from customWidgets import dialogs
 import gamedefine
-
+import observerModel
 
 def save_():
     save.save(slot = 0)
@@ -33,11 +34,20 @@ class saveLoadWidget(QWidget):
             self.humanReadableLastUsed = time.strftime("%a, %d %b %Y %I:%M:%S %p", time.localtime(self.rawLastUsed))
 
             if not 'version' in self.metadata:
-                self.metadata['version'] = "not found"
-                
-            self.slotLabel = QLabel(f"{"Outdated/Too New" if gamedefine.gameVersion != self.metadata['version'] else ""} Slot {self.slotNum}, Quarks: {self.metadata["amounts"]['quarks']}, Achevement Completion: {round((self.metadata["achevements"]["have"] / len(gamedefine.gamedefine.achevementInternalDefine)) * 100, 2)}%,\nLast used: {self.humanReadableLastUsed} on version {self.metadata['version']}")
+                self.metadata['version'] = "-100.0.0"
+            myVersion: versions.Version = versions.Version(self.metadata['version'])
+            
+            if gamedefine.gameVersion > myVersion: # if the game is newer than the save
+                versionDifference = "Outdated"
+            elif gamedefine.gameVersion < myVersion: # if the game is older than the save
+                versionDifference = "Too New"
+            else:
+                versionDifference = ""
+            
+            versionDifferenceStr = f"Version Status: {versionDifference}" if not versionDifference == "" else ""
             
             
+            self.slotLabel = QLabel(f"{versionDifference} Slot {self.slotNum}, Quarks: {self.metadata["amounts"]['quarks']}, Achevement Completion: {round((self.metadata["achevements"]["have"] / len(gamedefine.gamedefine.achevementInternalDefine)) * 100, 2)}%,\nLast used: {self.humanReadableLastUsed} on version {self.metadata['version']}")
             
             self.layout_.addWidget(self.slotLabel)
             
@@ -64,6 +74,15 @@ class saveLoadWidget(QWidget):
                 
                 self.parent().parent().updateDisplayWithLists() # type: ignore
             
+        def updateDisplay(self):
+            self.timeZone = time.timezone
+            self.rawLastUsed = self.metadata["lastUsedOn"]
+            self.humanReadableLastUsed = time.strftime("%a, %d %b %Y %I:%M:%S %p", time.localtime(self.rawLastUsed))
+
+            if not 'version' in self.metadata:
+                self.metadata['version'] = "not found"
+            
+            self.slotLabel.setText(f"{"Outdated/Too New" if gamedefine.gameVersion != self.metadata['version'] else ""} Slot {self.slotNum}, Quarks: {self.metadata["amounts"]['quarks']}, Achevement Completion: {round((self.metadata["achevements"]["have"] / len(gamedefine.gamedefine.achevementInternalDefine)) * 100, 2)}%,\nLast used: {self.humanReadableLastUsed} on version {self.metadata['version']}")      
     class slotSwitcher(QWidget):
         def __init__(self):
             super().__init__()
@@ -113,8 +132,8 @@ class saveLoadWidget(QWidget):
         self.topLevelLayout = QVBoxLayout()
         self.stackWidget = QStackedWidget()
         
-
-        
+        fullResetObserver = observerModel.registerObserver(self.updateDisplayWithLists, observerModel.Observable.RESET_OBSERVABLE, observerModel.ObservableCallType.ALL, observerModel.ObservableCheckType.TYPE, "saveLoadFullReset")
+        displayResetObserver = observerModel.registerObserver(self.updateDisplay, observerModel.Observable.RESET_OBSERVABLE, observerModel.ObservableCallType.ALL, observerModel.ObservableCheckType.TYPE, "saveLoadDisplayReset")
 
         
         self.autoSaver = autosaveWidget()

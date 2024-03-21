@@ -7,6 +7,9 @@ import regex
 import deepdiff
 from PySide6.QtWidgets import QTabWidget
 from gameLogic import automationGameLogic
+import versions
+import quickload
+
 initalized = False
 
 defualtGameDefine = {
@@ -1024,7 +1027,7 @@ def getSaveMetadata(savedata: GameDefine | None = None) -> dict:
     
 
     
-    metadata["version"] = gameVersion
+    metadata["version"] = repr(gameVersion)
     
     return metadata
     
@@ -1097,9 +1100,7 @@ def convertStrToFloats(input: (dict | list)):
 
 gamedefine = from_dict(data_class=GameDefine, data=defualtGameDefine)
 initalized = True
-versionfile = open("version.txt", "r")
-gameVersion = versionfile.read()
-versionfile.close()
+gameVersion: versions.Version = versions.Version(quickload.quickload("version.txt", quickload.QuickloadType.TEXT, quickload.ErrorTolerance.FILE_NOT_FOUND)) if not quickload.quickload("version.txt", quickload.QuickloadType.TEXT, quickload.ErrorTolerance.FILE_NOT_FOUND) == "fileNotFound" else versions.Version("-1.0.0") # type:ignore
 theTabWidget: QTabWidget = None # type:ignore - this will be set to a tabwidget later
 # import base64
 # def b64Decode(what: str) -> str:
