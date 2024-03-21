@@ -1,9 +1,15 @@
 import re
+import enum
 
-VERSIONREGEX = re.compile(r"^v?\d+.\d+.\d+(-a\d*|-b\d*)?$")
+VERSIONREGEX = re.compile(r"^v?[0-9]+.[0-9]+.[0-9]+(-a\d*|-b\d*)?$")
+
+class releaseTypes(enum.StrEnum):
+    BETA = "b"
+    ALPHA = "a"
+    RELEASE = "r"
 
 class Version:
-    def __init__(self, versionStr: str):
+    def __init__(self, versionStr: str = "0.0.0"):
         """Version constructor
 
         Args:
@@ -18,42 +24,50 @@ class Version:
         Release types are Beta, Alpha, and Release (Release is the default, and  is only specified by a lack of beta or alpha in the version string)
         """
         if not VERSIONREGEX.match(versionStr):
+            print(VERSIONREGEX.match(versionStr))
             raise ValueError("Invalid version string")
         
         # Remove the "v" if it exists
         if versionStr[0] == "v":
             versionStr = versionStr[1:]
         
-        # Split the version string into its parts
-        parts = versionStr.split(".")
-        self.major = int(parts[0])
-        self.minor = int(parts[1])
-        if not "-" in parts[2]:
+        # Split the version string into its parts Example using 1.2.3-a23
+        parts = versionStr.split(".") # ["1", "2", "3-a23"]
+        self.major = int(parts[0]) # 1
+        self.minor = int(parts[1]) # 2
+        if not "-" in parts[2]: # False
             self.patch = int(parts[2])
         else:
-            self.patch = int(parts[2].split("-")[0])
+            self.patch = int(parts[2].split("-")[0]) # split: ["3", "a23"], then first item "3", then int conversion
         
         # Check for appendages
         if "-" in parts[2]:
-            appendage = parts[2].split("-")
-            self.patch = int(appendage[0])
-            self.appendage = appendage[1]
-            self.releaseType = "b" if self.appendage[0] == "b" else "a"
-            self.releaseTypeNumber = int(appendage[1][1:]) if appendage[1][1:] else 0
+            appendage = parts[2].split("-") # ["3", "a23"]
+            self.appendage: str = appendage[1] # a23
+            self.releaseType: releaseTypes = releaseTypes.BETA if self.appendage[0] == "b" else releaseTypes.ALPHA # first character is a, so ALPHA
+            self.revision: int = int(appendage[1][1:]) if appendage[1][1:] else 0 # everything other than the first character, so "23", then type cast to int
         else:
-            self.appendage = None
-            self.releaseType = "r"
-            self.releaseTypeNumber = 0
+            self.appendage = ""
+            self.releaseType = releaseTypes.RELEASE
+            self.revision = 0
         
         self.setWarningStr({})
         
     def __str__(self):
         """Converts the version object to a string"""
-        return f"Version {self.major}.{self.minor}.{self.patch}" + (f"-{self.appendage}" if self.appendage else "")
+        appendage = ""
+        if self.releaseType == releaseTypes.ALPHA:
+            appendage = f" Alpha{f" {self.revision}" if not self.revision == 0 else ""}"
+        elif self.releaseType == releaseTypes.BETA:
+            appendage = f" Beta{f" {self.revision}" if not self.revision == 0 else ""}"
+        else:
+            appendage = ""
+         
+        return f"Version {self.major}.{self.minor}.{self.patch}" + appendage
 
     def __eq__(self, other):
         """Checks if two versions are equal"""
-        return self.major == other.major and self.minor == other.minor and self.patch == other.patch and self.appendage == other.appendage
+        return self.major == other.major and self.minor == other.minor and self.patch == other.patch and self.releaseType == other.releaseType and self.revision == other.revision
     
     def __lt__(self, other):
         """Checks if the version is less than another version"""
@@ -72,7 +86,7 @@ class Version:
                         if self.appendage < other.appendage:
                             return True
                         elif self.appendage == other.appendage:
-                            if self.releaseTypeNumber < other.releaseTypeNumber:
+                            if self.revision < other.revision:
                                 return True
         return False
     
@@ -93,7 +107,7 @@ class Version:
                         if self.appendage > other.appendage:
                             return True
                         elif self.appendage == other.appendage:
-                            if self.releaseTypeNumber > other.releaseTypeNumber:
+                            if self.revision > other.revision:
                                 return True
         return False
     
@@ -111,7 +125,7 @@ class Version:
     
     def __repr__(self):
         """Returns a string representation of the object"""
-        return f"{str(self).split(' ')[1]}"
+        return f"{self.major}.{self.minor}.{self.patch}{f"-{self.releaseType}{self.revision}" if not self.releaseType == releaseTypes.RELEASE else ""}"
     
     def __hash__(self):
         """Returns a hash of the object"""
@@ -123,7 +137,8 @@ class Version:
             "major": self.major,
             "minor": self.minor,
             "patch": self.patch,
-            "appendage": self.appendage
+            "releaseType": self.releaseType,
+            "revision": self.revision
         }
     
     @staticmethod

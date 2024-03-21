@@ -116,7 +116,7 @@ class TestVersion(unittest.TestCase):
         self.assertEqual(v.patch, 3)
         self.assertIsNone(v.appendage)
         self.assertEqual(v.releaseType, "r")
-        self.assertEqual(v.releaseTypeNumber, 0)
+        self.assertEqual(v.revision, 0)
 
     def test_init_with_appendage(self):
         v = Version("1.2.3-b1")
@@ -125,7 +125,7 @@ class TestVersion(unittest.TestCase):
         self.assertEqual(v.patch, 3)
         self.assertEqual(v.appendage, "b1")
         self.assertEqual(v.releaseType, "b")
-        self.assertEqual(v.releaseTypeNumber, 1)
+        self.assertEqual(v.revision, 1)
 
     def test_str(self):
         v = Version("1.2.3")

@@ -1,5 +1,5 @@
-from PyQt6.QtWidgets import QApplication, QWidget, QLabel
-from PyQt6.QtGui import QFont, QFontDatabase
+from PySide6.QtWidgets import QApplication, QWidget, QLabel
+from PySide6.QtGui import QFont, QFontDatabase
 import sys
 import os
 

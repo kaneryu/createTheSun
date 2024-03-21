@@ -953,7 +953,6 @@ for i in range({amount} + 1):
             """
             code = f"newsave{location}.append(changes)"
             exec(code)
-            exec(f"newsave{location} = changes")
             
     gamedefine = from_dict(data_class=GameDefine, data=newsave)
     gamedefine.mainTabBuyMultiple = 1
@@ -1100,7 +1099,7 @@ def convertStrToFloats(input: (dict | list)):
 
 gamedefine = from_dict(data_class=GameDefine, data=defualtGameDefine)
 initalized = True
-gameVersion: versions.Version = versions.Version(quickload.quickload("version.txt", quickload.QuickloadType.TEXT, quickload.ErrorTolerance.FILE_NOT_FOUND)) if not quickload.quickload("version.txt", quickload.QuickloadType.TEXT, quickload.ErrorTolerance.FILE_NOT_FOUND) == "fileNotFound" else versions.Version("-1.0.0") # type:ignore
+gameVersion: versions.Version = versions.Version(quickload.quickload("version.txt", quickload.QuickloadType.TEXT, quickload.ErrorTolerance.FILE_NOT_FOUND)) if not quickload.quickload("version.txt", quickload.QuickloadType.TEXT, quickload.ErrorTolerance.FILE_NOT_FOUND) == "fileNotFound" else versions.Version()# type:ignore
 theTabWidget: QTabWidget = None # type:ignore - this will be set to a tabwidget later
 # import base64
 # def b64Decode(what: str) -> str:

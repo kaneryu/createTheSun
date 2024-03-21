@@ -7,7 +7,7 @@ import base64
 import unlocks
 import time
 
-from PyQt6.QtWidgets import QDialog
+from PySide6.QtWidgets import QDialog
 
 
 from customWidgets import dialogs
@@ -126,7 +126,7 @@ def save(export: bool = False, exportEncoded: bool = False, notify: bool = True,
     gamedefine.gamedefine.sessionStartTime = time.time()
     
 
-def getSaveMetadataFromFile(slot: int = 0 ) -> dict:
+def getSaveMetadataFromSlot(slot: int = 0 ) -> dict:
     file = os.path.join(savedir, f"metadata.metadata{slot}")
     if os.path.exists(file):
         with open(file, 'r') as f:
