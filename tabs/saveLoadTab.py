@@ -29,7 +29,7 @@ class saveLoadWidget(QWidget):
             self.metadata = metadata
             self.layout_ = QVBoxLayout()
             
-            self.slotLabel = QLabel
+            self.slotLabel = QLabel()
             self.updateDisplay()
             
             self.layout_.addWidget(self.slotLabel)
@@ -176,7 +176,7 @@ class saveLoadWidget(QWidget):
         else:
             pass
     
-    def updateDisplayWithLists(self):
+    def updateDisplayWithLists(self, event = ""):
         self.stackWidget.setCurrentIndex(0)
         
         for i in reversed(range(self.stackWidget.count())):

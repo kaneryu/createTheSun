@@ -6,6 +6,7 @@ import json
 import base64
 import unlocks
 import time
+from dacite import from_dict
 
 from PySide6.QtWidgets import QDialog
 
@@ -105,23 +106,18 @@ def save(export: bool = False, exportEncoded: bool = False, notify: bool = True,
             operationSucsess.exec()
             
     else:
-        blankSave = os.path.join(savedir, f"save.save-1")
-        blankmetadata = os.path.join(savedir, f"metadata.metadata-1")
-        
+
         newSave = os.path.join(savedir, f"save.save{slot}")
         newmetadata = os.path.join(savedir, f"metadata.metadata{slot}")
-        
-        blankSaveFile = open(blankSave, "r")
-        blankmetadataFile = open(blankmetadata, "r")
-        
+
+        blankSave =  b64Encode(json.dumps(gamedefine.getSaveData(from_dict(gamedefine.GameDefine, gamedefine.defualtGameDefine))))
+        blankSaveMetadata = json.dumps(gamedefine.getSaveMetadata(from_dict(gamedefine.GameDefine, gamedefine.defualtGameDefine)))
+
         with open(newSave, "w") as f:
-            f.write(blankSaveFile.read())
+            f.write(blankSave)
         
         with open(newmetadata, "w") as f:
-            f.write(blankmetadataFile.read())
-        
-        blankSaveFile.close()
-        blankmetadataFile.close()
+            f.write(blankSaveMetadata)
         
     gamedefine.gamedefine.sessionStartTime = time.time()
     
