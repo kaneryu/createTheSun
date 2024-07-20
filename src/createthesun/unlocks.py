@@ -1,5 +1,5 @@
-from observerModel import registerObserver, Observable, ObservableCallType, callEvent
-from customWidgets import dialogs
+from .observerModel import registerObserver, Observable, ObservableCallType, callEvent
+from .customWidgets import dialogs
 import gamedefine
 from tabs import achevementsTab
 

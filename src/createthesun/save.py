@@ -1,4 +1,4 @@
-import gamedefine
+import .gamedefine
 import copy
 import os
 import pathlib
@@ -11,7 +11,7 @@ from dacite import from_dict
 from PySide6.QtWidgets import QDialog
 
 
-from customWidgets import dialogs
+from .customWidgets import dialogs
 
 
 save_ = {}

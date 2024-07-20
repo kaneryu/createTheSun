@@ -13,10 +13,10 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QProgre
 from PySide6.QtGui import QIntValidator
 
 #local imports
-import gamedefine
-import observerModel
-import gameLogic.numberLogic as numberLogic
-import gameLogic.automationGameLogic as automationGameLogic
+import .gamedefine
+import .observerModel
+import .gameLogic.numberLogic as numberLogic
+import .gameLogic.automationGameLogic as automationGameLogic
 
     
 

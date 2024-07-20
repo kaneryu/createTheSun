@@ -7,13 +7,13 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
 # from PySide6.QtGui import
 
 import sys
-import save
-import tabs.maintab as maintab
-import tabs.automationtab as automationtab
-import tabs.saveLoadTab as saveLoadTab_
-import tabs.achevementsTab as achevementsTab_
-import tabs.unlockTab as unlockTab_
-import resourceGain
+import .save
+import .tabs.maintab as maintab
+import .tabs.automationtab as automationtab
+import .tabs.saveLoadTab as saveLoadTab_
+import .tabs.achevementsTab as achevementsTab_
+import .tabs.unlockTab as unlockTab_
+import .resourceGain
 
 saveModule = save # I don't know if importing save from main.py will cause a circular import, but this feels safer for now.
 

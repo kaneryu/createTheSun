@@ -16,15 +16,15 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, Q
 from PySide6.QtCore import QPropertyAnimation, Qt, QTimer, QRunnable, Slot, Signal, QThreadPool
 
 #local imports
-import gamedefine
+import .gamedefine
 
-import observerModel
+import .observerModel
 
-import tabs_ as tabs
-import tabs.electrons as electrons
-import urbanistFont
-from customWidgets import dialogs
-import unlocks # this is the only interaction needed to start the unlocks service
+import .tabs_ as tabs
+import .tabs.electrons as electrons
+import .urbanistFont
+from .customWidgets import dialogs
+import .unlocks # this is the only interaction needed to start the unlocks service
 
 
 basedir = os.path.join(os.path.abspath(__file__), os.path.pardir)

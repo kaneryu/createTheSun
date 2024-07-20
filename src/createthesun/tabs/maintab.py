@@ -9,12 +9,12 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushBu
 from PySide6.QtGui import QIntValidator
 
 #local imports
-import gamedefine
-import gameLogic.itemGameLogic as itemGameLogic
-import urbanistFont
-import observerModel
-import gameLogic.numberLogic as numberLogic
-from tabs import unlockTab
+import .gamedefine
+import .gameLogic.itemGameLogic as itemGameLogic
+import .urbanistFont
+import .observerModel
+import .gameLogic.numberLogic as numberLogic
+from .tabs import unlockTab
 
 class purchaseStrip(QWidget):
     def __init__(self, name):

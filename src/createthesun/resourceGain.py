@@ -1,6 +1,6 @@
-import observerModel
+from . import observerModel,gamedefine
 from copy import deepcopy
-import gamedefine
+
 import time
 import dataclasses
 

@@ -9,7 +9,7 @@ basedir = os.path.dirname(os.path.realpath(__file__))
 from time import time
 import pathlib
 
-import gamedefine
+import .gamedefine
     
 
 

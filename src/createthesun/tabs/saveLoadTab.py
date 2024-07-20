@@ -10,11 +10,11 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushBu
 
 
 #local imports
-import save
-import versions
-from customWidgets import dialogs
-import gamedefine
-import observerModel
+import .save
+import .versions
+from .customWidgets import dialogs
+import .gamedefine
+import .observerModel
 
 def save_():
     save.save(slot = 0)

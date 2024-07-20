@@ -6,9 +6,9 @@ import json
 import regex
 import deepdiff
 from PySide6.QtWidgets import QTabWidget
-from gameLogic import automationGameLogic
+from .gameLogic import automationGameLogic
 import versions
-import quickload
+from . import quickload
 
 initalized = False
 
