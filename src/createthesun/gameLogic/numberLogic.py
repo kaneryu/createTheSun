@@ -13,11 +13,11 @@ def evaluateCostEquation(costEquation: str, *args: int, arglist: list = [None]) 
         *args: The arguments to put into the cost equation.
 
     Returns:
-        int: The result of the cost equation.    
+        int: The result of the cost equation.
     """
     if not arglist[0] == None:
         args = tuple(arglist)
-        
+
     # if there are too many arguments, it will break
     if f"%{len(args) + 1}%" in costEquation:
         raise ValueError(f"Incorrect number of arguments provided. Expected {costEquation.count("%")}, got {len(args)}")
@@ -25,7 +25,7 @@ def evaluateCostEquation(costEquation: str, *args: int, arglist: list = [None]) 
     # if there are too few arguments, it will break
     if f"%{len(args)}%" in costEquation:
         raise ValueError(f"Incorrect number of arguments provided. Expected {costEquation.count("%")}, got {len(args)}")
-    
+
     # break up the equation into a list of strings
     equation = splitCostEquation(costEquation)
 
@@ -71,12 +71,7 @@ def splitCostEquation(costEquation: str) -> list[str]:
         i += 1
     if latestGroup != "":
         groups.append(latestGroup)
-    return (groups)
-
-
-
-
-
+    return groups
 
 
 def magnitude(number):
@@ -85,20 +80,22 @@ def magnitude(number):
 
     return int(log(number, 1000))
 
+
 def nonilize(number):
     if number == 0:
         return 0
 
     k = 1000.0
     magnitude_ = magnitude(number)
-    return '%.1f %s' % ((number*10) // (k**magnitude_) / 10, magnitudeDict[magnitude_ - 1])
+    return "%.1f %s" % ((number * 10) // (k**magnitude_) / 10, magnitudeDict[magnitude_ - 1])
+
 
 def humanReadableNumber(number):
     if number == 0:
         return "0"
     if magnitude(number) > 100:
-        if not len(str(number)) > 307: # max float size fix (also shout out to antimatter dimensions 1.79e308!!!)
-            return '{:.2e}'.format(number)
+        if not len(str(number)) > 307:  # max float size fix (also shout out to antimatter dimensions 1.79e308!!!)
+            return "{:.2e}".format(number)
         else:
             number = str(number)
             return number[1] + "." + number[2] + number[3] + "e" + str(len(number) - 1)
@@ -106,31 +103,31 @@ def humanReadableNumber(number):
         if number < 1000:
             return str(number)
         elif number < 100_000:
-            return '{:,}'.format(number)
+            return "{:,}".format(number)
         else:
             return nonilize(number)
 
 
 magnitudeDict = {
     -1: "broken%",
-    0:  "K",
-    1:  "M",
-    2:  "B",
-    3:  "T",
-    4:  "Qa",
-    5:  "Qt",
-    6:  "Sx",
-    7:  "Sp",
-    8:  "Oc",
-    9:  "No",
-    10:	"Dc",
-    11:	"UDc",
-    12:	"DDc",
-    13:	"TDc",
-    14:	"QaDc",
-    15:	"QtDc",
-    16:	"SxDc",
-    17:	"SpDc",
+    0: "K",
+    1: "M",
+    2: "B",
+    3: "T",
+    4: "Qa",
+    5: "Qt",
+    6: "Sx",
+    7: "Sp",
+    8: "Oc",
+    9: "No",
+    10: "Dc",
+    11: "UDc",
+    12: "DDc",
+    13: "TDc",
+    14: "QaDc",
+    15: "QtDc",
+    16: "SxDc",
+    17: "SpDc",
     18: "ODc",
     19: "NDc",
     20: "Vg",
@@ -211,7 +208,7 @@ magnitudeDict = {
     95: "QtNn",
     96: "SxNn",
     97: "SpNn",
-    98:	"ONn",
-    99:	"NNn",
-    100: "Ce" 
+    98: "ONn",
+    99: "NNn",
+    100: "Ce",
 }
