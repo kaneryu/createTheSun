@@ -2,7 +2,7 @@ from createthesun.gameLogic import numberLogic
 import createthesun.observerModel as observerModel
 import createthesun.gamedefine as gamedefine
 
-def test_magnitude(self):
+def test_magnitude():
     result = numberLogic.magnitude(1000)
     assert result == 1
     
@@ -24,7 +24,7 @@ def test_magnitude(self):
     result = numberLogic.magnitude(1_000_000_000_000)
     assert result == 4
     
-def test_observerModel(self):
+def test_observerModel():
     observerModel.log = {"creationEvents": [], "deregisterEvents": [], "callEvents": [], "recievedEvents": []} # for some reason there is an old log that needs to be cleared
     observer1 = observerModel.registerObserver(lambda x: print("test"), observerModel.Observable.ITEM_OBSERVABLE, observerModel.ObservableCallType.GAINED)
     observer2 = observerModel.registerObserver(lambda x: print("test2"), observerModel.Observable.ITEM_OBSERVABLE, observerModel.ObservableCallType.GAINED)

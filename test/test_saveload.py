@@ -4,7 +4,7 @@ import createthesun.gamedefine as gamedefine
 import random
 import dacite
 
-def test_saveLoad(self):
+def test_saveLoad():
     seeds = [1923, 2000, 2023, 8231]
     
     possibleAmountsToChage = ["quarks", "protons", "hydrogen"]
