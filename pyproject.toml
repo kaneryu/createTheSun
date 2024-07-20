@@ -1,0 +1,8 @@
+[tool.pytest.ini_options]
+addopts = "--cov --cov-report=lcov:lcov.info --cov-report=term"
+
+[tool.coverage.run]
+source = ["createthesun"]
+
+[tool.pytest.ini_options]
+pythonpath = [ ".", "createthesun"]

@@ -11,7 +11,7 @@ from PySide6.QtGui import QIntValidator
 #local imports
 import gamedefine
 import gameLogic.itemGameLogic as itemGameLogic
-import assets.fonts.urbanist.urbanistFont as urbanistFont
+import urbanistFont
 import observerModel
 import gameLogic.numberLogic as numberLogic
 from tabs import unlockTab

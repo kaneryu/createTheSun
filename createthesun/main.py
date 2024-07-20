@@ -22,7 +22,7 @@ import observerModel
 
 import tabs_ as tabs
 import tabs.electrons as electrons
-import assets.fonts.urbanist.urbanistFont as urbanistFont
+import urbanistFont
 from customWidgets import dialogs
 import unlocks # this is the only interaction needed to start the unlocks service
 

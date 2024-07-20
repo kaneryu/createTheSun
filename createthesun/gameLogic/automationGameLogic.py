@@ -1,7 +1,7 @@
 import sympy as sp
 import time
 from math import floor, ceil, log
-import gamedefine
+import gamedefine as gamedefine
 import gameLogic.numberLogic as numberLogic
 import resourceGain
 
