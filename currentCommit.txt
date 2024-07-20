@@ -1,4 +1,0 @@
-implemented achevements
-balanced protonicForge equation
-implemented rewrite visual/internal define
-re-added error catching
