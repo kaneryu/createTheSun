@@ -41,6 +41,9 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+lints = [
+    "ruff==0.5.3",
+]
 tests = [
     "pytest==8.2.2",
 ]
@@ -55,5 +58,20 @@ packages = [
     "src/dacite",
 ]
 
+[tool.ruff]
+target-version = "py312"
+line-length = 120
+include = [
+    "pyproject.toml",
+    "src/**/*.py",
+]
+
+[tool.ruff.lint]
+select = [
+    "I", # isort
+]
+
 [tool.coverage.run]
-source = ["createthesun"]
+source = [
+    "createthesun",
+]
