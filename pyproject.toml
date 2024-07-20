@@ -1,5 +1,5 @@
 [project]
-name = "createthesun2"
+name = "createthesun"
 version = "0.3.0-a"
 description = "An incremental game where the goal is to create the sun!"
 readme = "README.md"
