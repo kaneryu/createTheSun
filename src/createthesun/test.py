@@ -2,6 +2,7 @@ import dataclasses
 import random
 import string
 
+
 @dataclasses.dataclass
 class fizlike:
     outstring: str

@@ -1,6 +1,6 @@
 import sys
 from dataclasses import dataclass, field
-from typing import Dict, Any, Callable, Optional, Type, List
+from typing import Any, Callable, Dict, List, Optional, Type
 
 from dacite.frozen_dict import FrozenDict
 

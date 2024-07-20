@@ -1,7 +1,9 @@
-from PySide6.QtWidgets import QApplication, QWidget, QLabel
-from PySide6.QtGui import QFont, QFontDatabase
-import sys
 import os
+import sys
+
+from PySide6.QtGui import QFont, QFontDatabase
+from PySide6.QtWidgets import QApplication, QLabel, QWidget
+
 
 def createFonts():
     fontDir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "assets/fonts/urbanist/")

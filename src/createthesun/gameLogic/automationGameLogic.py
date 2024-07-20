@@ -1,7 +1,9 @@
-import sympy as sp
 import time
-from math import floor, ceil, log
-from .. import gamedefine,resourceGain
+from math import ceil, floor, log
+
+import sympy as sp
+
+from .. import gamedefine, resourceGain
 from . import numberLogic
 
 

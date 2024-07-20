@@ -1,31 +1,38 @@
-#standard imports
-import time
 import ctypes
-import threading
-import sys
-import os
 import json
-import requests
+import os
 import subprocess
+import sys
+import threading
+import time
 from math import floor
 
-
+import requests
 from PySide6 import QtCore
-from PySide6.QtGui import QIcon, QPixmap, QAction
-from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QTabWidget, QSizePolicy, QDialog, QSplashScreen
-from PySide6.QtCore import QPropertyAnimation, Qt, QTimer, QRunnable, Slot, Signal, QThreadPool
+from PySide6.QtCore import QPropertyAnimation, QRunnable, Qt, QThreadPool, QTimer, Signal, Slot
+from PySide6.QtGui import QAction, QIcon, QPixmap
+from PySide6.QtWidgets import (
+    QApplication,
+    QDialog,
+    QHBoxLayout,
+    QLabel,
+    QMainWindow,
+    QSizePolicy,
+    QSplashScreen,
+    QTabWidget,
+    QVBoxLayout,
+    QWidget,
+)
 
-#local imports
-import .gamedefine
-
-import .observerModel
-
-import .tabs_ as tabs
-import .tabs.electrons as electrons
-import .urbanistFont
+from . import (
+    gamedefine,
+    observerModel,
+    unlocks,  # this is the only interaction needed to start the unlocks service
+    urbanistFont,
+)
+from . import tabs_ as tabs
 from .customWidgets import dialogs
-import .unlocks # this is the only interaction needed to start the unlocks service
-
+from .tabs import electrons
 
 basedir = os.path.join(os.path.abspath(__file__), os.path.pardir)
 

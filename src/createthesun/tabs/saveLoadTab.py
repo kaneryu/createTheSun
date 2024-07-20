@@ -1,20 +1,25 @@
-#standard imports
 import json
-import time
 import os
-#third party imports
+import time
 
-from PySide6.QtCore import Qt, QSize, Signal as pyqtSignal
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QFrame, QGridLayout, QProgressBar, QComboBox, QStackedWidget
-# from PySide6.QtGui import
+from PySide6.QtCore import QSize, Qt
+from PySide6.QtCore import Signal as pyqtSignal
+from PySide6.QtWidgets import (
+    QComboBox,
+    QFrame,
+    QGridLayout,
+    QHBoxLayout,
+    QLabel,
+    QProgressBar,
+    QPushButton,
+    QStackedWidget,
+    QVBoxLayout,
+    QWidget,
+)
 
-
-#local imports
-import .save
-import .versions
+from . import gamedefine, observerModel, save, versions
 from .customWidgets import dialogs
-import .gamedefine
-import .observerModel
+
 
 def save_():
     save.save(slot = 0)

@@ -1,17 +1,15 @@
-from PySide6 import QtGui
-from PySide6.QtGui import QPixmap, QRegion, QAction, QKeySequence
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGraphicsBlurEffect, QGridLayout, QApplication
-from PySide6.QtCore import QPropertyAnimation, Qt, QTimer, QEasingCurve, QRect, Signal, Slot
 import os
+import pathlib
+from time import time
+
+from PySide6 import QtGui
+from PySide6.QtCore import QEasingCurve, QPropertyAnimation, QRect, Qt, QTimer, Signal, Slot
+from PySide6.QtGui import QAction, QKeySequence, QPixmap, QRegion
+from PySide6.QtWidgets import QApplication, QGraphicsBlurEffect, QGridLayout, QHBoxLayout, QLabel, QVBoxLayout, QWidget
+
+from . import gamedefine
 
 basedir = os.path.dirname(os.path.realpath(__file__))
-
-from time import time
-import pathlib
-
-import .gamedefine
-    
-
 
 
 mediadir = os.path.join(str(pathlib.Path(basedir).parent) + "\\assets\\")

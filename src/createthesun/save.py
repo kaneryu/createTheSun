@@ -1,18 +1,16 @@
-import .gamedefine
+import base64
 import copy
+import json
 import os
 import pathlib
-import json
-import base64
-import unlocks
 import time
-from dacite import from_dict
 
+import unlocks
+from dacite import from_dict
 from PySide6.QtWidgets import QDialog
 
-
+from . import gamedefine
 from .customWidgets import dialogs
-
 
 save_ = {}
 rootdir = pathlib.Path(__file__).parent

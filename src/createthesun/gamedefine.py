@@ -1,14 +1,16 @@
-import time
-from dataclasses import dataclass, asdict
-from dacite import from_dict
-from copy import deepcopy
 import json
-import regex
+import time
+from copy import deepcopy
+from dataclasses import asdict, dataclass
+
 import deepdiff
-from PySide6.QtWidgets import QTabWidget
-from .gameLogic import automationGameLogic
+import regex
 import versions
+from dacite import from_dict
+from PySide6.QtWidgets import QTabWidget
+
 from . import quickload
+from .gameLogic import automationGameLogic
 
 initalized = False
 

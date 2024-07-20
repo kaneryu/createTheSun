@@ -1,8 +1,9 @@
-from . import observerModel,gamedefine
+import dataclasses
+import time
 from copy import deepcopy
 
-import time
-import dataclasses
+from . import gamedefine, observerModel
+
 
 @dataclasses.dataclass
 class data_:

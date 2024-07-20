@@ -1,5 +1,6 @@
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QDialogButtonBox, QVBoxLayout, QMessageBox
+from PySide6.QtWidgets import QDialog, QDialogButtonBox, QLabel, QMessageBox, QVBoxLayout
+
 
 class CustomDialog(QDialog):
     def __init__(self, text, windowTitle = "Dialog", cancelable = True, customQBtn = None, preventClose = False):

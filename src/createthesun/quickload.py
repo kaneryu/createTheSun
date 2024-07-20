@@ -1,6 +1,7 @@
 import enum
 import os
 
+
 class QuickloadType(enum.IntEnum):
     TEXT = 1
     BYTES = 2

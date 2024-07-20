@@ -1,36 +1,36 @@
 from dataclasses import is_dataclass
 from itertools import zip_longest
-from typing import TypeVar, Type, Optional, get_type_hints, Mapping, Any, Collection, MutableMapping
+from typing import Any, Collection, Mapping, MutableMapping, Optional, Type, TypeVar, get_type_hints
 
 from dacite.cache import cache
 from dacite.config import Config
 from dacite.data import Data
 from dacite.dataclasses import (
-    get_default_value_for_field,
     DefaultValueNotFoundError,
+    get_default_value_for_field,
     get_fields,
     is_frozen,
 )
 from dacite.exceptions import (
-    ForwardReferenceError,
-    WrongTypeError,
     DaciteError,
-    UnionMatchError,
-    MissingValueError,
     DaciteFieldError,
-    UnexpectedDataError,
+    ForwardReferenceError,
+    MissingValueError,
     StrictUnionMatchError,
+    UnexpectedDataError,
+    UnionMatchError,
+    WrongTypeError,
 )
 from dacite.types import (
-    is_instance,
-    is_generic_collection,
-    is_union,
     extract_generic,
-    is_optional,
-    extract_origin_collection,
-    is_init_var,
     extract_init_var,
+    extract_origin_collection,
+    is_generic_collection,
+    is_init_var,
+    is_instance,
+    is_optional,
     is_subclass,
+    is_union,
 )
 
 T = TypeVar("T")

@@ -1,22 +1,17 @@
-#standard imports
+
+import copy
 import json
 import time
-import copy
+from math import ceil, floor
+
 import observerModel
-from math import floor, ceil
-#third party imports
-# from PyQt6.QtCore import *
-# from PyQt6.QtWidgets import *
-# from PyQt6.QtGui import *
-
 from PySide6.QtCore import QSize
-from PySide6.QtWidgets import QFrame, QGridLayout, QLabel, QPushButton, QVBoxLayout, QWidget
 from PySide6.QtGui import Qt
+from PySide6.QtWidgets import QFrame, QGridLayout, QLabel, QPushButton, QVBoxLayout, QWidget
 
+from . import gamedefine
+from .gameLogic import automationGameLogic
 
-#local imports
-import .gamedefine
-import .gameLogic.automationGameLogic as automationGameLogic
 
 class automationBlock(QFrame):
     def __init__(self, name):

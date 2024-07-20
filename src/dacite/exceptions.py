@@ -1,4 +1,5 @@
-from typing import Any, Type, Optional, Set, Dict
+from typing import Any, Dict, Optional, Set, Type
+
 from dacite.types import is_union
 
 

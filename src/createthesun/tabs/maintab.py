@@ -1,20 +1,16 @@
-#standard imports
 import json
-from copy import deepcopy
 import sys
 import time
+from copy import deepcopy
 
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QLineEdit, QSpacerItem
 from PySide6.QtGui import QIntValidator
+from PySide6.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QPushButton, QSpacerItem, QVBoxLayout, QWidget
 
-#local imports
-import .gamedefine
-import .gameLogic.itemGameLogic as itemGameLogic
-import .urbanistFont
-import .observerModel
-import .gameLogic.numberLogic as numberLogic
+from . import gamedefine, observerModel, urbanistFont
+from .gamedefine import itemGameLogic, numberLogic
 from .tabs import unlockTab
+
 
 class purchaseStrip(QWidget):
     def __init__(self, name):

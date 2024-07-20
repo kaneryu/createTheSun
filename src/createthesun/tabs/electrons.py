@@ -1,15 +1,11 @@
 import time
 
-# from PyQt6.QtWidgets import *
-# from PyQt6.QtGui import *
-# from PyQt6 import QtCore
-# from PyQt6.QtCore import *
-
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QProgressBar
-from PySide6.QtGui import Qt
 from PySide6 import QtCore
+from PySide6.QtGui import Qt
+from PySide6.QtWidgets import QLabel, QProgressBar, QVBoxLayout, QWidget
 
-import .gamedefine
+from . import gamedefine
+
 
 class electrons(QWidget):
     def updateDisplay(self):               

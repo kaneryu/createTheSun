@@ -1,7 +1,7 @@
-import sympy as sp
-import regex as re
-from math import floor, ceil, log
+from math import ceil, floor, log
 
+import regex as re
+import sympy as sp
 
 
 def evaluateCostEquation(costEquation: str, *args: int, arglist: list = [None]) -> int | float:

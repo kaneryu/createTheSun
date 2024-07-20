@@ -1,8 +1,10 @@
-import sympy as sp
+from math import ceil, floor, log
+
 import regex as re
-from math import floor, ceil, log
-import .gamedefine
-import .gameLogic.numberLogic as numberLogic
+import sympy as sp
+
+from . import gamedefine
+from .gamedefine import numberLogic
 
 
 def canAfford(item: str, doBuyMultiply = True) -> bool:

@@ -1,26 +1,16 @@
-#standard imports
 import json
-from copy import deepcopy
-import sys
 import math
-#third party imports
-# from PyQt6.QtCore import Qt
-# from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QLineEdit, QSpacerItem
-# from PyQt6.QtGui import QIntValidator
+import sys
+from copy import deepcopy
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QProgressBar
 from PySide6.QtGui import QIntValidator
+from PySide6.QtWidgets import QHBoxLayout, QLabel, QProgressBar, QVBoxLayout, QWidget
 
-#local imports
-import .gamedefine
-import .observerModel
-import .gameLogic.numberLogic as numberLogic
-import .gameLogic.automationGameLogic as automationGameLogic
+from . import gamedefine, observerModel
+from .gameLogic import automationGameLogic, numberLogic
 
-    
 
-        
 class unlockStrip(QWidget):
     def __init__(self, name: str, maintab: bool | None = False):
         super().__init__()

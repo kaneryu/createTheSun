@@ -1,11 +1,10 @@
-import warnings
-from typing import Union
-from enum import StrEnum
-import random
 import base64
-import json
 import inspect
-
+import json
+import random
+import warnings
+from enum import StrEnum
+from typing import Union
 
 log: dict[str, list] = {"creationEvents": [], "callEvents": [], "recievedEvents": [], "deregisterEvents": []}
 
