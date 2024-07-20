@@ -7,9 +7,9 @@ from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QIntValidator
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QPushButton, QSpacerItem, QVBoxLayout, QWidget
 
-from . import gamedefine, observerModel, urbanistFont
-from .gamedefine import itemGameLogic, numberLogic
-from .tabs import unlockTab
+from .. import gamedefine, observerModel, urbanistFont
+from ..gameLogic import itemGameLogic, numberLogic
+from . import unlockTab
 
 
 class purchaseStrip(QWidget):

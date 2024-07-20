@@ -2,6 +2,7 @@ import json
 import os
 import time
 
+import versions
 from PySide6.QtCore import QSize, Qt
 from PySide6.QtCore import Signal as pyqtSignal
 from PySide6.QtWidgets import (
@@ -17,8 +18,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from . import gamedefine, observerModel, save, versions
-from .customWidgets import dialogs
+from .. import gamedefine, observerModel, save
+from ..customWidgets import dialogs
 
 
 def save_():

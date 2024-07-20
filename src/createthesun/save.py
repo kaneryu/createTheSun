@@ -5,11 +5,10 @@ import os
 import pathlib
 import time
 
-import unlocks
 from dacite import from_dict
 from PySide6.QtWidgets import QDialog
 
-from . import gamedefine
+from . import gamedefine, unlocks
 from .customWidgets import dialogs
 
 save_ = {}

@@ -3,13 +3,12 @@ import json
 import time
 from math import ceil, floor
 
-import observerModel
 from PySide6.QtCore import QSize
 from PySide6.QtGui import Qt
 from PySide6.QtWidgets import QFrame, QGridLayout, QLabel, QPushButton, QVBoxLayout, QWidget
 
-from . import gamedefine
-from .gameLogic import automationGameLogic
+from .. import gamedefine, observerModel
+from ..gameLogic import automationGameLogic
 
 
 class automationBlock(QFrame):
