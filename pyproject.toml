@@ -1,8 +1,17 @@
+[project]
+name = "createthesun2"
+version = "0.3.0-a"
+description = "An incremental game where the goal is to create the sun!"
+readme = "README.md"
+dependencies = []
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [tool.pytest.ini_options]
 addopts = "--cov --cov-report=lcov:lcov.info --cov-report=term"
+pythonpath = [ ".", "createthesun"]
 
 [tool.coverage.run]
 source = ["createthesun"]
-
-[tool.pytest.ini_options]
-pythonpath = [ ".", "createthesun"]
