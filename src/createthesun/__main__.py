@@ -23,6 +23,8 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
+import versions
+
 
 from . import (
     gamedefine,
@@ -231,7 +233,7 @@ class MainWindow(QMainWindow):
 
             if gamedefine.force == 1:
                 gamedefine.force = 0
-                forceUpdate()
+                self.forceUpdate()
 
         if devmode:
             while self.threadsRunning:
@@ -291,16 +293,16 @@ class MainWindow(QMainWindow):
     #         os.mkdir(SAVEDIR)
 
 
-def preStartUp():
-    def updateCheck():
+def preStartUp(testing = False):
+    def updateCheck(version = "", upstream = ""):
         try:
             request = requests.request("GET", "https://api.github.com/repos/KaneryU/createTheSun/releases")
         except:
             return True
-
+        
         response = json.loads(request.text)
         installpath = os.path.dirname(__file__) + "\\"
-
+        
         try:
             file = open(f"{installpath}version.txt", "r")
         except FileNotFoundError:
@@ -309,15 +311,21 @@ def preStartUp():
             file.close()
             file = open(f"{installpath}version.txt", "r")
 
-        currentVersion = file.read()
+        
+        currentVersion = versions.Version(file.read())
         file.close()
-        latestVersion = response[0]["tag_name"]
+        latestVersion = versions.Version(response[0]["tag_name"])
         print(f"current version: {currentVersion}, latest version: {latestVersion}")
-        if currentVersion == latestVersion:
-            return True
-        else:
-            return False
+        
+        
+        
+        print(currentVersion < latestVersion)
+        
+        return currentVersion < latestVersion
 
+    if testing:
+        return updateCheck()    
+    
     if not updateCheck():  # if not on the latest version
         command = f"{os.getenv('LOCALAPPDATA')}\\createTheSunUpdater\\installer.exe"
         if not os.path.exists(command):
@@ -329,12 +337,15 @@ def preStartUp():
             error_dialog.exec()
             return
 
+        
         print(command)
         subprocess.Popen([command])
         sys.exit(app.exit())
 
-
-if __name__ == "__main__":
+app: QApplication
+def main():
+    global app
+    
     quickLaunch = devmode  # enabled during development
 
     # change icon in taskbar
@@ -394,6 +405,7 @@ if __name__ == "__main__":
     splashScreen.hide()
     gamedefine.gamedefine.sessionStartTime = time.time()
 
+    
     app.exec()
 
 

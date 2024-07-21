@@ -1,6 +1,6 @@
-from createthesun.gameLogic import numberLogic
-import createthesun.observerModel as observerModel
-import createthesun.gamedefine as gamedefine
+from src.createthesun.gameLogic import numberLogic
+import src.createthesun.observerModel as observerModel
+from src.createthesun.__main__ import preStartUp as main_preStartUp
 
 def test_magnitude():
     result = numberLogic.magnitude(1000)
@@ -70,5 +70,3 @@ def test_observerModel():
     # observer1 NOT called
     # observer2 called
     # observer3 NOT called
-
-    

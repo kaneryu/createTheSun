@@ -1,6 +1,4 @@
-from createthesun.gameLogic import numberLogic
-import createthesun.observerModel as observerModel
-import createthesun.gamedefine as gamedefine
+import src.createthesun.gamedefine as gamedefine
 import random
 import dacite
 
