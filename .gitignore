@@ -13,3 +13,6 @@ main.spec
 *.pyc
 /appdata
 tasks.json
+.coverage
+lcov.info
+/.pytest_cache
