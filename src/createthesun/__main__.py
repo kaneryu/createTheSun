@@ -326,7 +326,7 @@ def preStartUp(testing = False):
     if testing:
         return updateCheck()    
     
-    if not updateCheck():  # if not on the latest version
+    if updateCheck():  # if not on the latest version
         command = f"{os.getenv('LOCALAPPDATA')}\\createTheSunUpdater\\installer.exe"
         if not os.path.exists(command):
             error_dialog = dialogs.errorDialog(
