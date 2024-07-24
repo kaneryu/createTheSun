@@ -25,14 +25,13 @@ from PySide6.QtWidgets import (
 )
 import versions
 
+from .old import gamedefine, observerModel, unlocks
+
 
 from . import (
-    gamedefine,
-    observerModel,
-    unlocks,  # this is the only interaction needed to start the unlocks service
     urbanistFont,
 )
-from . import tabs_ as tabs
+from .old import tabs_ as tabs
 from .customWidgets import dialogs
 from .tabs import electrons
 
@@ -142,6 +141,8 @@ class MainWindow(QMainWindow):
 
         self.interalUpdateThread.start()
 
+        print(self.size())
+        
     def _updateDisplay(self):
         """
         Updates the display continuously.

@@ -37,6 +37,7 @@ dependencies = [
     "types-regex==2023.12.25.20240106",
     "types-requests==2.31.0.20240125",
     "urllib3==2.1.0",
+    "materialyoucolor==2.0.9",
     "versions-kaneryu",
 ]
 [project.optional-dependencies]

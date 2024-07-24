@@ -1,5 +1,5 @@
 from src.createthesun.gameLogic import numberLogic
-import src.createthesun.observerModel as observerModel
+import createthesun.old.observerModel as observerModel
 from src.createthesun.__main__ import preStartUp as main_preStartUp
 
 def test_magnitude():

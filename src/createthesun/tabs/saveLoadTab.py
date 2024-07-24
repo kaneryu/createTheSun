@@ -18,7 +18,9 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from .. import gamedefine, observerModel, save
+from ..old import gamedefine, observerModel
+
+from ..old import save
 from ..customWidgets import dialogs
 
 

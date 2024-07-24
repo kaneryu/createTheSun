@@ -3,7 +3,9 @@ from math import ceil, floor, log
 
 import sympy as sp
 
-from .. import gamedefine, resourceGain
+from ..old import gamedefine
+
+from ..old import resourceGain
 from . import numberLogic
 
 

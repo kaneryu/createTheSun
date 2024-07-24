@@ -7,7 +7,7 @@ from PySide6.QtCore import QEasingCurve, QPropertyAnimation, QRect, Qt, QTimer, 
 from PySide6.QtGui import QAction, QKeySequence, QPixmap, QRegion
 from PySide6.QtWidgets import QApplication, QGraphicsBlurEffect, QGridLayout, QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
-from .. import gamedefine
+from ..old import gamedefine
 
 basedir = os.path.dirname(os.path.realpath(__file__))
 

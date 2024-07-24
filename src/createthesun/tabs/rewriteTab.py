@@ -7,7 +7,9 @@ from PySide6.QtCore import QSize
 from PySide6.QtGui import Qt
 from PySide6.QtWidgets import QFrame, QGridLayout, QLabel, QPushButton, QVBoxLayout, QWidget
 
-from .. import gamedefine, observerModel
+from ..old import gamedefine
+
+from ..old import observerModel
 from .gamedefine import automationGameLogic
 
 

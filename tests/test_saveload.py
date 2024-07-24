@@ -1,4 +1,4 @@
-import src.createthesun.gamedefine as gamedefine
+import createthesun.old.gamedefine as gamedefine
 import random
 import dacite
 

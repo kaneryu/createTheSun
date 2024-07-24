@@ -9,7 +9,7 @@ import versions
 from dacite import from_dict
 from PySide6.QtWidgets import QTabWidget
 
-from . import quickload
+from .. import quickload
 from .gameLogic import automationGameLogic
 
 initalized = False

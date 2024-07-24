@@ -4,7 +4,7 @@ from PySide6 import QtCore
 from PySide6.QtGui import Qt
 from PySide6.QtWidgets import QLabel, QProgressBar, QVBoxLayout, QWidget
 
-from .. import gamedefine
+from ..old import gamedefine
 
 
 class electrons(QWidget):
