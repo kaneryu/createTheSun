@@ -13,7 +13,6 @@ ApplicationWindow {
     minimumHeight: 480
 
     title: "Create The Sun"
-    property QtObject mainModel // absract list model from python
     property QtObject tabsModel // absract list model from python -- contains tabs
     property QtObject backend
     property QtObject theme
@@ -24,6 +23,7 @@ ApplicationWindow {
         function onModelChanged(model) {
             mainModel = model
         }
+        
 
         function onLoadComplete() {}
         onUpdateTheme: {
@@ -45,7 +45,36 @@ ApplicationWindow {
         
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
+    }
 
+    ListView {
+        id: tabBar
+        model: root.tabsModel
+        anchors.fill: parent
+        layoutDirection: Qt.LeftToRight
+
+        spacing: 10 / 2
+
+        delegate: Item {
+            width: 100
+            height: 50
+            Rectangle {
+                
+                topRightRadius: 10
+                topLeftRadius: 10
+
+                width: 149 / 2
+                height: 43 / 2
+
+                color: theme.getColor("primaryContainer")
+
+                border.color: theme.getColor("primaryFixedDim")
+                border.width: 1/2
+                Text {
+                    text: model.name
+                }
+            }
+        }
     }
 
 }

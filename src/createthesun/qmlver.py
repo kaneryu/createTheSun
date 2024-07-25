@@ -23,40 +23,49 @@ class Item:
     multi: str = ""
     
 class ListModel(QAbstractListModel):
-    def __init__(self):
+    def __init__(self, contains = Item):
         super().__init__()
-        self._songs = []
+        self._contentsList = []
 
+        self.contains = contains
+        
     def data(self, index: QModelIndex, role: int = Qt.ItemDataRole.DisplayRole):
         if 0 <= index.row() < self.rowCount():
-            song = self._songs[index.row()]
+            item = self._contentsList[index.row()]
             name = self.roleNames().get(role)
             if name:
-                return getattr(song, name.decode())
+                return getattr(item, name.decode())
 
     def roleNames(self) -> dict[int, QByteArray]:
         d = {}
-        for i, field in enumerate(dataclasses.fields(Item)):
+        for i, field in enumerate(dataclasses.fields(self.contains)):
             d[Qt.ItemDataRole.DisplayRole + i] = field.name.encode()
         return d
 
     def rowCount(self, parent=None):
-        return len(self._songs)
+        return len(self._contentsList)
 
-    def addSong(self, song: Item):
+    def addItem(self, item: object):
         self.beginInsertRows(QModelIndex(), 0, 0)
-        self._songs.insert(0, song)
+        self._contentsList.insert(0, item)
         self.endInsertRows()
         
-    def moveSong(self, fromIndex: int, toIndex: int):
+    def moveItem(self, fromIndex: int, toIndex: int):
         self.beginMoveRows(QModelIndex(), fromIndex, fromIndex, QModelIndex(), toIndex)
-        self._songs.insert(toIndex, self._songs.pop(fromIndex))
+        self._contentsList.insert(toIndex, self._contentsList.pop(fromIndex))
         self.endMoveRows()
     
     def clear(self):
         self.beginResetModel()
-        self._songs.clear()
+        self._contentsList.clear()
         self.endResetModel()
+
+    def count(self):
+        return len(self._contentsList)  
+@dataclasses.dataclass
+class Tab:
+    name: str = ""
+    contents: str = ""
 
 
 class Backend(QObject):
@@ -76,6 +85,15 @@ def findQmlFile() -> str | None:
             if file == 'main~2x3x.qml':
                 return os.path.join(path, file)
     return None
+
+
+def createTabModel():
+    model = ListModel(contains=Tab)
+    model.addItem(Tab("Tab 1", "Contents 1"))
+    model.addItem(Tab("Tab 2", "Contents 2"))
+    model.addItem(Tab("Tab 3", "Contents 3"))
+    model.addItem(Tab("Tab 4", "Contents 4"))
+    return model
 
     
 def main():
@@ -105,9 +123,9 @@ def main():
     theme.get_dynamicColors(0xDCAB5C, True, 0.0)
     
     engine.rootObjects()[0].setProperty('theme', theme)
-    print(theme.background)
-    mod = backend.model
-    backend.modelChanged.emit(mod)
+    tabModel = createTabModel()
+    engine.rootObjects()[0].setProperty('tabsModel', tabModel)
+    
 
     # Main Theme Source Color: #DCAB5C
     backend.loadComplete.emit()
