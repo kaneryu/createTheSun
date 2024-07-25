@@ -26,6 +26,7 @@ ApplicationWindow {
         
 
         function onLoadComplete() {}
+
         onUpdateTheme: {
             background.color = theme.getColor("background")
             headertext.color = theme.getColor("primary")
@@ -46,35 +47,97 @@ ApplicationWindow {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
     }
-
-    ListView {
-        id: tabBar
-        model: root.tabsModel
+    Item {
+        id: content
         anchors.fill: parent
-        layoutDirection: Qt.LeftToRight
+        anchors.top: header.bottom
+        anchors.topMargin: 10
+        anchors.bottomMargin: 10
+        anchors.leftMargin: 10
+        anchors.rightMargin: 10
 
-        spacing: 10 / 2
+        ListView {
+            id: tabBar
+            model: root.tabsModel
+            anchors.fill: parent
+            orientation: ListView.Horizontal
 
-        delegate: Item {
-            width: 100
-            height: 50
-            Rectangle {
-                
-                topRightRadius: 10
-                topLeftRadius: 10
+            spacing: 2
 
-                width: 149 / 2
+            delegate: Rectangle {
+                id: rect
+                topRightRadius: 10/2
+                topLeftRadius: 10/2
+
+                width: metrics.width + 10
                 height: 43 / 2
 
-                color: theme.getColor("primaryContainer")
+                color: (backend.activeTab == model.name) ? theme.getColor("primaryContainer") : theme.getColor("secondaryContainer")
 
-                border.color: theme.getColor("primaryFixedDim")
+                border.color: (backend.activeTab == model.name) ? theme.getColor("primaryFixedDim") : theme.getColor("secondaryFixedDim")
                 border.width: 1/2
+
                 Text {
+                    id: tabText
                     text: model.name
+                    color: (backend.activeTab == model.name) ? theme.getColor("onPrimaryContainer") : theme.getColor("onPrimaryContainer")
+                    font.pixelSize: 18
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    anchors.fill: parent
+
+                    Behavior on color {
+                        ColorAnimation {
+                            easing: Easing.InOutQuad
+                            duration: 200
+                        }
+                    }
+                }
+
+                TextMetrics {
+                    id: metrics
+                    text: tabText.text
+                    font: tabText.font
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: backend.activeTab = model.name
+                }
+
+                Behavior on color {
+                    ColorAnimation {
+                        easing: Easing.InOutQuad
+                        duration: 200
+                    }
+                }
+
+            }
+        }
+
+        Item {
+            id: tabContent
+            anchors.top: tabBar.bottom
+            anchors.topMargin: 10
+            anchors.fill: parent
+
+            Loader {
+                id: tabLoader
+                anchors.fill: parent
+                sourceComponent: backend.activeTabComponent
+
+                Behavior on sourceComponent {
+                    SequentialAnimation {
+                        NumberAnimation {
+                            target: tabLoader.item
+                            property: "opacity"
+                            from: 0
+                            to: 1
+                            duration: 200
+                        }
+                    }
                 }
             }
         }
     }
-
 }

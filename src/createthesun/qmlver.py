@@ -72,10 +72,21 @@ class Backend(QObject):
     modelChanged = QSignal(QAbstractListModel, name="modelChanged", arguments=['model'])
     loadComplete = QSignal(name="loadComplete")
     updateTheme = QSignal(name="updateTheme")
+    
+    activeTabChanged = QSignal(name="activeTabChanged")
     def __init__(self):
         super().__init__()
-        
+        self.activeTab = "Main Tab"
         self.model = ListModel()
+    
+    @Property(str, notify=activeTabChanged)
+    def activeTab(self):
+        return self._activeTab
+    
+    @activeTab.setter
+    def activeTab(self, value):
+        self._activeTab = value
+        self.activeTabChanged.emit()
         
 
 def findQmlFile() -> str | None:
@@ -89,10 +100,12 @@ def findQmlFile() -> str | None:
 
 def createTabModel():
     model = ListModel(contains=Tab)
-    model.addItem(Tab("Tab 1", "Contents 1"))
-    model.addItem(Tab("Tab 2", "Contents 2"))
-    model.addItem(Tab("Tab 3", "Contents 3"))
-    model.addItem(Tab("Tab 4", "Contents 4"))
+    model.addItem(Tab("Stats", "Contents 4"))
+    model.addItem(Tab("Save & Load", "Contents 4"))
+    model.addItem(Tab("Goals", "Contents 4"))
+    model.addItem(Tab("Achevements", "Contents 3"))
+    model.addItem(Tab("Automation", "Contents 2"))
+    model.addItem(Tab("Main Tab", "Contents 1"))
     return model
 
     
