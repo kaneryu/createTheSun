@@ -1,9 +1,7 @@
-from materialyoucolor.hct import Hct
 from materialyoucolor.dynamiccolor.material_dynamic_colors import MaterialDynamicColors
+from materialyoucolor.hct import Hct
 from materialyoucolor.scheme.scheme_tonal_spot import SchemeTonalSpot
-
-from PySide6.QtCore import Qt, QObject, Slot
-
+from PySide6.QtCore import QObject, Qt, Slot
 
 
 class Theme(QObject):

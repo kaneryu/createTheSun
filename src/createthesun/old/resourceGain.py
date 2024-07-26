@@ -2,9 +2,7 @@ import dataclasses
 import time
 from copy import deepcopy
 
-from .old import gamedefine
-
-from .old import observerModel
+from .old import gamedefine, observerModel
 
 
 @dataclasses.dataclass

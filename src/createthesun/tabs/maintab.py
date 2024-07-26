@@ -7,10 +7,9 @@ from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QIntValidator
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QPushButton, QSpacerItem, QVBoxLayout, QWidget
 
-from ..old import gamedefine, observerModel
-
 from .. import urbanistFont
 from ..gameLogic import itemGameLogic, numberLogic
+from ..old import gamedefine, observerModel
 from . import unlockTab
 
 

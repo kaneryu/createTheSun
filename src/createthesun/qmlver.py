@@ -1,19 +1,31 @@
 # stdlib imports
-import sys
-import random
 import dataclasses
-import requests
-import threading
 import enum
 import os
+import random
+import sys
+import threading
+
+import requests
+from PySide6.QtCore import Property as Property
+
 # library imports
-from PySide6.QtCore import Qt, Signal as QSignal, Slot as Slot, QObject, QAbstractListModel, QModelIndex, QTimer, Property as Property, QByteArray
-from PySide6.QtGui import QAction, QIcon, QFont
+from PySide6.QtCore import QAbstractListModel, QByteArray, QModelIndex, QObject, Qt, QTimer
+from PySide6.QtCore import Signal as QSignal
+from PySide6.QtCore import Slot as Slot
+from PySide6.QtGui import QAction, QFont, QIcon
+from PySide6.QtQml import (
+    QmlElement,
+    QmlSingleton,
+    QQmlApplicationEngine,
+    qmlRegisterSingletonInstance,
+    qmlRegisterSingletonType,
+)
 from PySide6.QtWidgets import QApplication
-from PySide6.QtQml import QQmlApplicationEngine, QmlSingleton, qmlRegisterSingletonType, qmlRegisterSingletonInstance, QmlElement
+
 # local imports
-from . import materialInterface
-from . import urbanistFont
+from . import materialInterface, urbanistFont
+
 
 @dataclasses.dataclass
 class Item:
@@ -83,13 +95,17 @@ class Backend(QObject):
     def __new__(cls, *args, **kwargs):
         if not cls._instance:
             cls._instance = super(Backend, cls).__new__(cls, *args, **kwargs)
+            
+        print(cls._instance)
         return cls._instance
 
     @staticmethod
     def create(engine):
-        return Backend()
+        bck = Backend()
+        return bck
     
     def __init__(self):
+        super().__init__()
         if not hasattr(self, 'initialized'):
             self.initialized = True
             self._value = 0

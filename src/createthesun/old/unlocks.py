@@ -1,9 +1,9 @@
 import time
 
-from .old import gamedefine
+from ..tabs import achevementsTab
 from .customWidgets import dialogs
 from .observerModel import Observable, ObservableCallType, callEvent, registerObserver
-from ..tabs import achevementsTab
+from .old import gamedefine
 
 unlockables = gamedefine.gamedefine.unlockables
 unlockedUnlockables = gamedefine.gamedefine.unlockedUnlockables

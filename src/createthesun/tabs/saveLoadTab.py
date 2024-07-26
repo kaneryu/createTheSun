@@ -18,10 +18,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from ..old import gamedefine, observerModel
-
-from ..old import save
 from ..customWidgets import dialogs
+from ..old import gamedefine, observerModel, save
 
 
 def save_():

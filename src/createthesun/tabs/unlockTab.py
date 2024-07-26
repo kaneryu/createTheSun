@@ -7,10 +7,8 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QIntValidator
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QProgressBar, QVBoxLayout, QWidget
 
-from ..old import gamedefine
-
-from ..old import observerModel
 from ..gameLogic import automationGameLogic, numberLogic
+from ..old import gamedefine, observerModel
 
 
 class unlockStrip(QWidget):

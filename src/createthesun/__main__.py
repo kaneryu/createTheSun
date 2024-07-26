@@ -8,6 +8,7 @@ import time
 from math import floor
 
 import requests
+import versions
 from PySide6 import QtCore
 from PySide6.QtCore import QPropertyAnimation, QRunnable, Qt, QThreadPool, QTimer, Signal, Slot
 from PySide6.QtGui import QAction, QIcon, QPixmap
@@ -23,16 +24,13 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
-import versions
-
-from .old import gamedefine, observerModel, unlocks
-
 
 from . import (
     urbanistFont,
 )
-from .old import tabs_ as tabs
 from .customWidgets import dialogs
+from .old import gamedefine, observerModel, unlocks
+from .old import tabs_ as tabs
 from .tabs import electrons
 
 basedir = os.path.join(os.path.abspath(__file__), os.path.pardir)

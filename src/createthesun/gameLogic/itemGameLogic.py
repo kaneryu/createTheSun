@@ -3,8 +3,8 @@ from math import ceil, floor, log
 import regex as re
 import sympy as sp
 
-from ..old import gamedefine
 from ..gameLogic import numberLogic
+from ..old import gamedefine
 
 
 def canAfford(item: str, doBuyMultiply=True) -> bool:

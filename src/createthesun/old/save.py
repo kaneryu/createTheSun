@@ -5,12 +5,12 @@ import os
 import pathlib
 import time
 
-from .old import gamedefine
 from dacite import from_dict
 from PySide6.QtWidgets import QDialog
 
 from . import unlocks
 from .customWidgets import dialogs
+from .old import gamedefine
 
 save_ = {}
 rootdir = pathlib.Path(__file__).parent
