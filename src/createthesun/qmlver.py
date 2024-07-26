@@ -10,7 +10,7 @@ import os
 from PySide6.QtCore import Qt, Signal as QSignal, Slot as Slot, QObject, QAbstractListModel, QModelIndex, QTimer, Property as Property, QByteArray
 from PySide6.QtGui import QAction, QIcon, QFont
 from PySide6.QtWidgets import QApplication
-from PySide6.QtQml import QQmlApplicationEngine
+from PySide6.QtQml import QQmlApplicationEngine, QmlSingleton, qmlRegisterSingletonType, qmlRegisterSingletonInstance, QmlElement
 # local imports
 from . import materialInterface
 from . import urbanistFont
@@ -65,17 +65,35 @@ class ListModel(QAbstractListModel):
 @dataclasses.dataclass
 class Tab:
     name: str = ""
-    contents: str = ""
+    
+QML_IMPORT_NAME = "CreateTheSun"
+QML_IMPORT_MAJOR_VERSION = 1
+QML_IMPORT_MINOR_VERSION = 0
 
-
+@QmlElement
+@QmlSingleton
 class Backend(QObject):
     modelChanged = QSignal(QAbstractListModel, name="modelChanged", arguments=['model'])
     loadComplete = QSignal(name="loadComplete")
     updateTheme = QSignal(name="updateTheme")
-    
     activeTabChanged = QSignal(name="activeTabChanged")
+    
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            cls._instance = super(Backend, cls).__new__(cls, *args, **kwargs)
+        return cls._instance
+
+    @staticmethod
+    def create(engine):
+        return Backend()
+    
     def __init__(self):
-        super().__init__()
+        if not hasattr(self, 'initialized'):
+            self.initialized = True
+            self._value = 0
+            
         self.activeTab = "Main Tab"
         self.model = ListModel()
     
@@ -87,7 +105,6 @@ class Backend(QObject):
     def activeTab(self, value):
         self._activeTab = value
         self.activeTabChanged.emit()
-        
 
 def findQmlFile() -> str | None:
     # Find the QML file
@@ -100,14 +117,16 @@ def findQmlFile() -> str | None:
 
 def createTabModel():
     model = ListModel(contains=Tab)
-    model.addItem(Tab("Stats", "Contents 4"))
-    model.addItem(Tab("Save & Load", "Contents 4"))
-    model.addItem(Tab("Goals", "Contents 4"))
-    model.addItem(Tab("Achevements", "Contents 3"))
-    model.addItem(Tab("Automation", "Contents 2"))
-    model.addItem(Tab("Main Tab", "Contents 1"))
+    model.addItem(Tab("Stats"))
+    model.addItem(Tab("Save & Load"))
+    model.addItem(Tab("Goals"))
+    model.addItem(Tab("Achevements"))
+    model.addItem(Tab("Automation"))
+    model.addItem(Tab("Main Tab"))
     return model
 
+def singleton_provider(engine):
+    return Backend()
     
 def main():
     theme = materialInterface.Theme()
@@ -128,9 +147,9 @@ def main():
     else:
         engine.load(qml)
 
-    
     backend = Backend()
-    engine.rootObjects()[0].setProperty('backend', backend)
+    backendId = qmlRegisterSingletonType(Backend, "CreateTheSun", 1, 0, "Backend", singleton_provider)
+    
     
     theme = materialInterface.Theme()
     theme.get_dynamicColors(0xDCAB5C, True, 0.0)
@@ -139,7 +158,6 @@ def main():
     tabModel = createTabModel()
     engine.rootObjects()[0].setProperty('tabsModel', tabModel)
     
-
     # Main Theme Source Color: #DCAB5C
     backend.loadComplete.emit()
     backend.updateTheme.emit()

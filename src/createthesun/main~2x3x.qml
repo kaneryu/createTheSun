@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Qt.labs.platform
 import "./qml/" as Kyu
+import CreateTheSun 1.0
 
 
 
@@ -14,11 +15,10 @@ ApplicationWindow {
 
     title: "Create The Sun"
     property QtObject tabsModel // absract list model from python -- contains tabs
-    property QtObject backend
     property QtObject theme
     
     Connections {
-        target: backend
+        target: Backend
 
         function onModelChanged(model) {
             mainModel = model
@@ -72,15 +72,15 @@ ApplicationWindow {
                 width: metrics.width + 10
                 height: 43 / 2
 
-                color: (backend.activeTab == model.name) ? theme.getColor("primaryContainer") : theme.getColor("secondaryContainer")
+                color: (Backend.activeTab == model.name) ? theme.getColor("primaryContainer") : theme.getColor("secondaryContainer")
 
-                border.color: (backend.activeTab == model.name) ? theme.getColor("primaryFixedDim") : theme.getColor("secondaryFixedDim")
+                border.color: (Backend.activeTab == model.name) ? theme.getColor("primaryFixedDim") : theme.getColor("secondaryFixedDim")
                 border.width: 1/2
 
                 Text {
                     id: tabText
                     text: model.name
-                    color: (backend.activeTab == model.name) ? theme.getColor("onPrimaryContainer") : theme.getColor("onPrimaryContainer")
+                    color: (Backend.activeTab == model.name) ? theme.getColor("onPrimaryContainer") : theme.getColor("onPrimaryContainer")
                     font.pixelSize: 18
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
@@ -102,7 +102,7 @@ ApplicationWindow {
 
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: backend.activeTab = model.name
+                    onClicked: Backend.activeTab = model.name
                 }
 
                 Behavior on color {
@@ -124,19 +124,7 @@ ApplicationWindow {
             Loader {
                 id: tabLoader
                 anchors.fill: parent
-                sourceComponent: backend.activeTabComponent
-
-                Behavior on sourceComponent {
-                    SequentialAnimation {
-                        NumberAnimation {
-                            target: tabLoader.item
-                            property: "opacity"
-                            from: 0
-                            to: 1
-                            duration: 200
-                        }
-                    }
-                }
+                sourceComponent: Backend.activeTabComponent
             }
         }
     }
