@@ -87,7 +87,6 @@ QML_IMPORT_MINOR_VERSION = 0
 class Backend(QObject):
     modelChanged = QSignal(QAbstractListModel, name="modelChanged", arguments=['model'])
     loadComplete = QSignal(name="loadComplete")
-    updateTheme = QSignal(name="updateTheme")
     activeTabChanged = QSignal(name="activeTabChanged")
     
     _instance = None
@@ -129,6 +128,8 @@ def createTabModel():
     model.addItem(Tab("Main Tab"))
     return model
 
+def generateRandomHexColor():
+    return random.randint(0, 0xFFFFFF)
 
 def main():
     theme = materialInterface.Theme()
@@ -143,6 +144,14 @@ def main():
     engine.quit.connect(app.quit)
     qml = findQmlFile()
 
+    backend: Backend = Backend()
+    print(backend)
+    qmlRegisterSingletonInstance(Backend, QML_IMPORT_NAME, QML_IMPORT_MAJOR_VERSION, QML_IMPORT_MINOR_VERSION, "Backend", backend)
+    
+    theme: materialInterface.Theme = materialInterface.Theme()
+    theme.get_dynamicColors(generateRandomHexColor(), True, 0.0)
+    print(theme)
+    qmlRegisterSingletonInstance(materialInterface.Theme, QML_IMPORT_NAME, QML_IMPORT_MAJOR_VERSION, QML_IMPORT_MINOR_VERSION, "Theme", theme)
     
     if not qml:
         print('Could not find QML file')
@@ -158,7 +167,7 @@ def main():
     qmlRegisterSingletonInstance(Backend, QML_IMPORT_NAME, QML_IMPORT_MAJOR_VERSION, QML_IMPORT_MINOR_VERSION, "Backend", backend)
     
     theme: materialInterface.Theme = materialInterface.Theme()
-    theme.get_dynamicColors(0xDCAB5C, True, 0.0)
+    theme.get_dynamicColors(generateRandomHexColor(), True, 0.0)
     print(theme)
     qmlRegisterSingletonInstance(materialInterface.Theme, QML_IMPORT_NAME, QML_IMPORT_MAJOR_VERSION, QML_IMPORT_MINOR_VERSION, "Theme", theme)
     
@@ -166,8 +175,14 @@ def main():
     tabModel = createTabModel()
     engine.rootObjects()[0].setProperty('tabsModel', tabModel)
     
+    tim = QTimer()
+    tim.setInterval(1000)
+    tim.timeout.connect(lambda: theme.get_dynamicColors(generateRandomHexColor(), True, 0.0))
+    tim.start()
+    
+    
+    
     # Main Theme Source Color: #DCAB5C
     backend.loadComplete.emit()
-    backend.updateTheme.emit()
     engine.rootObjects()[0].show()
     sys.exit(app.exec())

@@ -27,6 +27,16 @@ ApplicationWindow {
         function onLoadComplete() {}
     }
 
+    Connections {
+        target: Theme
+
+        onThemeChanged: {
+            background.color = Theme.background /** For some reason these are broken if i don't do this.... */
+            headertext.color = Theme.primary /** For some reason these are broken if i don't do this.... */
+        }
+    }
+
+
     
     background: Rectangle {
         id: background
@@ -67,15 +77,15 @@ ApplicationWindow {
                 width: metrics.width + 10
                 height: 43 / 2
 
-                color: (Backend.activeTab == model.name) ? Theme.primaryContainer : Theme.secondaryContainer
+                color: (Backend.activeTab == model.name) ? Theme.primaryContainer : Theme.surfaceContainer
 
-                border.color: (Backend.activeTab == model.name) ? Theme.primaryFixedDim : Theme.secondaryFixedDim
+                border.color: (Backend.activeTab == model.name) ? Theme.primaryFixedDim : Theme.primaryFixedDim
                 border.width: 1/2
 
                 Text {
                     id: tabText
                     text: model.name
-                    color: (Backend.activeTab == model.name) ? Theme.onPrimaryContainer : Theme.onPrimaryContainer
+                    color: (Backend.activeTab == model.name) ? Theme.onPrimaryContainer : Theme.onSurface
                     font.pixelSize: 18
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
@@ -83,7 +93,7 @@ ApplicationWindow {
 
                     Behavior on color {
                         ColorAnimation {
-                            easing: Easing.InOutQuad
+                            easing.type: Easing.InOutQuad
                             duration: 200
                         }
                     }
@@ -102,7 +112,7 @@ ApplicationWindow {
 
                 Behavior on color {
                     ColorAnimation {
-                        easing: Easing.InOutQuad
+                        easing.type: Easing.InOutQuad
                         duration: 200
                     }
                 }

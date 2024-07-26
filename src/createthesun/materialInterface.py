@@ -3,7 +3,6 @@ from materialyoucolor.hct import Hct
 from materialyoucolor.scheme.scheme_tonal_spot import SchemeTonalSpot
 from PySide6.QtCore import QObject, Qt, Slot, Property, Signal
 
-
 class Theme(QObject):
     themeChanged = Signal(name="themeChanged")
     
