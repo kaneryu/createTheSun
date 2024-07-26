@@ -15,7 +15,6 @@ ApplicationWindow {
 
     title: "Create The Sun"
     property QtObject tabsModel // absract list model from python -- contains tabs
-    property QtObject theme
     
     Connections {
         target: Backend
@@ -26,16 +25,12 @@ ApplicationWindow {
         
 
         function onLoadComplete() {}
-
-        onUpdateTheme: {
-            background.color = theme.getColor("background")
-            headertext.color = theme.getColor("primary")
-        }
     }
 
     
     background: Rectangle {
         id: background
+        color: Theme.background
     }
     
     header: Text {
@@ -43,7 +38,7 @@ ApplicationWindow {
         text: root.title
         font.pixelSize: 24
 
-        
+        color: Theme.primary
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
     }
@@ -72,15 +67,15 @@ ApplicationWindow {
                 width: metrics.width + 10
                 height: 43 / 2
 
-                color: (Backend.activeTab == model.name) ? theme.getColor("primaryContainer") : theme.getColor("secondaryContainer")
+                color: (Backend.activeTab == model.name) ? Theme.primaryContainer : Theme.secondaryContainer
 
-                border.color: (Backend.activeTab == model.name) ? theme.getColor("primaryFixedDim") : theme.getColor("secondaryFixedDim")
+                border.color: (Backend.activeTab == model.name) ? Theme.primaryFixedDim : Theme.secondaryFixedDim
                 border.width: 1/2
 
                 Text {
                     id: tabText
                     text: model.name
-                    color: (Backend.activeTab == model.name) ? theme.getColor("onPrimaryContainer") : theme.getColor("onPrimaryContainer")
+                    color: (Backend.activeTab == model.name) ? Theme.onPrimaryContainer : Theme.onPrimaryContainer
                     font.pixelSize: 18
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter

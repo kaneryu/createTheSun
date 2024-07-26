@@ -91,18 +91,6 @@ class Backend(QObject):
     activeTabChanged = QSignal(name="activeTabChanged")
     
     _instance = None
-
-    def __new__(cls, *args, **kwargs):
-        if not cls._instance:
-            cls._instance = super(Backend, cls).__new__(cls, *args, **kwargs)
-            
-        print(cls._instance)
-        return cls._instance
-
-    @staticmethod
-    def create(engine):
-        bck = Backend()
-        return bck
     
     def __init__(self):
         super().__init__()
@@ -141,9 +129,7 @@ def createTabModel():
     model.addItem(Tab("Main Tab"))
     return model
 
-def singleton_provider(engine):
-    return Backend()
-    
+
 def main():
     theme = materialInterface.Theme()
     theme.get_dynamicColors(0xDCAB5C, True, 0.0)
@@ -156,6 +142,7 @@ def main():
     engine = QQmlApplicationEngine()
     engine.quit.connect(app.quit)
     qml = findQmlFile()
+
     
     if not qml:
         print('Could not find QML file')
@@ -163,12 +150,17 @@ def main():
     else:
         engine.load(qml)
 
-    backend = Backend()
-    backendId = qmlRegisterSingletonType(Backend, "CreateTheSun", 1, 0, "Backend", singleton_provider)
+    # backendId = qmlRegisterSingletonType(Backend, "CreateTheSun", 1, 0, "Backend")
+
+        
+    backend: Backend = Backend()
+    print(backend)
+    qmlRegisterSingletonInstance(Backend, QML_IMPORT_NAME, QML_IMPORT_MAJOR_VERSION, QML_IMPORT_MINOR_VERSION, "Backend", backend)
     
-    
-    theme = materialInterface.Theme()
+    theme: materialInterface.Theme = materialInterface.Theme()
     theme.get_dynamicColors(0xDCAB5C, True, 0.0)
+    print(theme)
+    qmlRegisterSingletonInstance(materialInterface.Theme, QML_IMPORT_NAME, QML_IMPORT_MAJOR_VERSION, QML_IMPORT_MINOR_VERSION, "Theme", theme)
     
     engine.rootObjects()[0].setProperty('theme', theme)
     tabModel = createTabModel()
