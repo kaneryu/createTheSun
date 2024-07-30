@@ -3,7 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Qt.labs.platform
 import "./qml/" as Kyu
-import CreateTheSun 1.0
+
 
 
 
@@ -18,22 +18,10 @@ ApplicationWindow {
     
     Connections {
         target: Backend
-
-        function onModelChanged(model) {
-            mainModel = model
-        }
-        
-
-        function onLoadComplete() {}
     }
 
     Connections {
         target: Theme
-
-        onThemeChanged: {
-            background.color = Theme.background /** For some reason these are broken if i don't do this.... */
-            headertext.color = Theme.primary /** For some reason these are broken if i don't do this.... */
-        }
     }
 
 
@@ -52,6 +40,7 @@ ApplicationWindow {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
     }
+    
     Item {
         id: content
         anchors.fill: parent
@@ -64,7 +53,13 @@ ApplicationWindow {
         ListView {
             id: tabBar
             model: root.tabsModel
-            anchors.fill: parent
+            
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+
+            
+
             orientation: ListView.Horizontal
 
             spacing: 2
@@ -107,7 +102,7 @@ ApplicationWindow {
 
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: Backend.activeTab = model.name
+                    onClicked: Backend.activeTab = model.internalName
                 }
 
                 Behavior on color {
@@ -129,7 +124,7 @@ ApplicationWindow {
             Loader {
                 id: tabLoader
                 anchors.fill: parent
-                sourceComponent: Backend.activeTabComponent
+                source: "qml/" + Backend.activeTab + ".qml"
             }
         }
     }

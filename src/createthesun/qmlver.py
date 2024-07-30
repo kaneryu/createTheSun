@@ -77,6 +77,7 @@ class ListModel(QAbstractListModel):
 @dataclasses.dataclass
 class Tab:
     name: str = ""
+    internalName: str = ""
     
 QML_IMPORT_NAME = "CreateTheSun"
 QML_IMPORT_MAJOR_VERSION = 1
@@ -97,7 +98,7 @@ class Backend(QObject):
             self.initialized = True
             self._value = 0
             
-        self.activeTab = "Main Tab"
+        self.activeTab = "mainTab"
         self.model = ListModel()
     
     @Property(str, notify=activeTabChanged)
@@ -108,6 +109,8 @@ class Backend(QObject):
     def activeTab(self, value):
         self._activeTab = value
         self.activeTabChanged.emit()
+    
+    
 
 def findQmlFile() -> str | None:
     # Find the QML file
@@ -120,12 +123,12 @@ def findQmlFile() -> str | None:
 
 def createTabModel():
     model = ListModel(contains=Tab)
-    model.addItem(Tab("Stats"))
-    model.addItem(Tab("Save & Load"))
-    model.addItem(Tab("Goals"))
-    model.addItem(Tab("Achevements"))
-    model.addItem(Tab("Automation"))
-    model.addItem(Tab("Main Tab"))
+    model.addItem(Tab(name = "Stats", internalName = "stats"))
+    model.addItem(Tab("Save & Load", internalName = "saveLoad"))
+    model.addItem(Tab("Goals", internalName = "goals"))
+    model.addItem(Tab("Achevements", internalName = "achevements"))
+    model.addItem(Tab("Automation", internalName = "automation"))
+    model.addItem(Tab("Main Tab", internalName = "mainTab"))
     return model
 
 def generateRandomHexColor():
@@ -145,31 +148,23 @@ def main():
     qml = findQmlFile()
 
     backend: Backend = Backend()
-    print(backend)
-    qmlRegisterSingletonInstance(Backend, QML_IMPORT_NAME, QML_IMPORT_MAJOR_VERSION, QML_IMPORT_MINOR_VERSION, "Backend", backend)
+    # print(backend)
+    # qmlRegisterSingletonInstance(Backend, QML_IMPORT_NAME, QML_IMPORT_MAJOR_VERSION, QML_IMPORT_MINOR_VERSION, "Backend", backend)
     
     theme: materialInterface.Theme = materialInterface.Theme()
     theme.get_dynamicColors(generateRandomHexColor(), True, 0.0)
-    print(theme)
-    qmlRegisterSingletonInstance(materialInterface.Theme, QML_IMPORT_NAME, QML_IMPORT_MAJOR_VERSION, QML_IMPORT_MINOR_VERSION, "Theme", theme)
+    # print(theme)
+    # qmlRegisterSingletonInstance(materialInterface.Theme, QML_IMPORT_NAME, QML_IMPORT_MAJOR_VERSION, QML_IMPORT_MINOR_VERSION, "Theme", theme)
     
     if not qml:
         print('Could not find QML file')
         sys.exit(1)
     else:
         engine.load(qml)
-
-    # backendId = qmlRegisterSingletonType(Backend, "CreateTheSun", 1, 0, "Backend")
-
-        
-    backend: Backend = Backend()
-    print(backend)
-    qmlRegisterSingletonInstance(Backend, QML_IMPORT_NAME, QML_IMPORT_MAJOR_VERSION, QML_IMPORT_MINOR_VERSION, "Backend", backend)
     
-    theme: materialInterface.Theme = materialInterface.Theme()
-    theme.get_dynamicColors(generateRandomHexColor(), True, 0.0)
-    print(theme)
-    qmlRegisterSingletonInstance(materialInterface.Theme, QML_IMPORT_NAME, QML_IMPORT_MAJOR_VERSION, QML_IMPORT_MINOR_VERSION, "Theme", theme)
+    engine.rootContext().setContextProperty("Theme", theme)
+    engine.rootContext().setContextProperty("Backend", backend)
+
     
     engine.rootObjects()[0].setProperty('theme', theme)
     tabModel = createTabModel()

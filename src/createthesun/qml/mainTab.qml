@@ -4,18 +4,21 @@ import QtQuick.Layouts
 import Qt.labs.platform
 
 Item {
-    id: mainTab
+    id: root
     property QtObject mainModel // absract list model from python
-    property QtObject backend
-    property QtObject theme
 
     Connections {
-        target: backend
-
-        function onModelChanged(model) {
-            mainModel = model
-        }
-
-        function onLoadComplete() {}
+        target: Backend
     }
+
+    Connections {
+        target:Theme
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        id: background
+        color: Theme.primary
+    }
+
 }
