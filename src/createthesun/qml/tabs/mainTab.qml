@@ -7,6 +7,7 @@ Item {
     id: root
     property QtObject mainModel // absract list model from python
 
+
     Connections {
         target: Backend
     }
@@ -19,6 +20,13 @@ Item {
         anchors.fill: parent
         id: background
         color: Theme.primary
+        
+        Behavior on color {
+            ColorAnimation {
+                easing.type: Easing.InOutQuad
+                duration: 200
+            }
+        }
     }
 
 }

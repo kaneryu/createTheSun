@@ -1,7 +1,8 @@
 ![Logo](https://files.catbox.moe/1q9te7.png)
 
 
-# Create The Sun
+# Create The Sun - QML Dev branch
+## As the name suggests, this branch is for developing the QML version of the game. The main version of the game is broken on this branch, clone origin/main if you want to work on the main version of the game. However, the QML version will be the future main version of the game. 
 
 An incremental not-idle-yet game where the goal is to create the sun
 
