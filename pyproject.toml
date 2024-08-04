@@ -24,8 +24,6 @@ dependencies = [
     "pluggy",
     "pyinstaller",
     "pyinstaller-hooks-contrib",
-    "PyQt6-Qt6",
-    "PyQt6-sip",
     "PySide6",
     "PySide6_Addons",
     "PySide6_Essentials",

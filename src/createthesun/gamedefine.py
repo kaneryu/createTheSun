@@ -1,18 +1,264 @@
+#######
+from __future__ import annotations
+#######
+
 import json
 import time
 from copy import deepcopy
 from dataclasses import asdict, dataclass
+from typing import Self
 
 import deepdiff
 import regex
 import versions
 from dacite import from_dict
 from PySide6.QtWidgets import QTabWidget
+from PySide6.QtCore import QObject, Signal, Slot, Property as QProperty
 
-from .. import quickload
-from .gameLogic import automationGameLogic
+from . import quickload
+
+items: dict[str, object] = {}
+
+# Base Classes
+class _Item(QObject):
+    """This is the base class for all items, will not be accessed directly. It supports switch items, which are items that have been modified from the base item.
+    
+    Note that switches are guranteed to always be in the same order, so the first switch will always be the first switch, and so on.
+    The use of switch items are optional, so this class can be used without them.
+    """
+    nameChanged = Signal(str)
+    descriptionChanged = Signal(str)
+    amountChanged = Signal(int)
+    
+    def __init__(self):
+        super().__init__()
+        global items
+        items[self.__class__.__name__] = self
+        
+        self._name: str = ""
+        self._description: str = ""
+
+        self._amount: int = 0
+
+        self.internalName: str = ""
+        self.singlarName: str = ""
+        self.cost: list[dict[str, int]] = []
+        self.costEquation: str = ""
+        self.gives: list[dict[object, int]] = []
+        self.switches: list[object] = []
+    
+    def getSwitch(self, switch: int) -> object:
+        """This function will return the correct switch item based on the switch number.
+        
+        Args:
+            switch (int): The switch number.
+        
+        Returns:
+            Item_Switch: The correct switch item.
+        """
+        return self.switches[switch]
+    
+    @QProperty(str, notify=nameChanged)
+    def name(self) -> str:
+        return self._name
+    
+    @name.setter
+    def name(self, value: str):
+        self._name = value
+        self.nameChanged.emit(value)
+    
+    
+    @QProperty(str, notify=descriptionChanged)
+    def description(self) -> str:
+        return self._description
+    
+    @description.setter
+    def description(self, value: str):
+        self._description = value
+        self.descriptionChanged.emit(value)
+    
+    @QProperty(int, notify=amountChanged)
+    def amount(self) -> int:
+        return self._amount
+    
+    @amount.setter
+    def amount(self, value: int):
+        self._amount = value
+        self.amountChanged.emit(value)
+
+    @Slot(result=str)
+    def getName(self) -> str:
+        if not self.amount == 1:
+            return self.name
+        else:
+            return self.singlarName
+
+
+
+
+class _LevelAutomation:
+    """This is the base class for all automations, will not be accessed directly, even when instantiated.
+    It should instead be used with the Automation class, which will return the correct LevelAutomation class.
+    """
+    def __init__(self):
+        
+        self.name: str = ""
+        self.description: str = ""
+        self.upgradeName: str = ""
+        self.upgradeDescription: str = ""
+        
+        self.statDescription: str = ""
+        self.upgradeStatDescription: str = ""
+        self.statDescriptionBlank: str = ""
+
+        self.disabledText: str = ""
+        
+        
+        self.startLevel: int = 0
+        self.upgradeCost: list[dict[str, int]] = []
+        self.withRequirement: bool = False
+        self.type: str = ""
+        self.idleGenerator: dict[str, int] = {}
+        
+class Automation:
+    """This is the base class for all automations, will not be accessed directly.
+    
+    """
+    def __init__(self):
+        self.firstCost: list[dict[str, int]] = []
+        self.maxLevel: int = 0
+        self.multiLevelUpgradesStarts: list[int] = []
+        self.multiLevelUpgrades: list[Automation] = []
+    
+    def getAutomationClass(self, level: int) -> _LevelAutomation:
+        """This function will return the correct LevelAutomation class based on the level of the automation.
+        
+        Args:
+            level (int): The level of the automation.
+        
+        Returns:
+            _LevelAutomation: The correct LevelAutomation class.
+        """
+        return self.multiLevelUpgrades[self.getMultiLevel(level)]
+
+    def getMultiLevel(self, level: int) -> int:
+        """This function will return the correct LevelAutomation class based on the level of the automation.
+        
+        Args:
+            level (int): The level of the automation.
+        
+        Returns:
+            int: The correct LevelAutomation class.
+        """
+        _ = 0
+        while level >= self.multiLevelUpgradesStarts[_]:
+            _ += 1
+        
+        return self.multiLevelUpgrades[_]
+        
+class Achevement:
+    pass
+
+class Unlockable:
+    pass
+
+class Rewrite:
+    pass
 
 initalized = False
+
+class Quarks(_Item):
+    def __init__(self):
+        super().__init__()
+        self.name = "Quarks"
+        self.singlarName = "Quark"
+        self.description = "Quarks are the building blocks of protons. They are made of nothing...?"
+        self.internalName = "quarks"
+        
+        self.cost = [{"what": None, "amount": -1}]
+        self.defaultCost = -1
+        self.costEquation = ""
+        self.gives = [{"what": "quarks", "amount": 1}]
+Quarks()
+
+class Electrons(_Item):
+    def __init__(self):
+        super().__init__()
+        self.name = "Electrons"
+        self.singlarName = "Electron"
+        self.description = "Electrons are the building blocks of atoms."
+        self.internalName = "electrons"
+        
+        self.cost = [{"what": None, "amount": -1}]
+        self.defaultCost = -1
+        self.costEquation = ""
+        self.gives = [{"what": "Electrons", "amount": 1}]
+Electrons()
+
+class Protons(_Item):
+    def __init__(self):
+        super().__init__()
+        self.name = "Protons"
+        self.singlarName = "Proton"
+        self.description = "Protons are the building blocks of atoms. They are made of quarks."
+        self.internalName = "protons"
+        self.amount = 3
+        self.cost = [{"what": Quarks, "amount": 3}]
+        self.costEquation = "%1 * 3"
+        self.gives = [{"what": "Protons", "amount": 1}]
+Protons()
+
+class Hydrogen(_Item):
+    def __init__(self):
+        super().__init__()
+        self.name = "Hydrogen"
+        self.singlarName = "Hydrogen"
+        self.description = "Hydrogen is the simplest element. It is made of one proton and one electron."
+        
+        self.internalName = "hydrogen"
+        self.cost = [{"what": Quarks, "amount": 3}]
+        self.costEquation = "%1 * 3"
+        self.gives = [{"what": "Hydrogen", "amount": 1}]
+Hydrogen()
+
+class Stars(_Item):
+    def __init__(self):
+        super().__init__()
+        self.name = "Stars"
+        self.singlarName = "Star"
+        self.description = "Stars are the building blocks of galaxies. They are made of hydrogen."
+        
+        self.internalName = "stars"
+        self.cost = [{"what": Hydrogen, "amount": 1e57}]
+        self.costEquation = "%1 * 1e57"
+        self.gives = [{"what": "Stars", "amount": 2}]
+Stars()
+
+class Galaxies(_Item):
+    def __init__(self):
+        super().__init__()
+        self.name = "Galaxies"
+        self.singlarName = "Galaxy"
+        self.description = "Galaxies are the building blocks of superclusters. They are made of stars."
+        
+        self.internalName = "galaxies"
+        self.cost = [{"what": Stars, "amount": 1e11}]
+        self.costEquation = "%1 * 1e11"
+        self.gives = [{"what": "galaxies", "amount": 1}]
+Galaxies()
+
+class Superclusters(_Item):
+    def __init__(self):
+        super().__init__()
+        self.name = "Superclusters"
+        self.singlarName = "Supercluster"
+        self.description = "Superclusters are the building blocks of the universe. They are made of galaxies."
+        
+        self.internalName = "superclusters"
+        self.cost = [{"what": Galaxies, "amount": 100000}]
+        self.costEquation = "%1 * 100000"
+        self.gives = [{"what": "superclusters", "amount": 1}]
+Superclusters()
 
 defualtGameDefine = {
     "itemVisualDefine": {
@@ -206,8 +452,8 @@ defualtGameDefine = {
                 "description": "Accelerates particles to create quarks.",
                 "upgradeVisualName": "Increase Loop Size",
                 "upgradeDescription": "Increase the size of the particle accelerator loop for more quarks per second.",
-                "firstupgradeUsefulDescription": "Creates 1 Quark per second",
-                "currentUpgradeUsefulDescription": "You are currently gaining 1 Quark every %%% seconds",
+                "firstupgradeUsefulDescription": "Creates 1 Quark per second", # rolled into statDescription (See below)
+                "currentUpgradeUsefulDescription": "You are currently gaining 1 Quark every %%% seconds", # renamed to statDescription
                 "upgradeUsefulDescription": "Upgrade to gain 1 Quark every %%% seconds",
                 "usefulDescriptionBlank": "tickTime",
                 "disabledText": "How are you seeing this?",
@@ -532,57 +778,57 @@ lastAutosaveTime = 0
 autosaveTime = 300000
 
 
-def loadSave(saveDict: list[dict]):
-    global gamedefine
-    newsave = deepcopy(defualtGameDefine)
+# def loadSave(saveDict: list[dict]):
+#     global gamedefine
+#     newsave = deepcopy(defualtGameDefine)
 
-    for item in saveDict:
-        changes = item["changes"]
-        location: str
-        location = item["location"]
+#     for item in saveDict:
+#         changes = item["changes"]
+#         location: str
+#         location = item["location"]
 
-        try:
-            exec(f"newsave{location} = changes")
-        except IndexError:
-            # example where this path would be triggered:
-            # dict = {"hello": []}
-            # diff = [{"changes": 1, "location": ["hello"][2]}]
-            # so in this case, we need to add 3 items to the list, so we reach the third index
-            # this will allow us to use the index based assignment
+#         try:
+#             exec(f"newsave{location} = changes")
+#         except IndexError:
+#             # example where this path would be triggered:
+#             # dict = {"hello": []}
+#             # diff = [{"changes": 1, "location": ["hello"][2]}]
+#             # so in this case, we need to add 3 items to the list, so we reach the third index
+#             # this will allow us to use the index based assignment
 
-            # Ignore the comments above, i've just made it so the item is appended to the list.
+#             # Ignore the comments above, i've just made it so the item is appended to the list.
 
-            # make sure all quotes are double
-            location = location.replace("'", '"')
+#             # make sure all quotes are double
+#             location = location.replace("'", '"')
 
-            # match all keys
-            matches = regex.findall(r"[^[\]]*", location)
+#             # match all keys
+#             matches = regex.findall(r"[^[\]]*", location)
 
-            # remove the last key (which would be the list index)
+#             # remove the last key (which would be the list index)
 
-            # the regex removes the brackets, we have to add it back
+#             # the regex removes the brackets, we have to add it back
 
-            matches = [i for i in matches if not len(i) == 0]
-            amount = matches.pop()
-            matches = [f"[{i}]" for i in matches]
+#             matches = [i for i in matches if not len(i) == 0]
+#             amount = matches.pop()
+#             matches = [f"[{i}]" for i in matches]
 
-            what = "".join(matches)
-            oldCode = f"""
-toAppend = newsave{what}
-for i in range({amount} + 1):
-    toAppend.append(None)
-            """
-            code = f"newsave{location}.append(changes)"
-            exec(code)
+#             what = "".join(matches)
+#             oldCode = f"""
+# toAppend = newsave{what}
+# for i in range({amount} + 1):
+#     toAppend.append(None)
+#             """
+#             code = f"newsave{location}.append(changes)"
+#             exec(code)
 
-    gamedefine = from_dict(data_class=GameDefine, data=newsave)
-    gamedefine.mainTabBuyMultiple = 1
+#     gamedefine = from_dict(data_class=GameDefine, data=newsave)
+#     gamedefine.mainTabBuyMultiple = 1
 
-    for item in gamedefine.automationLevels:
-        if gamedefine.automationLevels[item] > 0:
-            automationGameLogic.updateAutomationStatus(item)
+#     for item in gamedefine.automationLevels:
+#         if gamedefine.automationLevels[item] > 0:
+#             automationGameLogic.updateAutomationStatus(item)
 
-    return gamedefine
+#     return gamedefine
 
 
 def getSaveData(data: GameDefine | None = None) -> list[dict]:

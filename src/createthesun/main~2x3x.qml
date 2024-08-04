@@ -18,6 +18,12 @@ ApplicationWindow {
     
     Connections {
         target: Backend
+
+        function onLoadComplete() {
+            console.log("Loaded")
+            console.log(ItemsModel)
+            console.log(Backend.activeTab)
+        }
     }
 
     Connections {
@@ -40,6 +46,7 @@ ApplicationWindow {
     
     header: Text {
         id: headertext
+        
         text: root.title
         font.pixelSize: 24
 

@@ -15,12 +15,57 @@ Item {
     Connections {
         target:Theme
     }
+    anchors.fill: parent
 
-    Rectangle {
-        anchors.fill: parent
-        id: background
-        color: Theme.primary
-        
+    ListView {
+    id: tabBar
+    model: ItemsModel
+    
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: parent.top
+
+    height: (43 / 2) + 10
+
+    orientation: ListView.Vertical
+    
+    spacing: 2
+    delegate: Rectangle {
+        id: rect
+        topRightRadius: 10/2
+        topLeftRadius: 10/2
+
+        width: metrics.width + 10
+        height: 43 / 2
+
+        color: Theme.surfaceContainer
+
+        border.color: Theme.primaryFixed
+        border.width: 1/2
+
+        Text {
+            id: tabText
+            text: "You have " + model.item.amount + " " + model.item.getName()
+            color: Theme.onSurface
+            font.pixelSize: 18
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            anchors.fill: parent
+
+            Behavior on color {
+                ColorAnimation {
+                    easing.type: Easing.InOutQuad
+                    duration: 200
+                }
+            }
+        }
+
+        TextMetrics {
+            id: metrics
+            text: tabText.text
+            font: tabText.font
+        }
+
         Behavior on color {
             ColorAnimation {
                 easing.type: Easing.InOutQuad
@@ -28,5 +73,6 @@ Item {
             }
         }
     }
+}
 
 }

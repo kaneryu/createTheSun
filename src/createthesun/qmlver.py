@@ -5,6 +5,7 @@ import os
 import random
 import sys
 import threading
+import time
 
 import requests
 from PySide6.QtCore import Property as Property
@@ -12,7 +13,7 @@ from PySide6.QtCore import Property as Property
 # library imports
 from PySide6.QtCore import QAbstractListModel, QByteArray, QModelIndex, QObject, Qt, QTimer
 from PySide6.QtCore import Signal as QSignal
-from PySide6.QtCore import Slot as Slot
+from PySide6.QtCore import Slot as Slot, QDir
 from PySide6.QtGui import QAction, QFont, QIcon
 from PySide6.QtQml import (
     QmlElement,
@@ -24,56 +25,12 @@ from PySide6.QtQml import (
 from PySide6.QtWidgets import QApplication
 
 # local imports
-from . import materialInterface, urbanistFont
+from . import materialInterface, urbanistFont, gamedefine, iLoveModelsTotally
 
 
-@dataclasses.dataclass
-class Item:
-    thing: str = ""
-    things: str = ""
-    objects: str = ""
-    multi: str = ""
+
     
-class ListModel(QAbstractListModel):
-    def __init__(self, contains = Item):
-        super().__init__()
-        self._contentsList = []
 
-        self.contains = contains
-        
-    def data(self, index: QModelIndex, role: int = Qt.ItemDataRole.DisplayRole):
-        if 0 <= index.row() < self.rowCount():
-            item = self._contentsList[index.row()]
-            name = self.roleNames().get(role)
-            if name:
-                return getattr(item, name.decode())
-
-    def roleNames(self) -> dict[int, QByteArray]:
-        d = {}
-        for i, field in enumerate(dataclasses.fields(self.contains)):
-            d[Qt.ItemDataRole.DisplayRole + i] = field.name.encode()
-        return d
-
-    def rowCount(self, parent=None):
-        return len(self._contentsList)
-
-    def addItem(self, item: object):
-        self.beginInsertRows(QModelIndex(), 0, 0)
-        self._contentsList.insert(0, item)
-        self.endInsertRows()
-        
-    def moveItem(self, fromIndex: int, toIndex: int):
-        self.beginMoveRows(QModelIndex(), fromIndex, fromIndex, QModelIndex(), toIndex)
-        self._contentsList.insert(toIndex, self._contentsList.pop(fromIndex))
-        self.endMoveRows()
-    
-    def clear(self):
-        self.beginResetModel()
-        self._contentsList.clear()
-        self.endResetModel()
-
-    def count(self):
-        return len(self._contentsList)  
 @dataclasses.dataclass
 class Tab:
     name: str = ""
@@ -83,13 +40,21 @@ QML_IMPORT_NAME = "CreateTheSun"
 QML_IMPORT_MAJOR_VERSION = 1
 QML_IMPORT_MINOR_VERSION = 0
 
+class Items(QObject):
+    def __init__(self):
+        super().__init__()
+        for i in gamedefine.items:
+            setattr(self, i.lower(), gamedefine.items[i])
+    
+    @Slot(str, result=QObject)
+    def getItem(self, name: str):
+        return getattr(self, name.lower())
+    
 @QmlElement
-@QmlSingleton
 class Backend(QObject):
-    modelChanged = QSignal(QAbstractListModel, name="modelChanged", arguments=['model'])
     loadComplete = QSignal(name="loadComplete")
     activeTabChanged = QSignal(name="activeTabChanged")
-    
+    # tabModelChanged = QSignal(name="tabModelChanged")
     _instance = None
     
     def __init__(self):
@@ -98,9 +63,8 @@ class Backend(QObject):
             self.initialized = True
             self._value = 0
             
-        self.activeTab = "mainTab"
-        self.model = ListModel()
-    
+        self._activeTab = "mainTab"   
+        
     @Property(str, notify=activeTabChanged)
     def activeTab(self):
         return self._activeTab
@@ -119,10 +83,9 @@ def findQmlFile() -> str | None:
             if file == 'main~2x3x.qml':
                 return os.path.join(path, file)
     return None
-
-
+ 
 def createTabModel():
-    model = ListModel(contains=Tab)
+    model = iLoveModelsTotally.ListModel(contains=Tab)
     model.addItem(Tab(name = "Stats", internalName = "stats"))
     model.addItem(Tab("Save & Load", internalName = "saveLoad"))
     model.addItem(Tab("Goals", internalName = "goals"))
@@ -134,9 +97,19 @@ def createTabModel():
 def generateRandomHexColor():
     return random.randint(0, 0xFFFFFF)
 
+@dataclasses.dataclass
+class Item:
+    item: QObject = None
+    
+def createItemModel():      
+    ItemsModel = iLoveModelsTotally.ListModel(contains=Item)
+    for i in gamedefine.items:
+        ItemsModel.addItem(Item(item=gamedefine.items[i]))
+        
+    return ItemsModel
+    
+
 def main():
-    theme = materialInterface.Theme()
-    theme.get_dynamicColors(0xDCAB5C, True, 0.0)
     app = QApplication()
     
     fonts = urbanistFont.createFonts()
@@ -147,14 +120,12 @@ def main():
     engine.quit.connect(app.quit)
     qml = findQmlFile()
 
-    backend: Backend = Backend()
-    # print(backend)
-    # qmlRegisterSingletonInstance(Backend, QML_IMPORT_NAME, QML_IMPORT_MAJOR_VERSION, QML_IMPORT_MINOR_VERSION, "Backend", backend)
-    
-    theme: materialInterface.Theme = materialInterface.Theme()
+    backend = Backend()
+
+    theme = materialInterface.Theme()
     theme.get_dynamicColors(generateRandomHexColor(), True, 0.0)
-    # print(theme)
-    # qmlRegisterSingletonInstance(materialInterface.Theme, QML_IMPORT_NAME, QML_IMPORT_MAJOR_VERSION, QML_IMPORT_MINOR_VERSION, "Theme", theme)
+    items = Items()
+
     
     if not qml:
         print('Could not find QML file')
@@ -164,11 +135,14 @@ def main():
     
     engine.rootContext().setContextProperty("Theme", theme)
     engine.rootContext().setContextProperty("Backend", backend)
-
+    engine.rootContext().setContextProperty("Items", items)
     
-    engine.rootObjects()[0].setProperty('theme', theme)
-    tabModel = createTabModel()
-    engine.rootObjects()[0].setProperty('tabsModel', tabModel)
+    tabsModel = createTabModel()
+
+    engine.rootObjects()[0].setProperty("tabsModel", tabsModel)
+    
+    ItemsModel = createItemModel()
+    engine.rootContext().setContextProperty("ItemsModel", ItemsModel)
     
     tim = QTimer()
     tim.setInterval(1000)
@@ -176,7 +150,8 @@ def main():
     tim.start()
     
     
-    
+    print(QDir.currentPath())
+    time.sleep(0.3)
     # Main Theme Source Color: #DCAB5C
     backend.loadComplete.emit()
     engine.rootObjects()[0].show()
