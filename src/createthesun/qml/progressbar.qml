@@ -65,15 +65,9 @@ import QtQuick.Shapes
 Item {
     id: root
     
-    width: 50
-    height: 100
-       
-    anchors.horizontalCenter: parent.horizontalCenter
-    anchors.verticalCenter: parent.verticalCenter
     
-    
-    property real percent: 50
-    property bool vertical: false
+    property real percent
+    property bool vertical
 
     property alias fillColor: fill.color
     property alias backgroundColor: background.color
@@ -99,8 +93,6 @@ Item {
             
             
             anchors.bottom: parent.bottom
-            color: "red"
-            
         }
     }
 }

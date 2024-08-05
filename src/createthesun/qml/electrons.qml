@@ -3,13 +3,15 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Qt.labs.platform
 
-import "./qml/" as ProgressBar
+import "." as Kyu
+
+
 
 Item {
     id: root
     property QtObject mainModel // absract list model from python
     
-    width: 63/2
+
 
     Connections {
         target: Backend
@@ -22,22 +24,29 @@ Item {
 
     Text {
         id: text
-        text: backend.items.electrons.count
+        text: Items.getItem("electrons").amount
         color: Theme.tertiary
         font.pixelSize: 24
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
+        anchors.top: parent.top
+        width: parent.width
     }
 
-    ProgressBar {
-        id: progress
-        anchors.fill: parent
+    Kyu.ProgressBar {
+        id: progressBar
+
+        anchors.top: text.bottom
+
+        width: parent.width
+
         percent: 50
+        vertical: true
+
         fillColor: Theme.tertiary
         backgroundColor: "transparent"
         radius: 5
         border.color: Theme.tertiary
-        border.width: 2
+        border.width: 1
     }
-
 }

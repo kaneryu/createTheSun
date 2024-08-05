@@ -123,7 +123,7 @@ def main():
     backend = Backend()
 
     theme = materialInterface.Theme()
-    theme.get_dynamicColors(generateRandomHexColor(), True, 0.0)
+    theme.get_dynamicColors(0x18130B, True, 0.0)
     items = Items()
 
     
@@ -144,10 +144,10 @@ def main():
     ItemsModel = createItemModel()
     engine.rootContext().setContextProperty("ItemsModel", ItemsModel)
     
-    tim = QTimer()
-    tim.setInterval(1000)
-    tim.timeout.connect(lambda: theme.get_dynamicColors(generateRandomHexColor(), True, 0.0))
-    tim.start()
+    # tim = QTimer()
+    # tim.setInterval(1000)
+    # tim.timeout.connect(lambda: theme.get_dynamicColors(generateRandomHexColor(), True, 0.0))
+    # tim.start()
     
     
     print(QDir.currentPath())

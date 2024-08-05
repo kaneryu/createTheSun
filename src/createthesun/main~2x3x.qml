@@ -141,6 +141,7 @@ ApplicationWindow {
             anchors.right: electrons.left
             anchors.bottom: parent.bottom
 
+
             Loader {
                 id: tabLoader
                 anchors.fill: parent
@@ -150,15 +151,19 @@ ApplicationWindow {
 
         Item {
             id: electrons
+
             anchors.top: tabBar.bottom
             anchors.right: parent.right
+
             anchors.bottom: parent.bottom
 
-            width: electronLoader.width
+            width: 52/2
+            
+            anchors.leftMargin: 10
 
             Loader {
                 id: electronLoader
-
+                anchors.fill: parent
                 source: "qml/electrons.qml"
                 Component.onCompleted: {
                     console.log("Electrons loaded")
