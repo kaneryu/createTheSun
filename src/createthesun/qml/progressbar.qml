@@ -83,7 +83,6 @@ Item {
     }
     Rectangle {
         id: background
-        clip: true
         anchors.fill: parent
         
         Rectangle {

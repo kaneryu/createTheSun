@@ -21,11 +21,7 @@ Item {
     id: tabBar
     model: ItemsModel
     
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.top: parent.top
-
-    height: (43 / 2) + 10
+    anchors.fill: parent
 
     orientation: ListView.Vertical
     
