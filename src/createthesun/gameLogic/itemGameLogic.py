@@ -4,7 +4,7 @@ import regex as re
 import sympy as sp
 
 from ..gameLogic import numberLogic
-from ..old import gamedefine
+from .. import gamedefine
 
 
 def canAfford(item: str, doBuyMultiply=True) -> bool:
@@ -40,7 +40,6 @@ def purchase(item: str, doBuyMultiply=False) -> None:
 
     Args:
         item (str): The item to purchase.
-        cost (int): The cost of the item.
     """
 
     buyMultiplier = gamedefine.gamedefine.mainTabBuyMultiple if doBuyMultiply else 1

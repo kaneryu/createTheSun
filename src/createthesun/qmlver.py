@@ -25,7 +25,7 @@ from PySide6.QtQml import (
 from PySide6.QtWidgets import QApplication
 
 # local imports
-from . import materialInterface, urbanistFont, gamedefine, iLoveModelsTotally
+from . import materialInterface, urbanistFont, gamedefine, iLoveModelsTotally, itemInteractions
 
 
 
