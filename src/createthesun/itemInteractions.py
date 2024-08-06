@@ -17,8 +17,9 @@ from PySide6.QtCore import Signal , Slot
 
 
 # local imports
-from gameLogic import numberLogic
+from .gameLogic import numberLogic
 
 
 
-class ItemInteractions(QObject)
+class ItemInteractions(QObject):
+    pass

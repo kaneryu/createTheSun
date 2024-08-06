@@ -103,7 +103,7 @@ class Item:
     
 def createItemModel():      
     ItemsModel = iLoveModelsTotally.ListModel(contains=Item)
-    for i in gamedefine.items:
+    for i in reversed(gamedefine.items):
         ItemsModel.addItem(Item(item=gamedefine.items[i]))
         
     return ItemsModel
