@@ -25,7 +25,9 @@ from PySide6.QtQml import (
 from PySide6.QtWidgets import QApplication
 
 # local imports
-from . import materialInterface, urbanistFont, gamedefine, iLoveModelsTotally, itemInteractions
+from .gameLogic import itemGameLogic
+from . import materialInterface, urbanistFont, gamedefine, iLoveModelsTotally
+
 
 
 
@@ -110,6 +112,7 @@ def createItemModel():
     
 
 def main():
+    gamedefine.ItemGameLogic = itemGameLogic.ItemGameLogic
     app = QApplication()
     
     fonts = urbanistFont.createFonts()
@@ -124,8 +127,9 @@ def main():
 
     theme = materialInterface.Theme()
     theme.get_dynamicColors(0x18130B, True, 0.0)
+    
     items = Items()
-
+    ItemGameLogic = itemGameLogic.ItemGameLogic.getInstance()
     
     if not qml:
         print('Could not find QML file')
@@ -136,6 +140,7 @@ def main():
     engine.rootContext().setContextProperty("Theme", theme)
     engine.rootContext().setContextProperty("Backend", backend)
     engine.rootContext().setContextProperty("Items", items)
+    engine.rootContext().setContextProperty("ItemGameLogic", ItemGameLogic)
     
     tabsModel = createTabModel()
 
@@ -144,14 +149,16 @@ def main():
     ItemsModel = createItemModel()
     engine.rootContext().setContextProperty("ItemsModel", ItemsModel)
     
+    
     # tim = QTimer()
     # tim.setInterval(1000)
     # tim.timeout.connect(lambda: theme.get_dynamicColors(generateRandomHexColor(), True, 0.0))
     # tim.start()
     
+    for i in gamedefine.items:
+        gamedefine.items[i].affordablilityCheck()
     
     print(QDir.currentPath())
-    time.sleep(0.3)
     # Main Theme Source Color: #DCAB5C
     backend.loadComplete.emit()
     engine.rootObjects()[0].show()

@@ -53,6 +53,13 @@ Item {
             txt.color = (disabledTextColor !== undefined && disabledTextColor !== null) ? disabledTextColor : textColor
             fill.radius = (disabledRadius !== undefined && disabledRadius !== null) ? disabledRadius : radius
             txt.text = (disabledText !== undefined && disabledText !== null) ? disabledText : text
+        } else {
+            fill.color = fillColor
+            fill.border.color = borderColor
+            fill.border.width = borderWidth
+            txt.color = textColor
+            fill.radius = radius
+            txt.text = text
         }
     }
 
@@ -96,7 +103,9 @@ Item {
             id: txt
             text: root.text
             color: textColor
-            anchors.centerIn: parent
+            anchors.fill: parent
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
             font.pixelSize: 24
         }
     }

@@ -13,11 +13,13 @@ import regex
 import versions
 from dacite import from_dict
 from PySide6.QtWidgets import QTabWidget
-from PySide6.QtCore import QObject, Signal, Slot, Property as QProperty
+from PySide6.QtCore import QObject, Signal, Slot, Property as QProperty, QTimer
+
 
 from . import quickload
 
-items: dict[str, object] = {}
+ItemGameLogic = None
+items: dict[str, _Item] = {}
 
 # Base Classes
 class _Item(QObject):
@@ -29,6 +31,8 @@ class _Item(QObject):
     nameChanged = Signal(str)
     descriptionChanged = Signal(str)
     amountChanged = Signal(int)
+    affordablilityChanged = Signal(bool)
+    costChanged = Signal(list)
     
     def __init__(self):
         super().__init__()
@@ -39,13 +43,31 @@ class _Item(QObject):
         self._description: str = ""
 
         self._amount: int = 0
-
+        
+        self._affordable: bool = True
+        
         self.internalName: str = ""
         self.singlarName: str = ""
-        self.cost: list[dict[str, int]] = []
+        self._cost: list[dict[_Item, int]] = []
+        self.defaultCost: int = 0
         self.costEquation: str = ""
-        self.gives: list[dict[object, int]] = []
+        self.gives: list[dict[_Item, int]] = []
         self.switches: list[object] = []
+        
+        self.nameChanged.connect(self.affordablilityCheck)
+        self.amountChanged.connect(self.affordablilityCheck)
+        
+        self.costChanged.connect(self.recheckcosts)
+
+    
+    def recheckcosts(self):
+        for i in self.cost:
+            i["what"].amountChanged.connect(self.affordablilityCheck)
+            
+    
+    
+    def periodicalChecks(self):
+        self.affordablilityCheck()
     
     def getSwitch(self, switch: int) -> object:
         """This function will return the correct switch item based on the switch number.
@@ -57,6 +79,14 @@ class _Item(QObject):
             Item_Switch: The correct switch item.
         """
         return self.switches[switch]
+    @QProperty(str, notify=costChanged)
+    def cost(self) -> list[dict[_Item, int]]:
+        return self._cost
+    
+    @cost.setter
+    def cost(self, value: list[dict[_Item, int]]):
+        self._cost = value
+        self.costChanged.emit(value)
     
     @QProperty(str, notify=nameChanged)
     def name(self) -> str:
@@ -66,7 +96,7 @@ class _Item(QObject):
     def name(self, value: str):
         self._name = value
         self.nameChanged.emit(value)
-    
+
     
     @QProperty(str, notify=descriptionChanged)
     def description(self) -> str:
@@ -76,6 +106,7 @@ class _Item(QObject):
     def description(self, value: str):
         self._description = value
         self.descriptionChanged.emit(value)
+
     
     @QProperty(int, notify=amountChanged)
     def amount(self) -> int:
@@ -86,15 +117,34 @@ class _Item(QObject):
         self._amount = value
         self.amountChanged.emit(value)
 
+    @QProperty(bool, notify=affordablilityChanged)
+    def affordable(self) -> bool:
+        return self._affordable
+
+    @affordable.setter
+    def affordable(self, value: bool):
+        self._affordable = value
+        self.affordablilityChanged.emit(value)
+        
     @Slot(result=str)
     def getName(self) -> str:
         if not self.amount == 1:
             return self.name
         else:
             return self.singlarName
+    
+    def getName_(self, number) -> str:
+        if not number == 1:
+            return self.name
+        else:
+            return self.singlarName
 
-
-
+    @Slot()
+    def affordablilityCheck(self):
+        if ItemGameLogic is not None:
+            self.affordable = ItemGameLogic.getInstance().canAfford(self.name)
+        else: 
+            print("affordablilityCheck: ItemGameLogic is not defined")
 
 class _LevelAutomation:
     """This is the base class for all automations, will not be accessed directly, even when instantiated.
@@ -178,7 +228,9 @@ class Quarks(_Item):
         self.cost = [{"what": None, "amount": -1}]
         self.defaultCost = -1
         self.costEquation = ""
-        self.gives = [{"what": "quarks", "amount": 1}]
+        self.gives = [{"what": items["Quarks"], "amount": 1}]
+        
+        
 Quarks()
 
 class Electrons(_Item):
@@ -192,7 +244,7 @@ class Electrons(_Item):
         self.cost = [{"what": None, "amount": -1}]
         self.defaultCost = -1
         self.costEquation = ""
-        self.gives = [{"what": "Electrons", "amount": 1}]
+        self.gives = [{"what": items["Electrons"], "amount": 1}]
 Electrons()
 
 class Protons(_Item):
@@ -203,9 +255,9 @@ class Protons(_Item):
         self.description = "Protons are the building blocks of atoms. They are made of quarks."
         self.internalName = "protons"
         self.amount = 3
-        self.cost = [{"what": Quarks, "amount": 3}]
+        self.cost = [{"what": items["Quarks"], "amount": 3}]
         self.costEquation = "%1 * 3"
-        self.gives = [{"what": "Protons", "amount": 1}]
+        self.gives = [{"what": items["Protons"], "amount": 1}]
 Protons()
 
 class Hydrogen(_Item):
@@ -216,9 +268,9 @@ class Hydrogen(_Item):
         self.description = "Hydrogen is the simplest element. It is made of one proton and one electron."
         
         self.internalName = "hydrogen"
-        self.cost = [{"what": Quarks, "amount": 3}]
+        self.cost = [{"what": items["Quarks"], "amount": 1}, {"what": items["Protons"], "amount": 1}, {"what": items["Electrons"], "amount": 1}]
         self.costEquation = "%1 * 3"
-        self.gives = [{"what": "Hydrogen", "amount": 1}]
+        self.gives = [{"what": items["Hydrogen"], "amount": 1}]
 Hydrogen()
 
 class Stars(_Item):
@@ -229,9 +281,9 @@ class Stars(_Item):
         self.description = "Stars are the building blocks of galaxies. They are made of hydrogen."
         
         self.internalName = "stars"
-        self.cost = [{"what": Hydrogen, "amount": 1e57}]
+        self.cost = [{"what": items["Hydrogen"], "amount": 1e57}]
         self.costEquation = "%1 * 1e57"
-        self.gives = [{"what": "Stars", "amount": 2}]
+        self.gives = [{"what": items["Stars"], "amount": 2}]
 Stars()
 
 class Galaxies(_Item):
@@ -242,9 +294,9 @@ class Galaxies(_Item):
         self.description = "Galaxies are the building blocks of superclusters. They are made of stars."
         
         self.internalName = "galaxies"
-        self.cost = [{"what": Stars, "amount": 1e11}]
+        self.cost = [{"what": items["Stars"], "amount": 1e11}]
         self.costEquation = "%1 * 1e11"
-        self.gives = [{"what": "galaxies", "amount": 1}]
+        self.gives = [{"what": items["Galaxies"], "amount": 1}]
 Galaxies()
 
 class Superclusters(_Item):
@@ -255,11 +307,75 @@ class Superclusters(_Item):
         self.description = "Superclusters are the building blocks of the universe. They are made of galaxies."
         
         self.internalName = "superclusters"
-        self.cost = [{"what": Galaxies, "amount": 100000}]
+        self.cost = [{"what": items["Galaxies"], "amount": 100000}]
         self.costEquation = "%1 * 100000"
-        self.gives = [{"what": "superclusters", "amount": 1}]
+        self.gives = [{"what": items["Superclusters"], "amount": 1}]
 Superclusters()
 
+class Game(QObject):
+    
+    purchaseToCreateChanged = Signal(list[str])
+    automationsToCreateChanged = Signal(list[str])
+    mainTabBuyMultipleChanged = Signal(int)
+    playTimeChanged = Signal(int)
+    tutorialPopupDoneChanged = Signal(bool)  
+    
+    def __init__(self) -> None:
+        super().__init__()
+        
+        self._purchaseToCreate = ["quarks", "protons"]
+        self._automationsToCreate = ["particleAccelerator", "protonicForge"]
+        
+        self._mainTabBuyMultiple = 1
+        
+        self._playTime = 0
+        self._tutorialPopupDone = False
+    
+    @QProperty(list, notify=purchaseToCreateChanged)
+    def purchaseToCreate(self) -> list[str]:
+        return self._purchaseToCreate
+    
+    @purchaseToCreate.setter
+    def purchaseToCreate(self, value: list[str]):
+        self._purchaseToCreate = value
+        self.purchasesToCreateChanged.emit(value)
+        
+    @QProperty(list, notify=automationsToCreateChanged)
+    def automationsToCreate(self) -> list[str]:
+        return self._automationsToCreate
+    
+    @automationsToCreate.setter
+    def automationsToCreate(self, value: list[str]):
+        self._automationsToCreate = value
+        self.automationsToCreateChanged.emit(value)
+    
+    @QProperty(int, notify=mainTabBuyMultipleChanged)
+    def mainTabBuyMultiple(self) -> int:
+        return self._mainTabBuyMultiple
+    
+    @mainTabBuyMultiple.setter
+    def mainTabBuyMultiple(self, value: int):
+        self._mainTabBuyMultiple = value
+        self.mainTabBuyMultipleChanged.emit(value)
+    
+    @QProperty(int, notify=playTimeChanged)
+    def playTime(self) -> int:
+        return self._playTime
+    
+    @playTime.setter
+    def playTime(self, value: int):
+        self._playTime = value
+        self.playTimeChanged.emit(value)
+    
+    @QProperty(bool, notify=tutorialPopupDoneChanged)
+    def tutorialPopupDone(self) -> bool:
+        return self._tutorialPopupDone
+    
+    @tutorialPopupDone.setter
+    def tutorialPopupDone(self, value: bool):
+        self._tutorialPopupDone = value
+        self.tutorialPopupDoneChanged.emit(value)
+game = Game()
 defualtGameDefine = {
     "itemVisualDefine": {
         "quarks": {
@@ -912,3 +1028,4 @@ theTabWidget: QTabWidget = None  # type:ignore - this will be set to a tabwidget
 # print(loadSave(json.loads(b64Decode(f.read()))))
 
 # f.close()
+

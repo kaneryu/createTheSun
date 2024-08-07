@@ -10,7 +10,7 @@ import "./qml/" as Kyu
 ApplicationWindow {
     id: root
     visible: true
-    minimumWidth: 640
+    minimumWidth: 840
     minimumHeight: 480
 
     title: "Create The Sun"

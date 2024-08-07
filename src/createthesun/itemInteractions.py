@@ -5,7 +5,7 @@ import os
 import random
 import sys
 import threading
-import time
+import typing
 
 import requests
 from PySide6.QtCore import Property as Property
@@ -17,9 +17,16 @@ from PySide6.QtCore import Signal , Slot
 
 
 # local imports
-from .gameLogic import numberLogic
-
+from .gameLogic import itemGameLogic
+from . import gamedefine
 
 
 class ItemInteractions(QObject):
-    pass
+    def __init__(self):
+        super().__init__()
+        self.possibleItems = gamedefine.items.keys()
+        
+        for i in itemGameLogic.functions:
+            self.__setattr__(i.__name__, i)
+        
+        

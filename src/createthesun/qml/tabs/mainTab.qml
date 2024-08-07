@@ -30,12 +30,19 @@ Item {
 
         color: Theme.surface
 
+        ToolTip {
+            id: tooltip
+            text: model.item.description
+            delay: 200
+            timeout: 2000
+        }
+
         Text {
             id: amtText
             text: "You have " + model.item.amount + " " + model.item.getName()
             width: root.largestTextWidth + 10
             color: Theme.onSurface
-            font.pixelSize: 36 / 2
+            font.pixelSize: 18
             verticalAlignment: Text.AlignVCenter
             anchors.left: parent.left
 
@@ -65,15 +72,11 @@ Item {
 
             height: parent.height
 
-            text: "Purchase 0 " + model.item.getName() + " for " + model.item.cost + " ..." // in the future you will call a function to get the cost text
-            disabledText: "(Can't Afford)"
-            textPixelSize: 36 / 2
-            
-            Component.onCompleted: {
-                if (model.item.name != "Quarks") {
-                    buyButton.enabled = false
-                }
-            }
+            text: ItemGameLogic.parseCost(model.item.name)
+            disabledText: ItemGameLogic.parseCost(model.item.name)
+            textPixelSize: 18
+
+            enabled: model.item.affordable
 
             TextMetrics {
                 id: bbmetrics
@@ -81,7 +84,7 @@ Item {
                 font: buyButton.txt.font
             }
 
-            width: bbmetrics.width + 50
+            width: (bbmetrics.advanceWidth * 1.2) + 15
 
             anchors.leftMargin: 15
             anchors.left: amtText.right
@@ -91,7 +94,7 @@ Item {
             clickedRadius: 0
 
             onClicked: {
-                Backend.buyItem(model.item.name)
+                ItemGameLogic.purchase(model.item.name)
             }
 
             fillColor: Theme.primaryContainer
