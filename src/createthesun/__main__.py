@@ -1,6 +1,7 @@
 import ctypes
 import json
 import os
+import pathlib
 import subprocess
 import sys
 import threading
@@ -36,7 +37,8 @@ from . import tabs_ as tabs
 from .customWidgets import dialogs
 from .tabs import electrons
 
-basedir = os.path.join(os.path.abspath(__file__), os.path.pardir)
+basedir = os.path.abspath(__file__)
+basedir = str(pathlib.Path(basedir).parent)
 
 devmode = True if os.path.exists(f"{basedir}\\otherStuff\\build.py") else False
 
@@ -348,9 +350,6 @@ def main():
     
     quickLaunch = devmode  # enabled during development
 
-    # change icon in taskbar
-    myappid = "opensource.createthesun.main.pre-release"
-    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
     app = QApplication(sys.argv)
     splashScreen = QSplashScreen(QPixmap(basedir + r"\assets\images\icon.ico"))
