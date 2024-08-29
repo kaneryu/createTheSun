@@ -4,7 +4,7 @@
 /build
 /dist
 /installer/dist
-/installer/build]
+/installer/build
 build/
 dist/
 /installer/dist/
@@ -16,3 +16,4 @@ tasks.json
 .coverage
 lcov.info
 /.pytest_cache
+src/createthesun/appdata/local/CreateTheSun/Saves/
