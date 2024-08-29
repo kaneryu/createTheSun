@@ -133,19 +133,23 @@ ApplicationWindow {
                 }
             }
         }
-
-        Item {
+        StackLayout {
             id: tabContent
             anchors.top: tabBar.bottom
             anchors.left: parent.left
             anchors.right: electrons.left
             anchors.bottom: parent.bottom
 
+            currentIndex: Backend.tabList.indexOf(Backend.activeTab)
 
-            Loader {
-                id: tabLoader
-                anchors.fill: parent
-                source: "qml/tabs/" + Backend.activeTab + ".qml"
+            Item {
+                Loader {
+                    id: tabLoader
+                    anchors.fill: parent
+                    source: "qml/tabs/" + Backend.activeTab + ".qml"
+                    asynchronous: true
+                    visible: status == Loader.Ready
+                }
             }
         }
 
@@ -165,10 +169,7 @@ ApplicationWindow {
                 id: electronLoader
                 anchors.fill: parent
                 source: "qml/electrons.qml"
-                Component.onCompleted: {
-                    console.log("Electrons loaded")
-                    console.log(width)
-                }
+
             }
         }
     }

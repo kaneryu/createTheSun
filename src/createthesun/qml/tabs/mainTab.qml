@@ -12,11 +12,67 @@ Item {
 
     anchors.fill: parent
 
+    Rectangle {
+        id: buyX
+        width: parent.width
+        height: 55 / 2
+        color: "transparent"
+
+        Text {
+            id: buyXText
+            text: "Buy x "
+            color: Theme.onSurface
+            font.pixelSize: 18
+            anchors.left: parent.left
+        }
+
+        TextField {
+            id: buyXField
+            width: 50
+            height: parent.height
+            anchors.left: buyXText.right
+            anchors.right: buyXButton.left
+            anchors.rightMargin: 5
+            text: "1"
+
+            validator: IntValidator { bottom: 1 }
+            inputMethodHints: Qt.ImhDigitsOnly
+            font.pixelSize: 18
+            color: Theme.onSurface
+            verticalAlignment: Text.AlignVCenter
+
+            background: Rectangle {
+                color: "transparent"
+                border.color: Theme.onSurface
+                border.width: 1
+
+                Behavior on color {
+                    ColorAnimation {
+                        easing.type: Easing.InOutQuad
+                        duration: 200
+                    }
+                }
+            }
+        }
+
+        Kyu.CustomButton {
+            id: buyXButton
+            height: parent.height
+            text: "Max All"
+            textPixelSize: 18
+            width: 65
+            anchors.right: parent.right
+            anchors.rightMargin: 15
+        }
+    }
     ListView {
     id: tabBar
     model: ItemsModel
     
-    anchors.fill: parent
+    anchors.top: buyX.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    height: parent.height - buyX.height
 
     orientation: ListView.Vertical
     
@@ -28,7 +84,7 @@ Item {
         width: parent.width
         height: 55 / 2
 
-        color: Theme.surface
+        color: "transparent"
 
         ToolTip {
             id: tooltip
@@ -81,39 +137,17 @@ Item {
             TextMetrics {
                 id: bbmetrics
                 text: buyButton.text
-                font: buyButton.txt.font
+                font: buyButton.textFont
             }
 
-            width: (bbmetrics.advanceWidth * 1.2) + 15
+            width: bbmetrics.advanceWidth + 15
 
             anchors.leftMargin: 15
             anchors.left: amtText.right
 
-            radius: 5
-            hoverRadius: 10
-            clickedRadius: 0
-
             onClicked: {
                 ItemGameLogic.purchase(model.item.name)
             }
-
-            fillColor: Theme.primaryContainer
-            hoverFillColor: Theme.primaryFixedDim
-            clickedFillColor: Theme.primaryFixed
-            disabledFillColor: Theme.secondaryContainer
-
-            borderColor: Theme.primaryFixed
-            disabledBorderColor: Theme.secondaryFixed
-
-            borderWidth: 1
-            disabledBorderWidth: 1
-
-
-            textColor: Theme.onPrimaryContainer
-            hoverTextColor: Theme.onPrimaryFixedDim
-            clickedTextColor: Theme.onPrimaryFixed
-            disabledTextColor: Theme.onSecondaryContainer
-
         }
 
 

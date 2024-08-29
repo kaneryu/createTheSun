@@ -42,8 +42,37 @@ Item {
     property string disabledText
     
     property alias textPixelSize: txt.font.pixelSize
+    property alias textFont: txt.font
 
     signal clicked()
+    
+
+    function setStyle1() {
+        root.radius = 5
+        root.hoverRadius = 10
+        root.clickedRadius = 0
+
+        root.fillColor = Theme.primaryContainer
+        root.hoverFillColor = Theme.primaryFixedDim
+        root.clickedFillColor = Theme.primaryFixed
+        root.disabledFillColor = Theme.secondaryContainer
+
+        root.borderColor = Theme.primaryFixed
+        root.disabledBorderColor = Theme.secondaryFixed
+
+        root.borderWidth = 1
+        root.disabledBorderWidth = 1
+
+
+        root.textColor = Theme.onPrimaryContainer
+        root.hoverTextColor = Theme.onPrimaryFixed
+        root.clickedTextColor = Theme.onPrimaryFixed
+        root.disabledTextColor = Theme.onSecondaryContainer
+    }
+
+    Component.onCompleted : {
+        setStyle1()
+    }
 
     onEnabledChanged: {
         if (!enabled) {

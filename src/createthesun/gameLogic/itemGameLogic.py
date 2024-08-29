@@ -53,6 +53,7 @@ class ItemGameLogic(QObject):
         ongoing = True
 
         for i in costs:
+            print(f"checking if {i['what'].name} has {i['amount'] * buyMultiplier} {i['what'].name} and has {i['what'].amount}")
             if i["what"].amount < i["amount"] * buyMultiplier:
                 ongoing = False
                 

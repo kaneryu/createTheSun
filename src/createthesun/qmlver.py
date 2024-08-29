@@ -1,17 +1,18 @@
 # stdlib imports
 import dataclasses
-import enum
+import random
 import os
 import random
 import sys
 import threading
 import time
 
+
 import requests
 from PySide6.QtCore import Property as Property
 
 # library imports
-from PySide6.QtCore import QAbstractListModel, QByteArray, QModelIndex, QObject, Qt, QTimer
+from PySide6.QtCore import QAbstractListModel, QByteArray, QModelIndex, QObject, Qt, QTimer, QThread
 from PySide6.QtCore import Signal as QSignal
 from PySide6.QtCore import Slot as Slot, QDir
 from PySide6.QtGui import QAction, QFont, QIcon
@@ -30,7 +31,25 @@ from . import materialInterface, urbanistFont, gamedefine, iLoveModelsTotally
 
 
 
+class BackgroundWorker(QThread):
+    def __init__(self):
+        super().__init__()
+        self.running = True
 
+    def run(self):
+        while self.running:
+            time.sleep(1)
+            print("Hello from BackgroundWorker")
+            gamedefine.items["Electrons"].amount += 1
+
+
+    def stop(self):
+        self.running = False
+
+def startBackgroundWorker():
+    worker = BackgroundWorker()
+    worker.start()
+    return worker
     
 
 @dataclasses.dataclass
@@ -76,6 +95,9 @@ class Backend(QObject):
         self._activeTab = value
         self.activeTabChanged.emit()
     
+    @Property(list, constant=True)
+    def tabList(self):
+        return [i.internalName for i in tabsModel._contentsList]
     
 
 def findQmlFile() -> str | None:
@@ -105,13 +127,42 @@ class Item:
     
 def createItemModel():      
     ItemsModel = iLoveModelsTotally.ListModel(contains=Item)
-    for i in reversed(gamedefine.items):
-        ItemsModel.addItem(Item(item=gamedefine.items[i]))
+    for i in reversed(gamedefine.game.purchaseToCreate):
+        ItemsModel.addItem(Item(gamedefine.items[i]))
+    
+    gamedefine.game.purchaseToCreateChanged.connect(updateItemModel)
         
     return ItemsModel
-    
 
+def updateItemModel():
+    # first, find deleted items
+    global ItemsModel
+    
+    for i in range(ItemsModel.count()):
+        if ItemsModel._contentsList[i].item.name not in gamedefine.game.purchaseToCreate:
+            ItemsModel.removeItem(i)
+    
+    # then, find new items
+    for i in gamedefine.game.purchaseToCreate:
+        found = False
+        for j in range(ItemsModel.count()):
+            if ItemsModel._contentsList[j].item.name == i:
+                found = True
+        if not found:
+            ItemsModel.addItem(Item(gamedefine.items[i]))
+    
+    # move any items that are in the wrong place
+    for i in range(ItemsModel.count()):
+        if ItemsModel._contentsList[i].item.name != gamedefine.game.purchaseToCreate[i]:
+            ItemsModel.moveItem(i, gamedefine.game.purchaseToCreate.index(ItemsModel._contentsList[i].item.name))
+    
+def appQuitOverride(event):
+    global bgworker
+    bgworker.stop()
+    event.accept()
+    
 def main():
+    global app, engine, backend, theme, items, ItemGameLogic, ItemsModel, bgworker, tabsModel
     gamedefine.ItemGameLogic = itemGameLogic.ItemGameLogic
     app = QApplication()
     
@@ -159,7 +210,8 @@ def main():
         gamedefine.items[i].affordablilityCheck()
     
     print(QDir.currentPath())
+    # bgworker = startBackgroundWorker()
     # Main Theme Source Color: #DCAB5C
     backend.loadComplete.emit()
-    engine.rootObjects()[0].show()
+    
     sys.exit(app.exec())

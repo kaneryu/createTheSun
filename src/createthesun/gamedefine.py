@@ -8,6 +8,7 @@ from copy import deepcopy
 from dataclasses import asdict, dataclass
 from typing import Self
 
+
 import deepdiff
 import regex
 import versions
@@ -245,7 +246,8 @@ class Electrons(_Item):
         self.defaultCost = -1
         self.costEquation = ""
         self.gives = [{"what": items["Electrons"], "amount": 1}]
-Electrons()
+electronkeepref = Electrons()
+
 
 class Protons(_Item):
     def __init__(self):
@@ -313,7 +315,6 @@ class Superclusters(_Item):
 Superclusters()
 
 class Game(QObject):
-    
     purchaseToCreateChanged = Signal(list[str])
     automationsToCreateChanged = Signal(list[str])
     mainTabBuyMultipleChanged = Signal(int)
@@ -323,14 +324,14 @@ class Game(QObject):
     def __init__(self) -> None:
         super().__init__()
         
-        self._purchaseToCreate = ["quarks", "protons"]
+        self._purchaseToCreate = ["Quarks", "Protons"]
         self._automationsToCreate = ["particleAccelerator", "protonicForge"]
         
         self._mainTabBuyMultiple = 1
         
         self._playTime = 0
         self._tutorialPopupDone = False
-    
+
     @QProperty(list, notify=purchaseToCreateChanged)
     def purchaseToCreate(self) -> list[str]:
         return self._purchaseToCreate
@@ -338,7 +339,8 @@ class Game(QObject):
     @purchaseToCreate.setter
     def purchaseToCreate(self, value: list[str]):
         self._purchaseToCreate = value
-        self.purchasesToCreateChanged.emit(value)
+        self.purchaseToCreateChanged.emit(value)
+    
         
     @QProperty(list, notify=automationsToCreateChanged)
     def automationsToCreate(self) -> list[str]:
@@ -375,7 +377,9 @@ class Game(QObject):
     def tutorialPopupDone(self, value: bool):
         self._tutorialPopupDone = value
         self.tutorialPopupDoneChanged.emit(value)
+        
 game = Game()
+
 defualtGameDefine = {
     "itemVisualDefine": {
         "quarks": {

@@ -36,7 +36,12 @@ class ListModel(QAbstractListModel):
         self.beginInsertRows(QModelIndex(), 0, 0)
         self._contentsList.insert(0, item)
         self.endInsertRows()
-        
+    
+    def removeItem(self, index: int):
+        self.beginRemoveRows(QModelIndex(), index, index)
+        self._contentsList.pop(index)
+        self.endRemoveRows()
+    
     def moveItem(self, fromIndex: int, toIndex: int):
         self.beginMoveRows(QModelIndex(), fromIndex, fromIndex, QModelIndex(), toIndex)
         self._contentsList.insert(toIndex, self._contentsList.pop(fromIndex))
@@ -49,3 +54,5 @@ class ListModel(QAbstractListModel):
 
     def count(self):
         return len(self._contentsList)
+
+    
