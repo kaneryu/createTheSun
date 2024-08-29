@@ -45,7 +45,7 @@ dependencies = [
     "types-requests",
     "urllib3",
     "versions_kaneryu",
-    "watchdog",
+    "watchdog"
 ]
 [project.optional-dependencies]
 dev = [
