@@ -53,7 +53,10 @@ Item {
         root.clickedRadius = 0
 
         root.fillColor = Theme.primaryContainer
+
         root.hoverFillColor = Theme.primaryFixedDim
+
+
         root.clickedFillColor = Theme.primaryFixed
         root.disabledFillColor = Theme.secondaryContainer
 
@@ -62,7 +65,6 @@ Item {
 
         root.borderWidth = 1
         root.disabledBorderWidth = 1
-
 
         root.textColor = Theme.onPrimaryContainer
         root.hoverTextColor = Theme.onPrimaryFixed

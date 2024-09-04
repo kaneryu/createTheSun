@@ -14,8 +14,13 @@ ApplicationWindow {
     minimumHeight: 480
 
     title: "Create The Sun"
-    property QtObject tabsModel // absract list model from python -- contains tabs
+    property QtObject tabsModel: TabsModel
     
+    onClosing: function(close) {
+        close.accepted = false
+        Backend.applicationExit()
+    }
+
     Connections {
         target: Backend
 
@@ -168,7 +173,7 @@ ApplicationWindow {
             Loader {
                 id: electronLoader
                 anchors.fill: parent
-                source: "qml/electrons.qml"
+                source: "qml/Electrons.qml"
 
             }
         }

@@ -53,6 +53,10 @@ Item {
                     }
                 }
             }
+
+            onTextChanged: {
+                ItemGameLogic.setBuyMultiplier(text)
+            }
         }
 
         Kyu.CustomButton {
@@ -63,6 +67,10 @@ Item {
             width: 65
             anchors.right: parent.right
             anchors.rightMargin: 15
+
+            onClicked: {
+                ItemGameLogic.maxAll()
+            }
         }
     }
     ListView {
@@ -129,7 +137,7 @@ Item {
             height: parent.height
 
             text: ItemGameLogic.parseCost(model.item.name)
-            disabledText: ItemGameLogic.parseCost(model.item.name)
+            disabledText: model.item.costStr
             textPixelSize: 18
 
             enabled: model.item.affordable

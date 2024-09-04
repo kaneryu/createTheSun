@@ -34,11 +34,11 @@ class _Item(QObject):
     amountChanged = Signal(int)
     affordablilityChanged = Signal(bool)
     costChanged = Signal(list)
-    
+    costStrChanged = Signal(str)
     def __init__(self):
         super().__init__()
         global items
-        items[self.__class__.__name__] = self
+        items[self.__class__.__name__] = self; items[self.__class__.__name__.lower()] = self
         
         self._name: str = ""
         self._description: str = ""
@@ -54,13 +54,17 @@ class _Item(QObject):
         self.costEquation: str = ""
         self.gives: list[dict[_Item, int]] = []
         self.switches: list[object] = []
-        
+    
+    def connectSignals(self):
         self.nameChanged.connect(self.affordablilityCheck)
         self.amountChanged.connect(self.affordablilityCheck)
-        
         self.costChanged.connect(self.recheckcosts)
+        
+        self.nameChanged.emit(self.name)
+        self.amountChanged.emit(self.amount)
+        self.costChanged.emit(self.cost)
 
-    
+
     def recheckcosts(self):
         for i in self.cost:
             i["what"].amountChanged.connect(self.affordablilityCheck)
@@ -80,6 +84,11 @@ class _Item(QObject):
             Item_Switch: The correct switch item.
         """
         return self.switches[switch]
+    
+    @QProperty(str, notify=costStrChanged)
+    def costStr(self) -> str:
+        return ItemGameLogic.parseCost(self.name)
+    
     @QProperty(str, notify=costChanged)
     def cost(self) -> list[dict[_Item, int]]:
         return self._cost
@@ -231,10 +240,16 @@ class Quarks(_Item):
         self.costEquation = ""
         self.gives = [{"what": items["Quarks"], "amount": 1}]
         
+        self.connectSignals()
         
 Quarks()
 
 class Electrons(_Item):
+    waitTimeChanged = Signal(int)
+    maxAmountChanged = Signal(int)
+    minAmountChanged = Signal(int)
+    increaseAmountChanged = Signal(int)
+    
     def __init__(self):
         super().__init__()
         self.name = "Electrons"
@@ -246,6 +261,52 @@ class Electrons(_Item):
         self.defaultCost = -1
         self.costEquation = ""
         self.gives = [{"what": items["Electrons"], "amount": 1}]
+        
+        self.amount = 50
+        
+        self._waitTime = 500
+        self._increaseAmount = 1
+        self._maxAmount = 100
+        self._minAmount = 0
+        
+        self.connectSignals()
+        
+    @QProperty(int, notify=increaseAmountChanged)
+    def increaseAmount(self) -> int:
+        return self._increaseAmount
+    
+    @increaseAmount.setter
+    def increaseAmount(self, val: int) -> int:
+        self._increaseAmount = val
+        self.increaseAmountChanged.emit(val)
+        
+    @QProperty(int, notify=waitTimeChanged)
+    def waitTime(self) -> int:
+        return self._waitTime
+    
+    @waitTime.setter
+    def waitTime(self, val: int) -> None:
+        self._waitTime = val
+        self.waitTimeChanged.emit(val)
+    
+    @QProperty(int, notify=maxAmountChanged)
+    def maxAmount(self) -> int:
+        return self._maxAmount
+    
+    @maxAmount.setter
+    def maxAmount(self, val: int) -> None:
+        self._maxAmount = val
+        self.maxAmountChanged.emit(val)
+    
+    @QProperty(int, notify=minAmountChanged)
+    def minAmount(self) -> int:
+        return self._minAmount
+    
+    @minAmount.setter
+    def minAmount(self, val: int) -> None:
+        self._minAmount = val
+        self.minAmountChanged.emit(val)
+        
 electronkeepref = Electrons()
 
 
@@ -260,6 +321,8 @@ class Protons(_Item):
         self.cost = [{"what": items["Quarks"], "amount": 3}]
         self.costEquation = "%1 * 3"
         self.gives = [{"what": items["Protons"], "amount": 1}]
+        
+        self.connectSignals()
 Protons()
 
 class Hydrogen(_Item):
@@ -273,6 +336,9 @@ class Hydrogen(_Item):
         self.cost = [{"what": items["Quarks"], "amount": 1}, {"what": items["Protons"], "amount": 1}, {"what": items["Electrons"], "amount": 1}]
         self.costEquation = "%1 * 3"
         self.gives = [{"what": items["Hydrogen"], "amount": 1}]
+        
+        self.connectSignals()
+        
 Hydrogen()
 
 class Stars(_Item):
@@ -286,6 +352,9 @@ class Stars(_Item):
         self.cost = [{"what": items["Hydrogen"], "amount": 1e57}]
         self.costEquation = "%1 * 1e57"
         self.gives = [{"what": items["Stars"], "amount": 2}]
+        
+        self.connectSignals()
+        
 Stars()
 
 class Galaxies(_Item):
@@ -299,6 +368,9 @@ class Galaxies(_Item):
         self.cost = [{"what": items["Stars"], "amount": 1e11}]
         self.costEquation = "%1 * 1e11"
         self.gives = [{"what": items["Galaxies"], "amount": 1}]
+        
+        self.connectSignals()
+        
 Galaxies()
 
 class Superclusters(_Item):
@@ -312,6 +384,8 @@ class Superclusters(_Item):
         self.cost = [{"what": items["Galaxies"], "amount": 100000}]
         self.costEquation = "%1 * 100000"
         self.gives = [{"what": items["Superclusters"], "amount": 1}]
+        
+        self.connectSignals()
 Superclusters()
 
 class Game(QObject):

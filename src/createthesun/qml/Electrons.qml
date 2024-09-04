@@ -11,7 +11,10 @@ Item {
     id: root
     property QtObject mainModel // absract list model from python
     
+    property QtObject electrons: Items.getItem("electrons")
 
+    width: 52/2
+    anchors.fill: root
 
     Connections {
         target: Backend
@@ -55,6 +58,8 @@ Item {
     Kyu.ProgressBar {
         id: progressBar
 
+        
+
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: text.bottom
@@ -62,7 +67,7 @@ Item {
 
         anchors.topMargin: 10
         
-        percent: 50
+        percent: ((root.electrons.amount - root.electrons.minAmount) / root.electrons.maxAmount) * 100
         vertical: true
 
         fillColor: Theme.tertiary
