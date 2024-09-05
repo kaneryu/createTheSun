@@ -50,7 +50,7 @@ class BackgroundWorker(QThread):
                 gamedefine.items["Electrons"].amount = gamedefine.items["Electrons"].minAmount
 
             for i in list(gamedefine.items.values()):
-                i.affordablilityCheck()
+                i.periodicalChecks()
 
 
     def stop(self):
@@ -124,13 +124,6 @@ class Backend(QObject):
         sys.exit()
 
 
-def findQmlFile() -> str | None:
-    # Find the QML file
-    for path in [os.path.join(os.path.dirname(__file__), 'qml'), os.path.join(os.path.dirname(__file__))]:
-        for file in os.listdir(path):
-            if file == 'main~2x3x.qml':
-                return os.path.join(path, file)
-    return None
 
 def createTabModel():
     model = iLoveModelsTotally.ListModel(contains=Tab)
@@ -192,15 +185,17 @@ def main():
 
     engine = QQmlApplicationEngine()
     engine.quit.connect(app.quit)
-    qml = findQmlFile()
+    qml = "main.qml"
 
     backend = Backend()
 
     theme = materialInterface.Theme()
     theme.get_dynamicColors(0x18130B, True, 0.0)
 
-    items = Items()
     ItemGameLogic = itemGameLogic.ItemGameLogic.getInstance()
+    gamedefine.createItems()
+    items = Items()
+    
     context = engine.rootContext()
 
     ItemsModel = createItemModel()
@@ -229,9 +224,6 @@ def main():
     # tim.setInterval(1000)
     # tim.timeout.connect(lambda: theme.get_dynamicColors(generateRandomHexColor(), True, 0.0))
     # tim.start()
-
-    for i in gamedefine.items:
-        gamedefine.items[i].affordablilityCheck()
 
     print(QDir.currentPath())
     # bgworker = startBackgroundWorker()

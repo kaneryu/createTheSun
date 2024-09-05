@@ -19,7 +19,33 @@ from PySide6.QtCore import QObject, Signal, Slot, Property as QProperty, QTimer
 
 from . import quickload
 
-ItemGameLogic = None
+class IGLSkeleton:
+    @staticmethod
+    def getInstance() -> IGLSkeleton: ...
+    
+    @Slot(str, result=bool)
+    def canAfford(self, item: str, doBuyMultiply=True) -> bool: ...
+
+    @Slot(str, result=None)
+    def _purchase(self, item: str, doBuyMultiply=False) -> None: ...
+
+    @Slot(str, result=None)
+    def purchase(self, item: str) -> None: ...
+
+    @Slot(str, result=None)
+    def getCurrentCost(self, item: str, _round: bool | None = False, eNotation: bool | None = True) -> float: ...
+
+    @Slot(str, result=str)
+    def parseCost(self, item: str) -> str: ...
+
+    @Slot(result=None)
+    def maxAll(self): 
+        def maxAllPurchase(item): ...
+        
+    @Slot(int, result=None)
+    def setBuyMultiplier(self, mult): ...
+        
+ItemGameLogic = IGLSkeleton
 items: dict[str, _Item] = {}
 
 # Base Classes
@@ -56,21 +82,19 @@ class _Item(QObject):
         self.switches: list[object] = []
     
     def connectSignals(self):
-        self.nameChanged.connect(self.affordablilityCheck)
-        self.amountChanged.connect(self.affordablilityCheck)
-        self.costChanged.connect(self.recheckcosts)
+        # self.nameChanged.connect(self.affordablilityCheck)
+        # self.amountChanged.connect(self.affordablilityCheck)
+        # self.costChanged.connect(self.recheckcosts)
         
         self.nameChanged.emit(self.name)
         self.amountChanged.emit(self.amount)
         self.costChanged.emit(self.cost)
 
 
-    def recheckcosts(self):
-        for i in self.cost:
-            i["what"].amountChanged.connect(self.affordablilityCheck)
+    # def recheckcosts(self):
+    #     for i in self.cost:
+    #         i["what"].amountChanged.connect(self.affordablilityCheck)
             
-    
-    
     def periodicalChecks(self):
         self.affordablilityCheck()
     
@@ -87,7 +111,7 @@ class _Item(QObject):
     
     @QProperty(str, notify=costStrChanged)
     def costStr(self) -> str:
-        return ItemGameLogic.parseCost(self.name)
+        return ItemGameLogic.getInstance().parseCost(self.name)
     
     @QProperty(str, notify=costChanged)
     def cost(self) -> list[dict[_Item, int]]:
@@ -155,7 +179,16 @@ class _Item(QObject):
             self.affordable = ItemGameLogic.getInstance().canAfford(self.name)
         else: 
             print("affordablilityCheck: ItemGameLogic is not defined")
-
+            
+def createItems():
+    global items, electronkeepref
+    Quarks()
+    Protons()
+    electronkeepref = Electrons()
+    Hydrogen()
+    Stars()
+    Galaxies()
+    Superclusters()
 class _LevelAutomation:
     """This is the base class for all automations, will not be accessed directly, even when instantiated.
     It should instead be used with the Automation class, which will return the correct LevelAutomation class.
@@ -240,10 +273,7 @@ class Quarks(_Item):
         self.costEquation = ""
         self.gives = [{"what": items["Quarks"], "amount": 1}]
         
-        self.connectSignals()
-        
-Quarks()
-
+        self.connectSignals()       
 class Electrons(_Item):
     waitTimeChanged = Signal(int)
     maxAmountChanged = Signal(int)
@@ -306,10 +336,6 @@ class Electrons(_Item):
     def minAmount(self, val: int) -> None:
         self._minAmount = val
         self.minAmountChanged.emit(val)
-        
-electronkeepref = Electrons()
-
-
 class Protons(_Item):
     def __init__(self):
         super().__init__()
@@ -323,8 +349,6 @@ class Protons(_Item):
         self.gives = [{"what": items["Protons"], "amount": 1}]
         
         self.connectSignals()
-Protons()
-
 class Hydrogen(_Item):
     def __init__(self):
         super().__init__()
@@ -338,9 +362,6 @@ class Hydrogen(_Item):
         self.gives = [{"what": items["Hydrogen"], "amount": 1}]
         
         self.connectSignals()
-        
-Hydrogen()
-
 class Stars(_Item):
     def __init__(self):
         super().__init__()
@@ -354,9 +375,6 @@ class Stars(_Item):
         self.gives = [{"what": items["Stars"], "amount": 2}]
         
         self.connectSignals()
-        
-Stars()
-
 class Galaxies(_Item):
     def __init__(self):
         super().__init__()
@@ -370,9 +388,6 @@ class Galaxies(_Item):
         self.gives = [{"what": items["Galaxies"], "amount": 1}]
         
         self.connectSignals()
-        
-Galaxies()
-
 class Superclusters(_Item):
     def __init__(self):
         super().__init__()
@@ -386,7 +401,6 @@ class Superclusters(_Item):
         self.gives = [{"what": items["Superclusters"], "amount": 1}]
         
         self.connectSignals()
-Superclusters()
 
 class Game(QObject):
     purchaseToCreateChanged = Signal(list[str])
