@@ -18,8 +18,6 @@ dependencies = [
     "pefile",
     "pyinstaller",
     "pyinstaller-hooks-contrib",
-    "PyQt6-Qt6",
-    "PyQt6-sip",
     "PySide6",
     "PySide6-Addons",
     "PySide6-Essentials",
