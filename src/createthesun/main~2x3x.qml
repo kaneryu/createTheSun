@@ -4,9 +4,6 @@ import QtQuick.Layouts
 import Qt.labs.platform
 import "./qml/" as Kyu
 
-
-
-
 ApplicationWindow {
     id: root
     visible: true
