@@ -62,7 +62,7 @@ Item {
 
         anchors.topMargin: 10
         
-        percent: 50
+        percent: Items.getItem("electrons").amount / Items.getItem("electrons").maxElectrons
         vertical: true
 
         fillColor: Theme.tertiary

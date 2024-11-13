@@ -210,7 +210,7 @@ def main():
         gamedefine.items[i].affordablilityCheck()
     
     print(QDir.currentPath())
-    # bgworker = startBackgroundWorker()
+    bgworker = startBackgroundWorker()
     # Main Theme Source Color: #DCAB5C
     backend.loadComplete.emit()
     

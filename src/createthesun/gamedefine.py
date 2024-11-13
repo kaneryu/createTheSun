@@ -235,6 +235,9 @@ class Quarks(_Item):
 Quarks()
 
 class Electrons(_Item):
+    minElectronsChanged = Signal(int)
+    maxElectronsChanged = Signal(int)
+    waitTimeChanged = Signal(int)
     def __init__(self):
         super().__init__()
         self.name = "Electrons"
@@ -246,6 +249,38 @@ class Electrons(_Item):
         self.defaultCost = -1
         self.costEquation = ""
         self.gives = [{"what": items["Electrons"], "amount": 1}]
+        
+        self._minElectrons = 0
+        self._maxElectrons = 100
+        self._waitTime = 0
+
+    @QProperty(bool, notify=minElectronsChanged)
+    def minElectrons(self) -> bool:
+        return self._minElectrons
+
+    @minElectrons.setter
+    def minElectrons(self, value: bool):
+        self._minElectrons = value
+        self.minElectronsChanged.emit(value)
+    
+    @QProperty(bool, notify=maxElectronsChanged)
+    def maxElectrons(self) -> bool:
+        return self._maxElectrons
+
+    @maxElectrons.setter
+    def maxElectrons(self, value: bool):
+        self._maxElectrons = value
+        self.maxElectronsChanged.emit(value)
+    
+    @QProperty(bool, notify=waitTimeChanged)
+    def waitTime(self) -> bool:
+        return self.waitTime
+
+    @waitTime.setter
+    def waitTime(self, value: bool):
+        self._waitTime = value
+        self.waitTimeChanged.emit(value)
+        
 electronkeepref = Electrons()
 
 
@@ -631,6 +666,12 @@ defualtGameDefine = {
         "galaxies": 0,
         "superclusters": 0,
     },
+    "electronDetails": {
+        "waitTime": 500,
+        "amount": 1,
+        "maxAmount": 100,
+        "minAmount": 0,
+    },
     "clickGainMultiplierList": {
         "quarks": [1],
         "electrons": [1],
@@ -650,12 +691,6 @@ defualtGameDefine = {
         "superclusters": [1],
     },
     "mainTabBuyMultiple": 1,
-    "electronDetails": {
-        "waitTime": 500,
-        "amount": 1,
-        "maxAmount": 100,
-        "minAmount": 0,
-    },
     "automationLevels": {"particleAccelerator": 0, "protonicForge": 0},
     "automationDisabledState": {"particleAccelerator": [False], "protonicForge": [False]},
     "automationDetails": {
