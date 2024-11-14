@@ -37,21 +37,19 @@ class BackgroundWorker(QThread):
         self.running = True
 
     def run(self):
-        self.lastElectronIncreaseTime = 0
         while self.running:
 
             time.sleep(1/60) # 60hz
 
-            if not gamedefine.items["Electrons"].amount >= gamedefine.items["Electrons"].maxAmount and ctstime.getTimeSinceTimestampMs(self.lastElectronIncreaseTime) >= gamedefine.items["Electrons"].waitTime:
+            if not gamedefine.items["Electrons"].amount >= gamedefine.items["Electrons"].maxAmount and ctstime.checkIntervalElapsed(gamedefine.items["Electrons"].waitTime, "Electrons-bgworker"):
                 gamedefine.items["Electrons"].amount = gamedefine.items["Electrons"].increaseAmount + gamedefine.items["Electrons"].amount
-                self.lastElectronIncreaseTime = ctstime.getTimeMs()
 
             if gamedefine.items["Electrons"].amount <= gamedefine.items["Electrons"].minAmount:
                 gamedefine.items["Electrons"].amount = gamedefine.items["Electrons"].minAmount
 
-            for i in list(gamedefine.items.values()):
-                print(i, i.name)
-                i.periodicalChecks()
+            if ctstime.checkIntervalElapsed(100, "periodicalChecks"):
+                for i in list(gamedefine.items.values()):
+                    i.periodicalChecks()
 
 
     def stop(self):
@@ -76,7 +74,7 @@ QML_IMPORT_MINOR_VERSION = 0
 class Items(QObject):
     def __init__(self):
         super().__init__()
-        for i in gamedefine.items.data:
+        for i in gamedefine.items:
             setattr(self, i.lower(), gamedefine.items[i])
 
     @Slot(str, result=QObject)

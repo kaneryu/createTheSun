@@ -23,8 +23,6 @@ ApplicationWindow {
 
         function onLoadComplete() {
             console.log("Loaded")
-            console.log(ItemsModel)
-            console.log(Backend.activeTab)
         }
     }
 

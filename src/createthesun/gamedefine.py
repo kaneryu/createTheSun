@@ -46,31 +46,28 @@ class IGLSkeleton:
     def setBuyMultiplier(self, mult): ...
 
 ItemGameLogic = IGLSkeleton
-class items_:
+class caseInsensitiveDict(dict):
     """Case Insensitive dictionary (for the keys)
     You can use this grab the items, without worrying about what case you're using.
-    Access the dict directy by items.data
     """
     def __init__(self):
-        self.data = {}
-
+        super().__init__()
+        
 
     def __getitem__(self, key: str) -> _Item:
         if type(key) == str:
-            return self.data[key.lower()]
+            return super().__getitem__(key.lower())
         else:
-            return self.data[key]
+            return super().__getitem__(key)
 
     def __setitem__(self, key: str, value: _Item) -> None:
         if type(key) == str:
-            self.data[key.lower()] = value
+            return super().__setitem__(key.lower(), value)
         else:
-            print("Key supplied to items_.__setitem__, but type was ", type(key))
-            self.data[key] = value
-    
-    def __repr__(self) -> str:
-        return str(self.data)
-items = items_()
+            super().__setitem__(key, value)
+            
+            
+items = caseInsensitiveDict()
 
 
 
