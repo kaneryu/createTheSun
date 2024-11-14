@@ -76,7 +76,7 @@ QML_IMPORT_MINOR_VERSION = 0
 class Items(QObject):
     def __init__(self):
         super().__init__()
-        for i in gamedefine.items:
+        for i in gamedefine.items.data:
             setattr(self, i.lower(), gamedefine.items[i])
 
     @Slot(str, result=QObject)
@@ -234,7 +234,6 @@ def main():
     # tim.start()
 
     print(QDir.currentPath())
-    bgworker = startBackgroundWorker()
     # Main Theme Source Color: #DCAB5C
     backend.loadComplete.emit()
 

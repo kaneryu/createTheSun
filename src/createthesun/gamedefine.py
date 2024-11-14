@@ -67,6 +67,9 @@ class items_:
         else:
             print("Key supplied to items_.__setitem__, but type was ", type(key))
             self.data[key] = value
+    
+    def __repr__(self) -> str:
+        return str(self.data)
 items = items_()
 
 
@@ -214,6 +217,7 @@ def createItems():
     Stars()
     Galaxies()
     Superclusters()
+
 class _LevelAutomation:
     """This is the base class for all automations, will not be accessed directly, even when instantiated.
     It should instead be used with the Automation class, which will return the correct LevelAutomation class.
