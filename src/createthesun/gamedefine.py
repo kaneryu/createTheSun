@@ -6,7 +6,7 @@ import json
 import time
 from copy import deepcopy
 from dataclasses import asdict, dataclass
-from typing import Self
+from typing import Any
 
 
 import deepdiff
@@ -19,13 +19,62 @@ from PySide6.QtCore import QObject, Signal, Slot, Property as QProperty, QTimer
 
 from . import quickload
 
-ItemGameLogic = None
-items: dict[str, _Item] = {}
+class IGLSkeleton:
+    @staticmethod
+    def getInstance() -> IGLSkeleton: ...
+
+    @Slot(str, result=bool)
+    def canAfford(self, item: str, doBuyMultiply=True) -> bool: ...
+
+    @Slot(str, result=None)
+    def _purchase(self, item: str, doBuyMultiply=False) -> None: ...
+
+    @Slot(str, result=None)
+    def purchase(self, item: str) -> None: ...
+
+    @Slot(str, result=None)
+    def getCurrentCost(self, item: str, _round: bool | None = False, eNotation: bool | None = True) -> float: ...
+
+    @Slot(str, result=str)
+    def parseCost(self, item: str) -> str: ...
+
+    @Slot(result=None)
+    def maxAll(self):
+        def maxAllPurchase(item): ...
+
+    @Slot(int, result=None)
+    def setBuyMultiplier(self, mult): ...
+
+ItemGameLogic = IGLSkeleton
+class items_:
+    """Case Insensitive dictionary (for the keys)
+    You can use this grab the items, without worrying about what case you're using.
+    Access the dict directy by items.data
+    """
+    def __init__(self):
+        self.data = {}
+
+
+    def __getitem__(self, key: str) -> _Item:
+        if type(key) == str:
+            return self.data[key.lower()]
+        else:
+            return self.data[key]
+
+    def __setitem__(self, key: str, value: _Item) -> None:
+        if type(key) == str:
+            self.data[key.lower()] = value
+        else:
+            print("Key supplied to items_.__setitem__, but type was ", type(key))
+            self.data[key] = value
+items = items_()
+
+
 
 # Base Classes
 class _Item(QObject):
     """This is the base class for all items, will not be accessed directly. It supports switch items, which are items that have been modified from the base item.
-    
+
     Note that switches are guranteed to always be in the same order, so the first switch will always be the first switch, and so on.
     The use of switch items are optional, so this class can be used without them.
     """
@@ -34,19 +83,19 @@ class _Item(QObject):
     amountChanged = Signal(int)
     affordablilityChanged = Signal(bool)
     costChanged = Signal(list)
-    
+    costStrChanged = Signal(str)
     def __init__(self):
         super().__init__()
         global items
-        items[self.__class__.__name__] = self
-        
+        items[self.__class__.__name__] = self; items[self.__class__.__name__.lower()] = self
+
         self._name: str = ""
         self._description: str = ""
 
         self._amount: int = 0
-        
+
         self._affordable: bool = True
-        
+
         self.internalName: str = ""
         self.singlarName: str = ""
         self._cost: list[dict[_Item, int]] = []
@@ -54,65 +103,72 @@ class _Item(QObject):
         self.costEquation: str = ""
         self.gives: list[dict[_Item, int]] = []
         self.switches: list[object] = []
-        
-        self.nameChanged.connect(self.affordablilityCheck)
-        self.amountChanged.connect(self.affordablilityCheck)
-        
-        self.costChanged.connect(self.recheckcosts)
 
-    
-    def recheckcosts(self):
-        for i in self.cost:
-            i["what"].amountChanged.connect(self.affordablilityCheck)
-            
-    
-    
+    def connectSignals(self):
+        # self.nameChanged.connect(self.affordablilityCheck)
+        # self.amountChanged.connect(self.affordablilityCheck)
+        # self.costChanged.connect(self.recheckcosts)
+
+        self.nameChanged.emit(self.name)
+        self.amountChanged.emit(self.amount)
+        self.costChanged.emit(self.cost)
+
+
+    # def recheckcosts(self):
+    #     for i in self.cost:
+    #         i["what"].amountChanged.connect(self.affordablilityCheck)
+
     def periodicalChecks(self):
         self.affordablilityCheck()
-    
+
     def getSwitch(self, switch: int) -> object:
         """This function will return the correct switch item based on the switch number.
-        
+
         Args:
             switch (int): The switch number.
-        
+
         Returns:
             Item_Switch: The correct switch item.
         """
         return self.switches[switch]
+
+    @QProperty(str, notify=costStrChanged)
+    def costStr(self) -> str:
+        return ItemGameLogic.getInstance().parseCost(self.name)
+
     @QProperty(str, notify=costChanged)
     def cost(self) -> list[dict[_Item, int]]:
         return self._cost
-    
+
     @cost.setter
     def cost(self, value: list[dict[_Item, int]]):
         self._cost = value
         self.costChanged.emit(value)
-    
+
     @QProperty(str, notify=nameChanged)
     def name(self) -> str:
         return self._name
-    
+
     @name.setter
     def name(self, value: str):
         self._name = value
         self.nameChanged.emit(value)
 
-    
+
     @QProperty(str, notify=descriptionChanged)
     def description(self) -> str:
         return self._description
-    
+
     @description.setter
     def description(self, value: str):
         self._description = value
         self.descriptionChanged.emit(value)
 
-    
+
     @QProperty(int, notify=amountChanged)
     def amount(self) -> int:
         return self._amount
-    
+
     @amount.setter
     def amount(self, value: int):
         self._amount = value
@@ -124,16 +180,18 @@ class _Item(QObject):
 
     @affordable.setter
     def affordable(self, value: bool):
-        self._affordable = value
-        self.affordablilityChanged.emit(value)
-        
+        if not self._affordable == value:
+            self._affordable = value
+            self.affordablilityChanged.emit(value)
+            print("Afforablilty for Protons changed to: ", value)
+
     @Slot(result=str)
     def getName(self) -> str:
         if not self.amount == 1:
             return self.name
         else:
             return self.singlarName
-    
+
     def getName_(self, number) -> str:
         if not number == 1:
             return self.name
@@ -144,49 +202,58 @@ class _Item(QObject):
     def affordablilityCheck(self):
         if ItemGameLogic is not None:
             self.affordable = ItemGameLogic.getInstance().canAfford(self.name)
-        else: 
+        else:
             print("affordablilityCheck: ItemGameLogic is not defined")
 
+def createItems():
+    global items, electronkeepref
+    Quarks()
+    Protons()
+    electronkeepref = Electrons()
+    Hydrogen()
+    Stars()
+    Galaxies()
+    Superclusters()
 class _LevelAutomation:
     """This is the base class for all automations, will not be accessed directly, even when instantiated.
     It should instead be used with the Automation class, which will return the correct LevelAutomation class.
     """
     def __init__(self):
-        
+
         self.name: str = ""
         self.description: str = ""
         self.upgradeName: str = ""
         self.upgradeDescription: str = ""
-        
+
         self.statDescription: str = ""
         self.upgradeStatDescription: str = ""
         self.statDescriptionBlank: str = ""
 
         self.disabledText: str = ""
-        
-        
+
+
         self.startLevel: int = 0
         self.upgradeCost: list[dict[str, int]] = []
         self.withRequirement: bool = False
         self.type: str = ""
         self.idleGenerator: dict[str, int] = {}
-        
+
 class Automation:
     """This is the base class for all automations, will not be accessed directly.
-    
+
     """
     def __init__(self):
         self.firstCost: list[dict[str, int]] = []
         self.maxLevel: int = 0
         self.multiLevelUpgradesStarts: list[int] = []
         self.multiLevelUpgrades: list[Automation] = []
-    
+
     def getAutomationClass(self, level: int) -> _LevelAutomation:
         """This function will return the correct LevelAutomation class based on the level of the automation.
-        
+
         Args:
             level (int): The level of the automation.
-        
+
         Returns:
             _LevelAutomation: The correct LevelAutomation class.
         """
@@ -194,19 +261,19 @@ class Automation:
 
     def getMultiLevel(self, level: int) -> int:
         """This function will return the correct LevelAutomation class based on the level of the automation.
-        
+
         Args:
             level (int): The level of the automation.
-        
+
         Returns:
             int: The correct LevelAutomation class.
         """
         _ = 0
         while level >= self.multiLevelUpgradesStarts[_]:
             _ += 1
-        
+
         return self.multiLevelUpgrades[_]
-        
+
 class Achevement:
     pass
 
@@ -225,65 +292,75 @@ class Quarks(_Item):
         self.singlarName = "Quark"
         self.description = "Quarks are the building blocks of protons. They are made of nothing...?"
         self.internalName = "quarks"
-        
+
         self.cost = [{"what": None, "amount": -1}]
         self.defaultCost = -1
         self.costEquation = ""
         self.gives = [{"what": items["Quarks"], "amount": 1}]
-        
-        
-Quarks()
 
+        self.connectSignals()
 class Electrons(_Item):
-    minElectronsChanged = Signal(int)
-    maxElectronsChanged = Signal(int)
     waitTimeChanged = Signal(int)
+    maxAmountChanged = Signal(int)
+    minAmountChanged = Signal(int)
+    increaseAmountChanged = Signal(int)
+
     def __init__(self):
         super().__init__()
         self.name = "Electrons"
         self.singlarName = "Electron"
         self.description = "Electrons are the building blocks of atoms."
         self.internalName = "electrons"
-        
+
         self.cost = [{"what": None, "amount": -1}]
         self.defaultCost = -1
         self.costEquation = ""
         self.gives = [{"what": items["Electrons"], "amount": 1}]
-        
-        self._minElectrons = 0
-        self._maxElectrons = 100
-        self._waitTime = 0
 
-    @QProperty(bool, notify=minElectronsChanged)
-    def minElectrons(self) -> bool:
-        return self._minElectrons
+        self.amount = 50
 
-    @minElectrons.setter
-    def minElectrons(self, value: bool):
-        self._minElectrons = value
-        self.minElectronsChanged.emit(value)
-    
-    @QProperty(bool, notify=maxElectronsChanged)
-    def maxElectrons(self) -> bool:
-        return self._maxElectrons
+        self._waitTime = 500
+        self._increaseAmount = 1
+        self._maxAmount = 100
+        self._minAmount = 0
 
-    @maxElectrons.setter
-    def maxElectrons(self, value: bool):
-        self._maxElectrons = value
-        self.maxElectronsChanged.emit(value)
-    
-    @QProperty(bool, notify=waitTimeChanged)
-    def waitTime(self) -> bool:
-        return self.waitTime
+        self.connectSignals()
+
+    @QProperty(int, notify=increaseAmountChanged)
+    def increaseAmount(self) -> int:
+        return self._increaseAmount
+
+    @increaseAmount.setter
+    def increaseAmount(self, val: int) -> int:
+        self._increaseAmount = val
+        self.increaseAmountChanged.emit(val)
+
+    @QProperty(int, notify=waitTimeChanged)
+    def waitTime(self) -> int:
+        return self._waitTime
 
     @waitTime.setter
-    def waitTime(self, value: bool):
-        self._waitTime = value
-        self.waitTimeChanged.emit(value)
-        
-electronkeepref = Electrons()
+    def waitTime(self, val: int) -> None:
+        self._waitTime = val
+        self.waitTimeChanged.emit(val)
 
+    @QProperty(int, notify=maxAmountChanged)
+    def maxAmount(self) -> int:
+        return self._maxAmount
 
+    @maxAmount.setter
+    def maxAmount(self, val: int) -> None:
+        self._maxAmount = val
+        self.maxAmountChanged.emit(val)
+
+    @QProperty(int, notify=minAmountChanged)
+    def minAmount(self) -> int:
+        return self._minAmount
+
+    @minAmount.setter
+    def minAmount(self, val: int) -> None:
+        self._minAmount = val
+        self.minAmountChanged.emit(val)
 class Protons(_Item):
     def __init__(self):
         super().__init__()
@@ -295,124 +372,125 @@ class Protons(_Item):
         self.cost = [{"what": items["Quarks"], "amount": 3}]
         self.costEquation = "%1 * 3"
         self.gives = [{"what": items["Protons"], "amount": 1}]
-Protons()
 
+        self.connectSignals()
 class Hydrogen(_Item):
     def __init__(self):
         super().__init__()
         self.name = "Hydrogen"
         self.singlarName = "Hydrogen"
         self.description = "Hydrogen is the simplest element. It is made of one proton and one electron."
-        
+
         self.internalName = "hydrogen"
         self.cost = [{"what": items["Quarks"], "amount": 1}, {"what": items["Protons"], "amount": 1}, {"what": items["Electrons"], "amount": 1}]
         self.costEquation = "%1 * 3"
         self.gives = [{"what": items["Hydrogen"], "amount": 1}]
-Hydrogen()
 
+        self.connectSignals()
 class Stars(_Item):
     def __init__(self):
         super().__init__()
         self.name = "Stars"
         self.singlarName = "Star"
         self.description = "Stars are the building blocks of galaxies. They are made of hydrogen."
-        
+
         self.internalName = "stars"
         self.cost = [{"what": items["Hydrogen"], "amount": 1e57}]
         self.costEquation = "%1 * 1e57"
         self.gives = [{"what": items["Stars"], "amount": 2}]
-Stars()
 
+        self.connectSignals()
 class Galaxies(_Item):
     def __init__(self):
         super().__init__()
         self.name = "Galaxies"
         self.singlarName = "Galaxy"
         self.description = "Galaxies are the building blocks of superclusters. They are made of stars."
-        
+
         self.internalName = "galaxies"
         self.cost = [{"what": items["Stars"], "amount": 1e11}]
         self.costEquation = "%1 * 1e11"
         self.gives = [{"what": items["Galaxies"], "amount": 1}]
-Galaxies()
 
+        self.connectSignals()
 class Superclusters(_Item):
     def __init__(self):
         super().__init__()
         self.name = "Superclusters"
         self.singlarName = "Supercluster"
         self.description = "Superclusters are the building blocks of the universe. They are made of galaxies."
-        
+
         self.internalName = "superclusters"
         self.cost = [{"what": items["Galaxies"], "amount": 100000}]
         self.costEquation = "%1 * 100000"
         self.gives = [{"what": items["Superclusters"], "amount": 1}]
-Superclusters()
+
+        self.connectSignals()
 
 class Game(QObject):
     purchaseToCreateChanged = Signal(list[str])
     automationsToCreateChanged = Signal(list[str])
     mainTabBuyMultipleChanged = Signal(int)
     playTimeChanged = Signal(int)
-    tutorialPopupDoneChanged = Signal(bool)  
-    
+    tutorialPopupDoneChanged = Signal(bool)
+
     def __init__(self) -> None:
         super().__init__()
-        
+
         self._purchaseToCreate = ["Quarks", "Protons"]
         self._automationsToCreate = ["particleAccelerator", "protonicForge"]
-        
+
         self._mainTabBuyMultiple = 1
-        
+
         self._playTime = 0
         self._tutorialPopupDone = False
 
     @QProperty(list, notify=purchaseToCreateChanged)
     def purchaseToCreate(self) -> list[str]:
         return self._purchaseToCreate
-    
+
     @purchaseToCreate.setter
     def purchaseToCreate(self, value: list[str]):
         self._purchaseToCreate = value
         self.purchaseToCreateChanged.emit(value)
-    
-        
+
+
     @QProperty(list, notify=automationsToCreateChanged)
     def automationsToCreate(self) -> list[str]:
         return self._automationsToCreate
-    
+
     @automationsToCreate.setter
     def automationsToCreate(self, value: list[str]):
         self._automationsToCreate = value
         self.automationsToCreateChanged.emit(value)
-    
+
     @QProperty(int, notify=mainTabBuyMultipleChanged)
     def mainTabBuyMultiple(self) -> int:
         return self._mainTabBuyMultiple
-    
+
     @mainTabBuyMultiple.setter
     def mainTabBuyMultiple(self, value: int):
         self._mainTabBuyMultiple = value
         self.mainTabBuyMultipleChanged.emit(value)
-    
+
     @QProperty(int, notify=playTimeChanged)
     def playTime(self) -> int:
         return self._playTime
-    
+
     @playTime.setter
     def playTime(self, value: int):
         self._playTime = value
         self.playTimeChanged.emit(value)
-    
+
     @QProperty(bool, notify=tutorialPopupDoneChanged)
     def tutorialPopupDone(self) -> bool:
         return self._tutorialPopupDone
-    
+
     @tutorialPopupDone.setter
     def tutorialPopupDone(self, value: bool):
         self._tutorialPopupDone = value
         self.tutorialPopupDoneChanged.emit(value)
-        
+
 game = Game()
 
 defualtGameDefine = {
@@ -1067,4 +1145,3 @@ theTabWidget: QTabWidget = None  # type:ignore - this will be set to a tabwidget
 # print(loadSave(json.loads(b64Decode(f.read()))))
 
 # f.close()
-

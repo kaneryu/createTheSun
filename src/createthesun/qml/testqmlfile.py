@@ -17,7 +17,7 @@ def main():
     
     engine = QQmlApplicationEngine()
 
-    engine.load("qml/progressbar.qml")
+    engine.load("qml/tabs/mainTab.qml")
 
 
     sys.exit(app.exec())

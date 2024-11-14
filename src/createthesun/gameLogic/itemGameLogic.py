@@ -13,9 +13,6 @@ from PySide6.QtCore import Signal , Slot
 # first argment is the item, second is misc
 _instance = None
 class ItemGameLogic(QObject):
-    
-    
-    
     @staticmethod
     def getInstance():
         global _instance
@@ -53,7 +50,7 @@ class ItemGameLogic(QObject):
         ongoing = True
 
         for i in costs:
-            print(f"checking if {i['what'].name} has {i['amount'] * buyMultiplier} {i['what'].name} and has {i['what'].amount}")
+            # print(f"checking if {i['what'].name} has {i['amount'] * buyMultiplier} {i['what'].name} and has {i['what'].amount}")
             if i["what"].amount < i["amount"] * buyMultiplier:
                 ongoing = False
                 
@@ -196,5 +193,14 @@ class ItemGameLogic(QObject):
             maxAllPurchase(
                 i
             )  # this fixes the 'cascade effect' of the max all button by not actually purchasing it until the end
+    @Slot(int, result=None)
+    def setBuyMultiplier(self, mult):
+        """Sets the buy multiplier
 
+        Args:
+            mult (int): The multiplier to set
+        """
+        
+        gamedefine.game.mainTabBuyMultiple = int(mult)
+        
 gamedefine.itemGameLogic = ItemGameLogic
