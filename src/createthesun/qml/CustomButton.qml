@@ -48,6 +48,7 @@ Item {
     
 
     function setStyle1() {
+        
         root.radius = 5
         root.hoverRadius = 10
         root.clickedRadius = 0
@@ -74,16 +75,18 @@ Item {
 
     Component.onCompleted : {
         setStyle1()
+        root.enabled = false
+        root.enabled = true
     }
 
     onEnabledChanged: {
         if (!enabled) {
-            fill.color = (disabledFillColor !== undefined && disabledFillColor !== null) ? disabledFillColor : fillColor
-            fill.border.color = (disabledBorderColor !== undefined && disabledBorderColor !== null) ? disabledBorderColor : borderColor
-            fill.border.width = (disabledBorderWidth !== undefined && disabledBorderWidth !== null) ? disabledBorderWidth : borderWidth
-            txt.color = (disabledTextColor !== undefined && disabledTextColor !== null) ? disabledTextColor : textColor
-            fill.radius = (disabledRadius !== undefined && disabledRadius !== null) ? disabledRadius : radius
-            txt.text = (disabledText !== undefined && disabledText !== null) ? disabledText : text
+            fill.color = (disabledFillColor !== undefined || disabledFillColor !== null) ? disabledFillColor : fillColor
+            fill.border.color = (disabledBorderColor !== undefined || disabledBorderColor !== null) ? disabledBorderColor : borderColor
+            fill.border.width = (disabledBorderWidth !== undefined || disabledBorderWidth !== null) ? disabledBorderWidth : borderWidth
+            txt.color = (disabledTextColor !== undefined || disabledTextColor !== null) ? disabledTextColor : textColor
+            fill.radius = (disabledRadius !== undefined || disabledRadius !== null) ? disabledRadius : radius
+            txt.text = (disabledText !== undefined || disabledText !== null) ? disabledText : text
         } else {
             fill.color = fillColor
             fill.border.color = borderColor

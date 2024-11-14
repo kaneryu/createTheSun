@@ -127,9 +127,9 @@ Item {
                 if (metrics.width > root.largestTextWidth) {
                     root.largestTextWidth = metrics.width
                 }
+                print("State:" + buyButton.enabled + model.item.name)
             }
         }
-
 
         Kyu.CustomButton {
             id: buyButton

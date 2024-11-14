@@ -50,6 +50,7 @@ class BackgroundWorker(QThread):
                 gamedefine.items["Electrons"].amount = gamedefine.items["Electrons"].minAmount
 
             for i in list(gamedefine.items.values()):
+                print(i, i.name)
                 i.periodicalChecks()
 
 
@@ -124,6 +125,13 @@ class Backend(QObject):
         sys.exit()
 
 
+def findQmlFile() -> str | None:
+    # Find the QML file
+    for path in [os.path.join(os.path.dirname(__file__), 'qml'), os.path.join(os.path.dirname(__file__))]:
+        for file in os.listdir(path):
+            if file == 'main~2x3x.qml':
+                return os.path.join(path, file)
+    return None
 
 def createTabModel():
     model = iLoveModelsTotally.ListModel(contains=Tab)
@@ -185,7 +193,7 @@ def main():
 
     engine = QQmlApplicationEngine()
     engine.quit.connect(app.quit)
-    qml = "main.qml"
+    qml = findQmlFile()
 
     backend = Backend()
 
