@@ -90,7 +90,7 @@ class ItemGameLogic(QObject):
     @Slot(str, result=None)
     def purchase(self, item: str) -> None:
         if self.canAfford(item):
-            self._purchase(item)
+            self._purchase(item, doBuyMultiply=True)
 
     @Slot(str, result=None)
     def getCurrentCost(self, item: str, _round: bool | None = False, eNotation: bool | None = True) -> float:

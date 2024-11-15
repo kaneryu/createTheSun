@@ -103,6 +103,8 @@ class _Item(QObject):
         self.costEquation: str = ""
         self.gives: list[dict[_Item, int]] = []
         self.switches: list[object] = []
+        
+        game.mainTabBuyMultipleChanged.connect(self.costStrChanged.emit)
 
     def connectSignals(self):
         # self.nameChanged.connect(self.affordablilityCheck)
@@ -134,7 +136,9 @@ class _Item(QObject):
 
     @QProperty(str, notify=costStrChanged)
     def costStr(self) -> str:
+        # print("costStr called", self.name)
         return ItemGameLogic.getInstance().parseCost(self.name)
+        
 
     @QProperty(str, notify=costChanged)
     def cost(self) -> list[dict[_Item, int]]:
@@ -369,7 +373,7 @@ class Protons(_Item):
         self.singlarName = "Proton"
         self.description = "Protons are the building blocks of atoms. They are made of quarks."
         self.internalName = "protons"
-        self.amount = 3
+        self.amount = 0
         self.cost = [{"what": items["Quarks"], "amount": 3}]
         self.costEquation = "%1 * 3"
         self.gives = [{"what": items["Protons"], "amount": 1}]

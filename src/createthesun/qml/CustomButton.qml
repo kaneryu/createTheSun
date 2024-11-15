@@ -41,9 +41,12 @@ Item {
     property string clickedText
     property string disabledText
     
+    property bool useDisabled: true
+
     property alias textPixelSize: txt.font.pixelSize
     property alias textFont: txt.font
 
+    property alias txttext: txt.text
     signal clicked()
     
 
@@ -75,18 +78,33 @@ Item {
 
     Component.onCompleted : {
         setStyle1()
-        root.enabled = false
-        root.enabled = true
     }
 
     onEnabledChanged: {
         if (!enabled) {
-            fill.color = (disabledFillColor !== undefined || disabledFillColor !== null) ? disabledFillColor : fillColor
-            fill.border.color = (disabledBorderColor !== undefined || disabledBorderColor !== null) ? disabledBorderColor : borderColor
-            fill.border.width = (disabledBorderWidth !== undefined || disabledBorderWidth !== null) ? disabledBorderWidth : borderWidth
-            txt.color = (disabledTextColor !== undefined || disabledTextColor !== null) ? disabledTextColor : textColor
-            fill.radius = (disabledRadius !== undefined || disabledRadius !== null) ? disabledRadius : radius
-            txt.text = (disabledText !== undefined || disabledText !== null) ? disabledText : text
+            // fill.color = (disabledFillColor !== undefined || disabledFillColor !== null) ? disabledFillColor : fillColor
+            // fill.border.color = (disabledBorderColor !== undefined || disabledBorderColor !== null) ? disabledBorderColor : borderColor
+            // fill.border.width = (disabledBorderWidth !== undefined || disabledBorderWidth !== null) ? disabledBorderWidth : borderWidth
+            // txt.color = (disabledTextColor !== undefined || disabledTextColor !== null) ? disabledTextColor : textColor
+            // fill.radius = (disabledRadius !== undefined || disabledRadius !== null) ? disabledRadius : radius
+            // txt.text = (disabledText !== undefined || disabledText !== null) ? disabledText : text
+            
+            if (useDisabled) {
+                fill.color = disabledFillColor
+                fill.border.color = disabledBorderColor
+                fill.border.width = disabledBorderWidth
+                txt.color = disabledTextColor
+                fill.radius = disabledRadius
+                txt.text = disabledText
+            } else {
+                fill.color = fillColor
+                fill.border.color = borderColor
+                fill.border.width = borderWidth
+                txt.color = textColor
+                fill.radius = radius
+                txt.text = text
+            }
+
         } else {
             fill.color = fillColor
             fill.border.color = borderColor

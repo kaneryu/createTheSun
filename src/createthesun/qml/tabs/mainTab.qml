@@ -68,6 +68,8 @@ Item {
             anchors.right: parent.right
             anchors.rightMargin: 15
 
+            enabled: true
+
             onClicked: {
                 ItemGameLogic.maxAll()
             }
@@ -136,15 +138,16 @@ Item {
 
             height: parent.height
 
-            text: ItemGameLogic.parseCost(model.item.name)
+            text: model.item.costStr
             disabledText: model.item.costStr
+
             textPixelSize: 18
 
             enabled: model.item.affordable
 
             TextMetrics {
                 id: bbmetrics
-                text: buyButton.text
+                text: buyButton.txttext
                 font: buyButton.textFont
             }
 
